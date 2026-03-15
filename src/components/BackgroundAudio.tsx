@@ -1,29 +1,40 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useDayAudio } from "@/hooks/useDayAudio";
 
 const BackgroundAudio = ({ daySlug }: { daySlug: string }) => {
-  const { audioUrl } = useDayAudio(daySlug);
+  const { tracks } = useDayAudio(daySlug);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const indexRef = useRef(0);
+
+  const playTrack = useCallback((index: number) => {
+    if (!tracks.length) return;
+    const idx = index % tracks.length;
+    indexRef.current = idx;
+
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = "";
+    }
+
+    const audio = new Audio(tracks[idx].audio_url);
+    audio.volume = 0.15;
+    audio.onended = () => playTrack(idx + 1);
+    audioRef.current = audio;
+    audio.play().catch(() => {});
+  }, [tracks]);
 
   useEffect(() => {
-    if (!audioUrl) return;
-
-    const audio = new Audio(audioUrl);
-    audio.loop = true;
-    audio.volume = 0.15;
-    audioRef.current = audio;
-
-    // Auto-play (may be blocked by browser until user interaction)
-    audio.play().catch(() => {});
-
+    if (tracks.length > 0) {
+      playTrack(0);
+    }
     return () => {
-      audio.pause();
-      audio.src = "";
-      audioRef.current = null;
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+        audioRef.current = null;
+      }
     };
-  }, [audioUrl]);
-
-  if (!audioUrl) return null;
+  }, [tracks, playTrack]);
 
   return null;
 };

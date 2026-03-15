@@ -2,41 +2,49 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface DayAudio {
+  id: string;
   day_slug: string;
   audio_url: string;
   file_name: string | null;
+  sort_order: number;
 }
 
 export function useDayAudio(daySlug: string) {
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [tracks, setTracks] = useState<DayAudio[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchTracks = async () => {
       setLoading(true);
       const { data } = await supabase
         .from("day_audio")
-        .select("audio_url")
+        .select("*")
         .eq("day_slug", daySlug)
-        .maybeSingle();
-      setAudioUrl(data?.audio_url ?? null);
+        .order("sort_order", { ascending: true });
+      setTracks((data as DayAudio[]) ?? []);
       setLoading(false);
     };
-    fetch();
+    fetchTracks();
   }, [daySlug]);
 
-  return { audioUrl, loading };
+  return { tracks, loading };
 }
 
 export function useAllDayAudio() {
-  const [audioMap, setAudioMap] = useState<Record<string, DayAudio>>({});
+  const [audioMap, setAudioMap] = useState<Record<string, DayAudio[]>>({});
   const [loading, setLoading] = useState(true);
 
   const refetch = async () => {
     setLoading(true);
-    const { data } = await supabase.from("day_audio").select("*");
-    const map: Record<string, DayAudio> = {};
-    data?.forEach((row: any) => { map[row.day_slug] = row; });
+    const { data } = await supabase
+      .from("day_audio")
+      .select("*")
+      .order("sort_order", { ascending: true });
+    const map: Record<string, DayAudio[]> = {};
+    (data as DayAudio[] | null)?.forEach((row) => {
+      if (!map[row.day_slug]) map[row.day_slug] = [];
+      map[row.day_slug].push(row);
+    });
     setAudioMap(map);
     setLoading(false);
   };
