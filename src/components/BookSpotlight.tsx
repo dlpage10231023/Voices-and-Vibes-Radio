@@ -4,6 +4,11 @@ const books = [
     title: "Kaleidoscope Kids Books",
     url: "https://kaleidoscopekidsbooks.com",
   },
+  {
+    emoji: "🎮",
+    title: "KKB Arcade Hub",
+    url: "https://kkb-arcade-hub.lovable.app",
+  },
 ];
 
 const BookSpotlight = () => {
