@@ -21,6 +21,7 @@ export type Database = {
           day_slug: string
           file_name: string | null
           id: string
+          media_type: string
           sort_order: number
           updated_at: string
         }
@@ -30,6 +31,7 @@ export type Database = {
           day_slug: string
           file_name?: string | null
           id?: string
+          media_type?: string
           sort_order?: number
           updated_at?: string
         }
@@ -39,6 +41,7 @@ export type Database = {
           day_slug?: string
           file_name?: string | null
           id?: string
+          media_type?: string
           sort_order?: number
           updated_at?: string
         }
