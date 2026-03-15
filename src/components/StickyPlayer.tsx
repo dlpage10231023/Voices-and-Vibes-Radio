@@ -14,7 +14,7 @@ const StickyPlayer = () => {
             🎙️ Voices & Vibes Radio — {isPlaying ? 'Live' : 'Offline'}
           </div>
           <div className="text-[11px] text-primary-foreground/50 tracking-[0.05em]">
-            voicesandvibes.fm · Houston, TX
+            voicesandvibesradio.com · Houston, TX
           </div>
         </div>
         {isPlaying && (
