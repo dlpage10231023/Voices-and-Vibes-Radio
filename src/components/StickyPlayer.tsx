@@ -32,7 +32,7 @@ const StickyPlayer = () => {
 
       <div className="flex items-center gap-4">
         <span className="text-[11px] font-bold text-primary-foreground/60 tracking-[0.08em] hidden sm:inline">
-          voicesandvibes.fm
+          voicesandvibesradio.com
         </span>
         <button
           onClick={togglePlay}

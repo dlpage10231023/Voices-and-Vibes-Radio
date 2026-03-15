@@ -4,7 +4,7 @@ const items = [
   "Healing Conversations & Restorative Jazz",
   "🕊️ Gospel Sunday — Church Spotlights Worldwide",
   "Hosted by Doreatha Page",
-  "voicesandvibes.fm",
+  "voicesandvibesradio.com",
 ];
 
 const Ticker = () => {

@@ -14,7 +14,7 @@ const About = () => {
 
           <div className="bg-primary text-primary-foreground px-6 py-4 text-[12px] font-bold tracking-[0.1em] uppercase mb-6 flex items-center gap-3">
             <span className="w-[7px] h-[7px] rounded-full bg-secondary animate-blink" />
-            Streaming 24/7 Worldwide · voicesandvibes.fm
+            Streaming 24/7 Worldwide · voicesandvibesradio.com
           </div>
 
           <div className="bg-card border-l-[3px] border-primary p-6 mb-4">
