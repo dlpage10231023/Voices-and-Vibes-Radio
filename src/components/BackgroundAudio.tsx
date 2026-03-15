@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from "react";
-import { useDayAudio } from "@/hooks/useDayAudio";
+import { useDayAudio, DayAudio } from "@/hooks/useDayAudio";
 import { motion, AnimatePresence } from "framer-motion";
+import NowPlayingPanel from "@/components/NowPlayingPanel";
 
 const BackgroundAudio = ({ daySlug }: { daySlug: string }) => {
   const { tracks } = useDayAudio(daySlug);
@@ -8,12 +9,14 @@ const BackgroundAudio = ({ daySlug }: { daySlug: string }) => {
   const indexRef = useRef(0);
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [currentTrack, setCurrentTrack] = useState<DayAudio | null>(null);
 
   const playTrack = useCallback((index: number) => {
     if (!tracks.length) return;
     const idx = index % tracks.length;
     indexRef.current = idx;
     const track = tracks[idx];
+    setCurrentTrack(track);
 
     // Stop any current audio
     if (audioRef.current) {
@@ -50,31 +53,35 @@ const BackgroundAudio = ({ daySlug }: { daySlug: string }) => {
         audioRef.current = null;
       }
       setVideoSrc(null);
+      setCurrentTrack(null);
     };
   }, [tracks, playTrack]);
 
   return (
-    <AnimatePresence>
-      {videoSrc && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.4 }}
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90"
-        >
-          <video
-            ref={videoRef}
-            src={videoSrc}
-            autoPlay
-            playsInline
-            onEnded={handleVideoEnded}
-            className="max-w-[90vw] max-h-[80vh] rounded"
-            onLoadedMetadata={(e) => { (e.target as HTMLVideoElement).volume = 1; }}
-          />
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <>
+      <NowPlayingPanel currentTrack={currentTrack} />
+      <AnimatePresence>
+        {videoSrc && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90"
+          >
+            <video
+              ref={videoRef}
+              src={videoSrc}
+              autoPlay
+              playsInline
+              onEnded={handleVideoEnded}
+              className="max-w-[90vw] max-h-[80vh] rounded"
+              onLoadedMetadata={(e) => { (e.target as HTMLVideoElement).volume = 1; }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

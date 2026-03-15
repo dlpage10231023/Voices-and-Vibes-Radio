@@ -8,6 +8,10 @@ export interface DayAudio {
   file_name: string | null;
   sort_order: number;
   media_type: string;
+  artist_name: string | null;
+  song_title: string | null;
+  album_name: string | null;
+  album_art_url: string | null;
 }
 
 export function useDayAudio(daySlug: string) {
