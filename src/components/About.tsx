@@ -1,3 +1,5 @@
+import doreathaImg from "@/assets/doreatha-page.png";
+
 const About = () => {
   return (
     <section id="about" className="py-[100px] px-[5vw] bg-card">
@@ -44,21 +46,57 @@ const About = () => {
         </div>
 
         {/* Right - Host Card */}
-        <div>
-          <div className="bg-card border border-primary/20 p-8 text-center">
-            <div className="w-[90px] h-[90px] rounded-full bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center font-dancing text-[2rem] text-foreground mx-auto mb-4 border-[3px] border-secondary">
-              DP
+        <div className="flex flex-col gap-6">
+          {/* Photo & Name */}
+          <div className="bg-card border border-primary/20 overflow-hidden">
+            <div className="w-full aspect-[4/5] overflow-hidden">
+              <img
+                src={doreathaImg}
+                alt="Doreatha L. Page — Host of Voices & Vibes Radio"
+                className="w-full h-full object-cover object-top"
+              />
             </div>
-            <div className="font-dancing text-[1.8rem] text-foreground mb-1">Doreatha Page</div>
-            <div className="text-[11px] tracking-[0.15em] uppercase text-primary">Radio Host · LPC, NCC · Houston, TX</div>
-            <a
-              href="https://doreatha.carrd.co"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block mt-4 text-[12px] text-secondary no-underline border-b border-secondary/30 pb-0.5 tracking-[0.05em]"
-            >
-              doreatha.carrd.co ↗
-            </a>
+            <div className="p-6 text-center">
+              <div className="font-dancing text-[1.8rem] text-foreground mb-1">Doreatha L. Page</div>
+              <div className="text-[11px] tracking-[0.15em] uppercase text-primary">Radio Host · LPC, NCC · Houston, TX</div>
+              <a
+                href="https://doreatha.carrd.co"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-3 text-[12px] text-secondary no-underline border-b border-secondary/30 pb-0.5 tracking-[0.05em]"
+              >
+                doreatha.carrd.co ↗
+              </a>
+            </div>
+          </div>
+
+          {/* Our Story */}
+          <div className="bg-card border border-primary/20 p-6">
+            <h3 className="text-[11px] tracking-[0.25em] uppercase text-primary mb-3 font-bold">Our Story</h3>
+            <p className="text-sm text-muted leading-[1.8] mb-4">
+              Voices & Vibes was born from a simple belief: healing happens in community. In a world where so many feel isolated, overwhelmed, and unheard, we wanted to create a space where people could find connection, hope, and peace — no matter where they are or what they're going through.
+            </p>
+            <p className="text-sm text-muted leading-[1.8]">
+              We started with a microphone, a vision, and a deep conviction that music and conversation have the power to transform lives. Today, Voices & Vibes streams 24/7 to listeners around the world.
+            </p>
+          </div>
+
+          {/* Why We Do It */}
+          <div className="bg-card border border-primary/20 p-6">
+            <h3 className="text-[11px] tracking-[0.25em] uppercase text-primary mb-3 font-bold">Why We Do It</h3>
+            <ul className="space-y-2">
+              {[
+                "Every voice deserves to be heard",
+                "Healing is possible for everyone",
+                "Faith and community are forces",
+                "Music has the power to restore the soul",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2 text-sm text-muted leading-[1.6]">
+                  <span className="w-[6px] h-[6px] rounded-full bg-secondary mt-[7px] shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
