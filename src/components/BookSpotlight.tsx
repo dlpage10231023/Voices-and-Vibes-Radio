@@ -1,13 +1,8 @@
 const books = [
   {
     emoji: "📚",
-    title: "Kaleidoscope Kids Book — Vol. 1",
-    url: "https://www.amazon.com/dp/B0GDZWK32X",
-  },
-  {
-    emoji: "📖",
-    title: "Kaleidoscope Kids Book — Vol. 2",
-    url: "https://www.amazon.com/dp/B0GF7BNNGH",
+    title: "Kaleidoscope Kids Books",
+    url: "https://kaleidoscopekidsbooks.com",
   },
 ];
 
@@ -48,7 +43,7 @@ const BookSpotlight = () => {
                   <div className="text-[11px] text-muted tracking-[0.05em] mb-4">Available on Amazon & Barnes & Noble</div>
                 </div>
                 <div className="inline-block bg-secondary text-secondary-foreground px-[18px] py-2 text-[11px] font-bold tracking-[0.1em] uppercase hover:brightness-110 transition-all w-fit">
-                  Shop on Amazon ↗
+                  Visit Website ↗
                 </div>
               </div>
             </a>
