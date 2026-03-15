@@ -16,32 +16,44 @@ export type Database = {
     Tables: {
       day_audio: {
         Row: {
+          album_art_url: string | null
+          album_name: string | null
+          artist_name: string | null
           audio_url: string
           created_at: string
           day_slug: string
           file_name: string | null
           id: string
           media_type: string
+          song_title: string | null
           sort_order: number
           updated_at: string
         }
         Insert: {
+          album_art_url?: string | null
+          album_name?: string | null
+          artist_name?: string | null
           audio_url: string
           created_at?: string
           day_slug: string
           file_name?: string | null
           id?: string
           media_type?: string
+          song_title?: string | null
           sort_order?: number
           updated_at?: string
         }
         Update: {
+          album_art_url?: string | null
+          album_name?: string | null
+          artist_name?: string | null
           audio_url?: string
           created_at?: string
           day_slug?: string
           file_name?: string | null
           id?: string
           media_type?: string
+          song_title?: string | null
           sort_order?: number
           updated_at?: string
         }
