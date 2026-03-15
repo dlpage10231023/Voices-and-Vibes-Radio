@@ -1,13 +1,8 @@
 const books = [
   {
     emoji: "📚",
-    title: "Kaleidoscope Kids Book — Vol. 1",
-    url: "https://www.amazon.com/dp/B0GDZWK32X",
-  },
-  {
-    emoji: "📖",
-    title: "Kaleidoscope Kids Book — Vol. 2",
-    url: "https://www.amazon.com/dp/B0GF7BNNGH",
+    title: "Kaleidoscope Kids Books",
+    url: "https://kaleidoscopekidsbooks.com",
   },
 ];
 
