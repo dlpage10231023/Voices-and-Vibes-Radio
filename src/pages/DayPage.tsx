@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StickyPlayer from "@/components/StickyPlayer";
 import ListenLiveButton from "@/components/ListenLiveButton";
+import BackgroundAudio from "@/components/BackgroundAudio";
 
 const SHARE_STORY_URL = "YOUR_GOOGLE_FORM_URL";
 
@@ -20,6 +21,7 @@ const DayPage = () => {
   return (
     <div className="min-h-screen bg-background text-foreground pb-[76px] overflow-x-hidden">
       <Navbar />
+      <BackgroundAudio daySlug={day} />
 
       {/* Hero */}
       <motion.section
