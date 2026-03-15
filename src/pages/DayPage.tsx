@@ -4,8 +4,8 @@ import { scheduleData, isValidDay } from "@/data/scheduleData";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StickyPlayer from "@/components/StickyPlayer";
+import ListenLiveButton from "@/components/ListenLiveButton";
 
-const LISTEN_LIVE_URL = "https://hello.citrus3.com:2020/public/voicesandvibes";
 const SHARE_STORY_URL = "YOUR_GOOGLE_FORM_URL";
 
 const DayPage = () => {
