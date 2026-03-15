@@ -46,7 +46,7 @@ const Hero = () => {
           </a>
         </div>
         <div className="text-sm text-muted tracking-[0.08em]">
-          Streaming worldwide at <strong className="text-foreground">voicesandvibes.fm</strong>
+          Streaming worldwide at <strong className="text-foreground">voicesandvibesradio.com</strong>
         </div>
       </div>
     </section>
