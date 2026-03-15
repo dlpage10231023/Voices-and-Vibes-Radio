@@ -2,7 +2,7 @@ import doreathaImg from "@/assets/doreatha-page.png";
 
 const About = () => {
   return (
-    <section id="about" className="py-[100px] px-[5vw] bg-card">
+    <section id="about" className="py-16 px-[5vw] bg-card">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-[5vw] max-w-[1100px] mx-auto items-start">
         {/* Left */}
         <div>
