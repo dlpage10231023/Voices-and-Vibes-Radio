@@ -4,44 +4,44 @@
 
 @layer base {
   :root {
-    --background: 0 3% 14%;
-    --foreground: 30 33% 94%;
+    --background: 0 0% 4%;
+    --foreground: 180 33% 96%;
 
-    --card: 15 5% 16%;
-    --card-foreground: 30 33% 94%;
+    --card: 0 0% 10%;
+    --card-foreground: 180 33% 96%;
 
-    --popover: 15 5% 16%;
-    --popover-foreground: 30 33% 94%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 180 33% 96%;
 
-    --primary: 27 46% 42%;
-    --primary-foreground: 30 33% 94%;
+    --primary: 180 100% 30%;
+    --primary-foreground: 0 0% 4%;
 
-    --secondary: 15 5% 16%;
-    --secondary-foreground: 30 33% 94%;
+    --secondary: 12 72% 60%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 200 6% 75%;
-    --muted-foreground: 200 6% 75%;
+    --muted: 180 22% 64%;
+    --muted-foreground: 180 22% 64%;
 
-    --accent: 27 46% 42%;
-    --accent-foreground: 30 33% 94%;
+    --accent: 12 72% 60%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 30 33% 94%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 27 46% 42%;
-    --input: 15 5% 16%;
-    --ring: 27 46% 42%;
+    --border: 180 100% 30%;
+    --input: 0 0% 10%;
+    --ring: 180 100% 30%;
 
-    --radius: 0.5rem;
+    --radius: 0rem;
 
-    --sidebar-background: 0 0% 10%;
-    --sidebar-foreground: 30 33% 94%;
-    --sidebar-primary: 27 46% 42%;
-    --sidebar-primary-foreground: 30 33% 94%;
-    --sidebar-accent: 15 5% 16%;
-    --sidebar-accent-foreground: 30 33% 94%;
-    --sidebar-border: 27 46% 42%;
-    --sidebar-ring: 27 46% 42%;
+    --sidebar-background: 0 0% 4%;
+    --sidebar-foreground: 180 33% 96%;
+    --sidebar-primary: 180 100% 30%;
+    --sidebar-primary-foreground: 0 0% 4%;
+    --sidebar-accent: 0 0% 10%;
+    --sidebar-accent-foreground: 180 33% 96%;
+    --sidebar-border: 180 100% 30%;
+    --sidebar-ring: 180 100% 30%;
   }
 }
 
@@ -51,10 +51,38 @@
   }
 
   body {
-    @apply bg-background text-foreground font-inter;
+    @apply bg-background text-foreground font-montserrat font-light;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-playfair;
+    @apply font-montserrat;
   }
+}
+
+/* Animations */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+@keyframes wave {
+  0%, 100% { height: 20px; }
+  50% { height: 120px; }
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-blink {
+  animation: blink 1.5s infinite;
+}
+
+.animate-wave {
+  animation: wave 1.4s ease-in-out infinite;
+}
+
+.animate-ticker {
+  animation: ticker 30s linear infinite;
 }

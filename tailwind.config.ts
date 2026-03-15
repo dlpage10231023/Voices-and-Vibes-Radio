@@ -14,8 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
+        dancing: ['"Dancing Script"', "cursive"],
+        montserrat: ["Montserrat", "sans-serif"],
         playfair: ['"Playfair Display"', "serif"],
-        inter: ["Inter", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -61,12 +62,6 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        "vv-dark": "hsl(0 3% 14%)",
-        "vv-card": "hsl(15 5% 16%)",
-        "vv-deep": "hsl(0 0% 10%)",
-        "vv-cream": "hsl(30 33% 94%)",
-        "vv-muted": "hsl(200 6% 75%)",
-        "vv-amber": "hsl(27 46% 42%)",
       },
       borderRadius: {
         lg: "var(--radius)",
