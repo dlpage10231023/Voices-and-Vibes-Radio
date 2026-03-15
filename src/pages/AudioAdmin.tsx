@@ -4,6 +4,7 @@ import { useAllDayAudio } from "@/hooks/useDayAudio";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StickyPlayer from "@/components/StickyPlayer";
+import { Badge } from "@/components/ui/badge";
 
 const DAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 const DAY_LABELS: Record<string, string> = {
@@ -20,20 +21,21 @@ const AudioAdmin = () => {
   const { audioMap, loading, refetch } = useAllDayAudio();
   const [uploading, setUploading] = useState<string | null>(null);
 
-  const handleUpload = async (daySlug: string, file: File) => {
+  const handleUpload = async (daySlug: string, file: File, mediaType: "audio" | "video") => {
     setUploading(daySlug);
     try {
       const ext = file.name.split(".").pop();
       const filePath = `${daySlug}/${Date.now()}.${ext}`;
+      const bucket = mediaType === "video" ? "day-video" : "day-audio";
 
       const { error: uploadError } = await supabase.storage
-        .from("day-audio")
+        .from(bucket)
         .upload(filePath, file, { upsert: false });
 
       if (uploadError) throw uploadError;
 
       const { data: urlData } = supabase.storage
-        .from("day-audio")
+        .from(bucket)
         .getPublicUrl(filePath);
 
       const existingTracks = audioMap[daySlug] || [];
@@ -41,7 +43,13 @@ const AudioAdmin = () => {
 
       const { error: dbError } = await supabase
         .from("day_audio")
-        .insert({ day_slug: daySlug, audio_url: urlData.publicUrl, file_name: file.name, sort_order: nextOrder });
+        .insert({
+          day_slug: daySlug,
+          audio_url: urlData.publicUrl,
+          file_name: file.name,
+          sort_order: nextOrder,
+          media_type: mediaType,
+        });
 
       if (dbError) throw dbError;
       await refetch();
@@ -54,15 +62,14 @@ const AudioAdmin = () => {
 
   const handleRemove = async (id: string, daySlug: string) => {
     try {
-      // Get the record to find storage path
       const track = (audioMap[daySlug] || []).find(t => t.id === id);
       await supabase.from("day_audio").delete().eq("id", id);
-      
+
       if (track?.audio_url) {
-        // Extract path from URL
-        const urlParts = track.audio_url.split("/day-audio/");
+        const bucket = track.media_type === "video" ? "day-video" : "day-audio";
+        const urlParts = track.audio_url.split(`/${bucket}/`);
         if (urlParts[1]) {
-          await supabase.storage.from("day-audio").remove([decodeURIComponent(urlParts[1])]);
+          await supabase.storage.from(bucket).remove([decodeURIComponent(urlParts[1])]);
         }
       }
       await refetch();
@@ -76,7 +83,6 @@ const AudioAdmin = () => {
     const newIndex = index + direction;
     if (newIndex < 0 || newIndex >= tracks.length) return;
 
-    // Swap sort_order values
     const a = tracks[index];
     const b = tracks[newIndex];
 
@@ -97,7 +103,7 @@ const AudioAdmin = () => {
             Audio Manager
           </h1>
           <p className="text-[15px] text-muted mb-10 leading-[1.8]">
-            Upload background music for each day's schedule page. Multiple tracks per day play as a playlist. Supported formats: MP3, WAV, OGG.
+            Upload background music and video commercials for each day's schedule page. Tracks play as a playlist in order. Supported: MP3, WAV, OGG for audio · MP4, WEBM for video.
           </p>
 
           {loading ? (
@@ -110,24 +116,40 @@ const AudioAdmin = () => {
 
                 return (
                   <div key={slug} className="bg-card p-6">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                       <div className="text-[11px] tracking-[0.18em] uppercase text-primary font-bold">
                         {DAY_LABELS[slug]}
                       </div>
-                      <label className="bg-primary text-primary-foreground px-4 py-2 text-[11px] font-bold tracking-[0.1em] uppercase cursor-pointer hover:brightness-110 transition-all">
-                        {isUploading ? "Uploading..." : "Add Track"}
-                        <input
-                          type="file"
-                          accept="audio/*"
-                          className="hidden"
-                          disabled={isUploading}
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) handleUpload(slug, file);
-                            e.target.value = "";
-                          }}
-                        />
-                      </label>
+                      <div className="flex gap-2">
+                        <label className="bg-primary text-primary-foreground px-4 py-2 text-[11px] font-bold tracking-[0.1em] uppercase cursor-pointer hover:brightness-110 transition-all">
+                          {isUploading ? "Uploading..." : "Add Track"}
+                          <input
+                            type="file"
+                            accept="audio/*"
+                            className="hidden"
+                            disabled={isUploading}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) handleUpload(slug, file, "audio");
+                              e.target.value = "";
+                            }}
+                          />
+                        </label>
+                        <label className="bg-secondary text-secondary-foreground px-4 py-2 text-[11px] font-bold tracking-[0.1em] uppercase cursor-pointer hover:brightness-110 transition-all">
+                          {isUploading ? "Uploading..." : "Add Commercial"}
+                          <input
+                            type="file"
+                            accept="video/*"
+                            className="hidden"
+                            disabled={isUploading}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) handleUpload(slug, file, "video");
+                              e.target.value = "";
+                            }}
+                          />
+                        </label>
+                      </div>
                     </div>
 
                     {tracks.length === 0 ? (
@@ -142,10 +164,24 @@ const AudioAdmin = () => {
                             <span className="text-[11px] text-muted/60 font-mono w-5 shrink-0">
                               {i + 1}.
                             </span>
+                            <Badge
+                              variant={track.media_type === "video" ? "secondary" : "default"}
+                              className="text-[9px] shrink-0"
+                            >
+                              {track.media_type === "video" ? "Video" : "Audio"}
+                            </Badge>
                             <span className="text-[12px] text-muted flex-1 min-w-0 truncate">
-                              {track.file_name || "Audio track"}
+                              {track.file_name || "Media track"}
                             </span>
-                            <audio controls src={track.audio_url} className="h-8 max-w-[180px] shrink-0" />
+                            {track.media_type === "video" ? (
+                              <video
+                                src={track.audio_url}
+                                controls
+                                className="h-16 max-w-[180px] shrink-0 rounded"
+                              />
+                            ) : (
+                              <audio controls src={track.audio_url} className="h-8 max-w-[180px] shrink-0" />
+                            )}
                             <div className="flex items-center gap-1 shrink-0">
                               <button
                                 onClick={() => handleMove(slug, i, -1)}
