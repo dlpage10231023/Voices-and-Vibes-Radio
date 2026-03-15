@@ -48,8 +48,8 @@ const About = () => {
         {/* Right - Host Card */}
         <div className="flex flex-col gap-6">
           {/* Photo & Name */}
-          <div className="bg-card border border-primary/20 overflow-hidden max-w-[600px] mx-auto">
-            <div className="w-full aspect-square min-w-[300px] min-h-[300px] max-h-[600px] overflow-hidden">
+          <div className="bg-card border border-primary/20 overflow-hidden max-w-[400px] mx-auto">
+            <div className="w-full aspect-square max-h-[400px] overflow-hidden">
               <img
                 src={doreathaImg}
                 alt="Doreatha L. Page — Host of Voices & Vibes Radio"
