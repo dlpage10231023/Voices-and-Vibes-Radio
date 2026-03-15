@@ -70,7 +70,7 @@ const BackgroundAudio = ({ daySlug }: { daySlug: string }) => {
             playsInline
             onEnded={handleVideoEnded}
             className="max-w-[90vw] max-h-[80vh] rounded"
-            style={{ volume: 1 }}
+            onLoadedMetadata={(e) => { (e.target as HTMLVideoElement).volume = 1; }}
           />
         </motion.div>
       )}
