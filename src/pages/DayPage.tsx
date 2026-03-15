@@ -4,8 +4,8 @@ import { scheduleData, isValidDay } from "@/data/scheduleData";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StickyPlayer from "@/components/StickyPlayer";
+import ListenLiveButton from "@/components/ListenLiveButton";
 
-const LISTEN_LIVE_URL = "https://hello.citrus3.com:2020/public/voicesandvibes";
 const SHARE_STORY_URL = "YOUR_GOOGLE_FORM_URL";
 
 const DayPage = () => {
@@ -37,14 +37,7 @@ const DayPage = () => {
             {data.tagline}
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <a
-              href={LISTEN_LIVE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-primary text-primary-foreground px-8 py-3.5 text-[12px] font-bold tracking-[0.12em] uppercase no-underline hover:brightness-110 hover:-translate-y-0.5 transition-all"
-            >
-              🎵 Listen Live
-            </a>
+            <ListenLiveButton />
             <a
               href={SHARE_STORY_URL}
               target="_blank"
