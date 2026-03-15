@@ -33,7 +33,7 @@ const Contact = () => {
             📘 Facebook
           </a>
           <a
-            href="#"
+            href="mailto:doreatha@rootedinhopetherapy.com"
             className="flex items-center gap-2 border border-primary/25 text-muted px-[18px] py-2.5 text-[12px] tracking-[0.08em] no-underline hover:border-primary hover:text-primary transition-all"
           >
             ✉️ Email Us
