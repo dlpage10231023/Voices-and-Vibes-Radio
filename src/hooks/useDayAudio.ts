@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-interface DayAudio {
+export interface DayAudio {
   id: string;
   day_slug: string;
   audio_url: string;
   file_name: string | null;
   sort_order: number;
+  media_type: string;
 }
 
 export function useDayAudio(daySlug: string) {
