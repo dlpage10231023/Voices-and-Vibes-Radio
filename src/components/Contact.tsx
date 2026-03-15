@@ -1,4 +1,17 @@
+import { useState } from "react";
+
 const Contact = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const subject = encodeURIComponent("Voices & Vibes Radio Inquiry");
+    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
+    window.location.href = `mailto:doreatha@rootedinhopetherapy.com?subject=${subject}&body=${body}`;
+  };
+
   return (
     <section id="contact" className="py-[100px] px-[5vw] bg-background">
       <div className="max-w-[680px] mx-auto">
@@ -13,15 +26,48 @@ const Contact = () => {
           Have a story to share? Want to partner with us or feature your church? We'd love to hear from you.
         </p>
 
-        <div className="mt-12 flex items-center gap-6">
-          <a
-            href="mailto:doreatha@rootedinhopetherapy.com?subject=Voices%20%26%20Vibes%20Radio%20Inquiry"
-            className="inline-block bg-primary text-primary-foreground px-9 py-3.5 text-[12px] font-bold tracking-[0.12em] uppercase border-none cursor-pointer hover:brightness-110 transition-all no-underline"
-          >
-            Send Us a Message
-          </a>
-          <span className="text-[11px] text-muted">We'll respond within 24–48 hours</span>
-        </div>
+        <form className="mt-12" onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-[10px] tracking-[0.2em] uppercase text-primary mb-2 font-bold">Your Name</label>
+              <input
+                type="text"
+                placeholder="Full name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full bg-primary/5 border border-primary/20 text-foreground font-montserrat text-sm px-4 py-3 outline-none focus:border-primary transition-colors placeholder:text-muted/40"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] tracking-[0.2em] uppercase text-primary mb-2 font-bold">Email</label>
+              <input
+                type="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-primary/5 border border-primary/20 text-foreground font-montserrat text-sm px-4 py-3 outline-none focus:border-primary transition-colors placeholder:text-muted/40"
+              />
+            </div>
+          </div>
+          <div className="mb-4">
+            <label className="block text-[10px] tracking-[0.2em] uppercase text-primary mb-2 font-bold">Message</label>
+            <textarea
+              placeholder="Tell us about yourself or how you'd like to connect..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="w-full bg-primary/5 border border-primary/20 text-foreground font-montserrat text-sm px-4 py-3 outline-none focus:border-primary transition-colors min-h-[130px] resize-y placeholder:text-muted/40"
+            />
+          </div>
+          <div className="flex items-center gap-6 mt-2">
+            <button
+              type="submit"
+              className="bg-primary text-primary-foreground px-9 py-3.5 text-[12px] font-bold tracking-[0.12em] uppercase border-none cursor-pointer hover:brightness-110 transition-all"
+            >
+              Send Message
+            </button>
+            <span className="text-[11px] text-muted">We'll respond within 24–48 hours</span>
+          </div>
+        </form>
 
         <div className="flex gap-4 mt-8">
           <a
