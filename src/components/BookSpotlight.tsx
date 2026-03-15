@@ -9,6 +9,11 @@ const books = [
     title: "KKB Arcade Hub",
     url: "https://kkb-arcade-hub.lovable.app",
   },
+  {
+    emoji: "🧠",
+    title: "Therapy Telehealth Arcade",
+    url: "https://therapyacrade.lovable.app",
+  },
 ];
 
 const BookSpotlight = () => {
