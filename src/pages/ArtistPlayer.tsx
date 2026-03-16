@@ -570,7 +570,7 @@ const ArtistPlayer = () => {
 
           {/* ── Volume ── */}
           <div
-            className="flex items-center"
+            className="flex items-center w-full"
             style={{ padding: "0 1.75rem 1.25rem", gap: "0.75rem" }}
           >
             <span
