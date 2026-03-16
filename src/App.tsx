@@ -7,6 +7,7 @@ import { AudioProvider } from "./components/AudioProvider";
 import Splash from "./pages/Splash.tsx";
 import Index from "./pages/Index.tsx";
 import DayPage from "./pages/DayPage.tsx";
+import ArtistPlayer from "./pages/ArtistPlayer.tsx";
 import AudioAdmin from "./pages/AudioAdmin.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -23,6 +24,7 @@ const App = () => (
             <Route path="/" element={<Splash />} />
             <Route path="/home" element={<Index />} />
             <Route path="/admin/audio" element={<AudioAdmin />} />
+            <Route path="/artist-player" element={<ArtistPlayer />} />
             <Route path="/:day" element={<DayPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
