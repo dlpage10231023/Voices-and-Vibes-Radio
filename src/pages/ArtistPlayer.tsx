@@ -10,6 +10,14 @@ const fmt = (s: number) => {
   return m + ":" + String(sec).padStart(2, "0");
 };
 
+/* ── Past Spotlights data ── */
+const pastSpotlights = [
+  { id: 1, name: "Nia Soleil", track: "Golden Hour", color: "#007A7A" },
+  { id: 2, name: "Marcus Reed", track: "Soul Revival", color: "#0d1a1a" },
+  { id: 3, name: "Amara Joy", track: "Still Waters", color: "#1a0d0d" },
+  { id: 4, name: "David Okon", track: "Restoration", color: "#007A7A" },
+];
+
 const ArtistPlayer = () => {
   const navigate = useNavigate();
 
@@ -29,6 +37,9 @@ const ArtistPlayer = () => {
   const [metaArtist, setMetaArtist] = useState("");
   const [metaAlbum, setMetaAlbum] = useState("");
   const [metaYear, setMetaYear] = useState("");
+
+  /* right column state */
+  const [trackStory, setTrackStory] = useState("");
 
   /* ── refs ── */
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -222,6 +233,14 @@ const ArtistPlayer = () => {
     }
   };
 
+  /* ── load past spotlight into player ── */
+  const loadSpotlight = (spot: typeof pastSpotlights[0]) => {
+    setMetaArtist(spot.name);
+    setMetaTitle(spot.track);
+    setMetaAlbum("");
+    setMetaYear("");
+  };
+
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
       <Navbar />
@@ -237,568 +256,796 @@ const ArtistPlayer = () => {
         input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;border:none;background:#009B9B}
       `}</style>
 
-      <div className="flex flex-col items-center pt-[100px] px-[5vw] pb-[80px]">
-        {/* ── Header ── */}
-        <div className="text-center mb-10">
-          <span
-            className="font-dancing text-[2rem] font-bold block mb-1"
-            style={{
-              background: "linear-gradient(135deg,#009B9B,#E8624A)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            Voices &amp; Vibes Radio
-          </span>
-          <div
-            className="text-[10px] tracking-[0.3em] uppercase"
-            style={{ color: "#8ab8b8", fontFamily: "'Share Tech Mono', monospace" }}
-          >
-            Artist Spotlight Player
-          </div>
-        </div>
-
-        {/* ── Player Card ── */}
-        <div
-          className="w-full relative overflow-hidden"
+      {/* ── Page Header ── */}
+      <div className="text-center pt-[100px] px-[5vw] mb-8">
+        <span
+          className="font-dancing text-[2rem] font-bold block mb-1"
           style={{
-            maxWidth: 520,
-            background: "#1a1a1a",
-            border: dragOver
-              ? "1px solid #009B9B"
-              : "1px solid rgba(0,155,155,0.2)",
-            boxShadow: dragOver ? "0 0 30px rgba(0,155,155,0.2)" : "none",
-            transition: "border-color .2s, box-shadow .2s",
+            background: "linear-gradient(135deg,#009B9B,#E8624A)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
           }}
-          onDragOver={(e) => {
-            e.preventDefault();
-            setDragOver(true);
-          }}
-          onDragLeave={() => setDragOver(false)}
-          onDrop={onDrop}
         >
-          {/* glow effects */}
-          <div
-            className="absolute top-0 left-0 pointer-events-none"
-            style={{
-              width: 200,
-              height: 200,
-              background:
-                "radial-gradient(circle at top left, rgba(0,155,155,0.1), transparent 70%)",
-            }}
-          />
-          <div
-            className="absolute bottom-0 right-0 pointer-events-none"
-            style={{
-              width: 160,
-              height: 160,
-              background:
-                "radial-gradient(circle at bottom right, rgba(232,98,74,0.08), transparent 70%)",
-            }}
-          />
+          Voices &amp; Vibes Radio
+        </span>
+        <div
+          className="text-[10px] tracking-[0.3em] uppercase"
+          style={{ color: "#8ab8b8", fontFamily: "'Share Tech Mono', monospace" }}
+        >
+          Artist Spotlight Player
+        </div>
+      </div>
 
-          {/* ── Album Art Zone ── */}
+      {/* ── Two Column Grid ── */}
+      <div
+        className="grid gap-8 px-[5vw] pb-[80px]"
+        style={{
+          gridTemplateColumns: "480px 1fr",
+          maxWidth: "none",
+        }}
+      >
+        {/* ===== LEFT COLUMN — Player Card ===== */}
+        <div className="flex flex-col items-center">
+          {/* Player Card */}
           <div
-            className="w-full relative overflow-hidden flex items-center justify-center cursor-pointer"
+            className="w-full relative overflow-hidden"
             style={{
-              aspectRatio: "1/1",
-              maxHeight: 340,
-              background: "#0d0d0d",
+              maxWidth: 520,
+              background: "#1a1a1a",
+              border: dragOver
+                ? "1px solid #009B9B"
+                : "1px solid rgba(0,155,155,0.2)",
+              boxShadow: dragOver ? "0 0 30px rgba(0,155,155,0.2)" : "none",
+              transition: "border-color .2s, box-shadow .2s",
             }}
-            onClick={() => {
-              if (artSrc) imgInputRef.current?.click();
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOver(true);
             }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={onDrop}
           >
-            {/* Image */}
-            {artSrc && (
-              <img
-                src={artSrc}
-                alt="Album Art"
-                className="w-full h-full object-cover"
-                style={{
-                  transition: "transform .6s ease, filter .4s ease",
-                  transform: isPlaying ? "scale(1.04)" : "scale(1)",
-                  filter: isPlaying ? "brightness(0.85)" : "brightness(1)",
-                }}
-              />
-            )}
-
-            {/* Placeholder */}
-            {!artSrc && (
-              <div
-                className="absolute inset-0 flex flex-col items-center justify-center gap-4"
-                style={{
-                  background: "linear-gradient(135deg,#0d1a1a,#1a0d0d)",
-                }}
-              >
-                <div className="text-[4rem] opacity-40">🎙️</div>
-                <p
-                  className="text-[11px] tracking-[0.2em] uppercase text-center px-8"
-                  style={{ color: "#8ab8b8", maxWidth: 200 }}
-                >
-                  Upload album art or drag &amp; drop an image here
-                </p>
-                <button
-                  className="font-montserrat font-bold text-[11px] tracking-[0.15em] uppercase cursor-pointer"
-                  style={{
-                    background: "rgba(0,155,155,0.15)",
-                    border: "1px solid rgba(0,155,155,0.4)",
-                    color: "#009B9B",
-                    padding: "8px 20px",
-                    transition: "background .2s",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.background = "rgba(0,155,155,0.3)")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.background = "rgba(0,155,155,0.15)")
-                  }
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    imgInputRef.current?.click();
-                  }}
-                >
-                  Choose Image
-                </button>
-              </div>
-            )}
-
-            {/* Vinyl ring (playing only) */}
+            {/* glow effects */}
             <div
-              className="absolute inset-0 flex items-center justify-center pointer-events-none"
+              className="absolute top-0 left-0 pointer-events-none"
               style={{
-                opacity: isPlaying ? 1 : 0,
-                transition: "opacity .4s",
+                width: 200,
+                height: 200,
+                background:
+                  "radial-gradient(circle at top left, rgba(0,155,155,0.1), transparent 70%)",
               }}
-            >
-              <div
-                style={{
-                  width: 80,
-                  height: 80,
-                  borderRadius: "50%",
-                  background:
-                    "radial-gradient(circle,rgba(0,0,0,0.85) 30%,rgba(0,155,155,0.3) 31%,rgba(0,0,0,0.6) 60%,rgba(232,98,74,0.2) 61%,rgba(0,0,0,0.7) 100%)",
-                  border: "2px solid rgba(0,155,155,0.3)",
-                  animation: isPlaying ? "spin 4s linear infinite" : "none",
-                }}
-              />
-              <div
-                className="absolute"
-                style={{
-                  width: 14,
-                  height: 14,
-                  borderRadius: "50%",
-                  background: "#009B9B",
-                  boxShadow: "0 0 12px rgba(0,155,155,0.6)",
-                }}
-              />
-            </div>
-
-            {/* Canvas visualizer */}
-            <canvas
-              ref={canvasRef}
-              className="art-canvas-wrap"
-              style={{ opacity: isPlaying ? 1 : 0 }}
+            />
+            <div
+              className="absolute bottom-0 right-0 pointer-events-none"
+              style={{
+                width: 160,
+                height: 160,
+                background:
+                  "radial-gradient(circle at bottom right, rgba(232,98,74,0.08), transparent 70%)",
+              }}
             />
 
-            {/* NOW PLAYING badge */}
+            {/* ── Album Art Zone ── */}
             <div
-              className="absolute top-4 left-4 flex items-center gap-[6px] font-montserrat font-bold text-[10px] tracking-[0.2em] uppercase text-white"
+              className="w-full relative overflow-hidden flex items-center justify-center cursor-pointer"
               style={{
-                background: "rgba(232,98,74,0.85)",
-                padding: "5px 12px",
-                opacity: isPlaying ? 1 : 0,
-                transition: "opacity .3s",
+                aspectRatio: "1/1",
+                maxHeight: 340,
+                background: "#0d0d0d",
+              }}
+              onClick={() => {
+                if (artSrc) imgInputRef.current?.click();
               }}
             >
-              <span
-                className="inline-block rounded-full bg-white"
-                style={{
-                  width: 6,
-                  height: 6,
-                  animation: "blink 1.2s infinite",
-                }}
-              />
-              Now Playing
-            </div>
-
-            {/* Watermark */}
-            <div
-              className="absolute bottom-3 right-4 font-dancing font-bold text-[1rem] pointer-events-none"
-              style={{
-                color: "rgba(255,255,255,0.35)",
-                opacity: isPlaying ? 1 : 0,
-                transition: "opacity .3s",
-              }}
-            >
-              Voices &amp; Vibes Radio
-            </div>
-          </div>
-
-          {/* ── Track Info ── */}
-          <div
-            className="relative"
-            style={{
-              padding: "1.5rem 1.75rem 1.25rem",
-              borderBottom: "1px solid rgba(0,155,155,0.08)",
-            }}
-          >
-            <div
-              className="font-montserrat font-bold text-[10px] tracking-[0.2em] uppercase mb-[0.4rem]"
-              style={{ color: "#009B9B" }}
-            >
-              🎙️ Voices &amp; Vibes Radio · Artist Spotlight
-            </div>
-            <div className="text-[1.15rem] font-montserrat font-bold text-white mb-[0.2rem] whitespace-nowrap overflow-hidden">
-              <span
-                className="inline-block"
-                style={{
-                  animation: scrollTitle
-                    ? "tscroll 14s linear infinite"
-                    : "none",
-                }}
-              >
-                {dispTitle}
-              </span>
-            </div>
-            <div
-              className="font-montserrat text-[13px] mb-[0.1rem]"
-              style={{ color: "#8ab8b8" }}
-            >
-              {dispArtist}
-            </div>
-            <div
-              className="font-montserrat font-light text-[11px] italic"
-              style={{ color: "rgba(138,184,184,0.5)" }}
-            >
-              {dispAlbum}
-            </div>
-          </div>
-
-          {/* ── Progress ── */}
-          <div style={{ padding: "1rem 1.75rem 0.75rem" }}>
-            <div
-              className="w-full relative cursor-pointer mb-2"
-              style={{
-                height: 4,
-                background: "rgba(255,255,255,0.08)",
-                borderRadius: 2,
-              }}
-              onClick={seekTo}
-            >
-              <div
-                className="h-full pointer-events-none"
-                style={{
-                  width: `${progress}%`,
-                  borderRadius: 2,
-                  background: "linear-gradient(to right,#009B9B,#E8624A)",
-                  transition: "width .25s linear",
-                }}
-              />
-            </div>
-            <div
-              className="flex justify-between text-[10px] tracking-[0.06em]"
-              style={{ color: "#8ab8b8" }}
-            >
-              <span>{fmt(elapsed)}</span>
-              <span>{duration > 0 ? fmt(duration) : "0:00"}</span>
-            </div>
-          </div>
-
-          {/* ── Controls ── */}
-          <div
-            className="flex items-center justify-center"
-            style={{ padding: "0.75rem 1.75rem 1rem", gap: "1.25rem" }}
-          >
-            <button
-              className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]"
-              style={{ color: isShuffled ? "#009B9B" : "#8ab8b8" }}
-              onClick={toggleShuffle}
-              title="Shuffle"
-            >
-              🔀
-            </button>
-            <button
-              className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]"
-              style={{ color: "#8ab8b8" }}
-              onClick={skipBack}
-              title="Back 10s"
-            >
-              ⏪
-            </button>
-            <button
-              className="border-none cursor-pointer flex items-center justify-center text-[1.5rem] transition-all"
-              style={{
-                width: 58,
-                height: 58,
-                borderRadius: "50%",
-                background: isPlaying ? "#E8624A" : "#009B9B",
-                color: "#0a0a0a",
-                boxShadow: isPlaying
-                  ? "0 0 28px rgba(232,98,74,0.4)"
-                  : "0 0 28px rgba(0,155,155,0.4)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.filter = "brightness(1.15)";
-                e.currentTarget.style.transform = "scale(1.06)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.filter = "brightness(1)";
-                e.currentTarget.style.transform = "scale(1)";
-              }}
-              onClick={togglePlay}
-            >
-              {isPlaying ? "⏸" : "▶"}
-            </button>
-            <button
-              className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]"
-              style={{ color: "#8ab8b8" }}
-              onClick={skipFwd}
-              title="Forward 10s"
-            >
-              ⏩
-            </button>
-            <button
-              className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]"
-              style={{ color: isLooping ? "#009B9B" : "#8ab8b8" }}
-              onClick={toggleLoop}
-              title="Loop"
-            >
-              🔁
-            </button>
-          </div>
-
-          {/* ── Volume ── */}
-          <div
-            className="flex items-center w-full"
-            style={{ padding: "0 1.75rem 1.25rem", gap: "0.75rem" }}
-          >
-            <span
-              className="text-[14px] cursor-pointer"
-              style={{ color: "#8ab8b8" }}
-              onClick={toggleMute}
-            >
-              {isMuted ? "🔇" : "🔈"}
-            </span>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={volume}
-              onChange={(e) => handleVolume(Number(e.target.value))}
-            />
-            <span
-              className="text-[11px] min-w-[32px] text-right"
-              style={{
-                color: "#8ab8b8",
-                fontFamily: "'Share Tech Mono', monospace",
-              }}
-            >
-              {volume}%
-            </span>
-          </div>
-
-          {/* ── Upload Section ── */}
-          <div
-            className="grid grid-cols-2"
-            style={{
-              borderTop: "1px solid rgba(0,155,155,0.08)",
-              padding: "1.25rem 1.75rem",
-              gap: "0.75rem",
-            }}
-          >
-            <button
-              className="flex flex-col items-center gap-[0.4rem] cursor-pointer text-center transition-all"
-              style={{
-                background: "rgba(0,155,155,0.05)",
-                border: "1px dashed rgba(0,155,155,0.25)",
-                padding: "1rem",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(0,155,155,0.12)";
-                e.currentTarget.style.borderColor = "rgba(0,155,155,0.5)";
-                e.currentTarget.style.borderStyle = "solid";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(0,155,155,0.05)";
-                e.currentTarget.style.borderColor = "rgba(0,155,155,0.25)";
-                e.currentTarget.style.borderStyle = "dashed";
-              }}
-              onClick={() => audioInputRef.current?.click()}
-            >
-              <div className="text-[1.4rem]">🎵</div>
-              <div
-                className="font-montserrat font-bold text-[10px] tracking-[0.15em] uppercase"
-                style={{ color: "#009B9B" }}
-              >
-                Upload Track
-              </div>
-              <div className="text-[10px]" style={{ color: "#8ab8b8" }}>
-                MP3, WAV, OGG
-              </div>
-            </button>
-            <button
-              className="flex flex-col items-center gap-[0.4rem] cursor-pointer text-center transition-all"
-              style={{
-                background: "rgba(232,98,74,0.05)",
-                border: "1px dashed rgba(232,98,74,0.25)",
-                padding: "1rem",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(232,98,74,0.12)";
-                e.currentTarget.style.borderColor = "rgba(232,98,74,0.5)";
-                e.currentTarget.style.borderStyle = "solid";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(232,98,74,0.05)";
-                e.currentTarget.style.borderColor = "rgba(232,98,74,0.25)";
-                e.currentTarget.style.borderStyle = "dashed";
-              }}
-              onClick={() => imgInputRef.current?.click()}
-            >
-              <div className="text-[1.4rem]">🖼️</div>
-              <div
-                className="font-montserrat font-bold text-[10px] tracking-[0.15em] uppercase"
-                style={{ color: "#E8624A" }}
-              >
-                Album Art
-              </div>
-              <div className="text-[10px]" style={{ color: "#8ab8b8" }}>
-                JPG, PNG, WebP
-              </div>
-            </button>
-          </div>
-
-          {/* ── Metadata Fields ── */}
-          <div
-            className="grid grid-cols-2"
-            style={{
-              borderTop: "1px solid rgba(0,155,155,0.08)",
-              padding: "1.25rem 1.75rem",
-              gap: "0.75rem",
-            }}
-          >
-            {[
-              {
-                label: "Track Title",
-                value: metaTitle,
-                set: setMetaTitle,
-                ph: "Song name",
-              },
-              {
-                label: "Artist",
-                value: metaArtist,
-                set: setMetaArtist,
-                ph: "Artist name",
-              },
-              {
-                label: "Album",
-                value: metaAlbum,
-                set: setMetaAlbum,
-                ph: "Album title",
-              },
-              {
-                label: "Year",
-                value: metaYear,
-                set: setMetaYear,
-                ph: "2024",
-              },
-            ].map((f) => (
-              <div key={f.label}>
-                <label
-                  className="block font-montserrat font-bold text-[9px] tracking-[0.2em] uppercase mb-[0.35rem]"
-                  style={{ color: "#009B9B" }}
-                >
-                  {f.label}
-                </label>
-                <input
-                  type="text"
-                  value={f.value}
-                  onChange={(e) => f.set(e.target.value)}
-                  placeholder={f.ph}
-                  className="w-full font-montserrat text-[12px] text-white outline-none"
+              {/* Image */}
+              {artSrc && (
+                <img
+                  src={artSrc}
+                  alt="Album Art"
+                  className="w-full h-full object-cover"
                   style={{
-                    background: "rgba(0,155,155,0.05)",
-                    border: "1px solid rgba(0,155,155,0.2)",
-                    padding: "8px 10px",
-                    transition: "border-color .2s",
+                    transition: "transform .6s ease, filter .4s ease",
+                    transform: isPlaying ? "scale(1.04)" : "scale(1)",
+                    filter: isPlaying ? "brightness(0.85)" : "brightness(1)",
                   }}
-                  onFocus={(e) =>
-                    (e.currentTarget.style.borderColor = "#009B9B")
-                  }
-                  onBlur={(e) =>
-                    (e.currentTarget.style.borderColor =
-                      "rgba(0,155,155,0.2)")
-                  }
+                />
+              )}
+
+              {/* Placeholder */}
+              {!artSrc && (
+                <div
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-4"
+                  style={{
+                    background: "linear-gradient(135deg,#0d1a1a,#1a0d0d)",
+                  }}
+                >
+                  <div className="text-[4rem] opacity-40">🎙️</div>
+                  <p
+                    className="text-[11px] tracking-[0.2em] uppercase text-center px-8"
+                    style={{ color: "#8ab8b8", maxWidth: 200 }}
+                  >
+                    Upload album art or drag &amp; drop an image here
+                  </p>
+                  <button
+                    className="font-montserrat font-bold text-[11px] tracking-[0.15em] uppercase cursor-pointer"
+                    style={{
+                      background: "rgba(0,155,155,0.15)",
+                      border: "1px solid rgba(0,155,155,0.4)",
+                      color: "#009B9B",
+                      padding: "8px 20px",
+                      transition: "background .2s",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.background = "rgba(0,155,155,0.3)")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = "rgba(0,155,155,0.15)")
+                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      imgInputRef.current?.click();
+                    }}
+                  >
+                    Choose Image
+                  </button>
+                </div>
+              )}
+
+              {/* Vinyl ring (playing only) */}
+              <div
+                className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                style={{
+                  opacity: isPlaying ? 1 : 0,
+                  transition: "opacity .4s",
+                }}
+              >
+                <div
+                  style={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: "50%",
+                    background:
+                      "radial-gradient(circle,rgba(0,0,0,0.85) 30%,rgba(0,155,155,0.3) 31%,rgba(0,0,0,0.6) 60%,rgba(232,98,74,0.2) 61%,rgba(0,0,0,0.7) 100%)",
+                    border: "2px solid rgba(0,155,155,0.3)",
+                    animation: isPlaying ? "spin 4s linear infinite" : "none",
+                  }}
+                />
+                <div
+                  className="absolute"
+                  style={{
+                    width: 14,
+                    height: 14,
+                    borderRadius: "50%",
+                    background: "#009B9B",
+                    boxShadow: "0 0 12px rgba(0,155,155,0.6)",
+                  }}
                 />
               </div>
+
+              {/* Canvas visualizer */}
+              <canvas
+                ref={canvasRef}
+                className="art-canvas-wrap"
+                style={{ opacity: isPlaying ? 1 : 0 }}
+              />
+
+              {/* NOW PLAYING badge */}
+              <div
+                className="absolute top-4 left-4 flex items-center gap-[6px] font-montserrat font-bold text-[10px] tracking-[0.2em] uppercase text-white"
+                style={{
+                  background: "rgba(232,98,74,0.85)",
+                  padding: "5px 12px",
+                  opacity: isPlaying ? 1 : 0,
+                  transition: "opacity .3s",
+                }}
+              >
+                <span
+                  className="inline-block rounded-full bg-white"
+                  style={{
+                    width: 6,
+                    height: 6,
+                    animation: "blink 1.2s infinite",
+                  }}
+                />
+                Now Playing
+              </div>
+
+              {/* Watermark */}
+              <div
+                className="absolute bottom-3 right-4 font-dancing font-bold text-[1rem] pointer-events-none"
+                style={{
+                  color: "rgba(255,255,255,0.35)",
+                  opacity: isPlaying ? 1 : 0,
+                  transition: "opacity .3s",
+                }}
+              >
+                Voices &amp; Vibes Radio
+              </div>
+            </div>
+
+            {/* ── Track Info ── */}
+            <div
+              className="relative"
+              style={{
+                padding: "1.5rem 1.75rem 1.25rem",
+                borderBottom: "1px solid rgba(0,155,155,0.08)",
+              }}
+            >
+              <div
+                className="font-montserrat font-bold text-[10px] tracking-[0.2em] uppercase mb-[0.4rem]"
+                style={{ color: "#009B9B" }}
+              >
+                🎙️ Voices &amp; Vibes Radio · Artist Spotlight
+              </div>
+              <div className="text-[1.15rem] font-montserrat font-bold text-white mb-[0.2rem] whitespace-nowrap overflow-hidden">
+                <span
+                  className="inline-block"
+                  style={{
+                    animation: scrollTitle
+                      ? "tscroll 14s linear infinite"
+                      : "none",
+                  }}
+                >
+                  {dispTitle}
+                </span>
+              </div>
+              <div
+                className="font-montserrat text-[13px] mb-[0.1rem]"
+                style={{ color: "#8ab8b8" }}
+              >
+                {dispArtist}
+              </div>
+              <div
+                className="font-montserrat font-light text-[11px] italic"
+                style={{ color: "rgba(138,184,184,0.5)" }}
+              >
+                {dispAlbum}
+              </div>
+            </div>
+
+            {/* ── Progress ── */}
+            <div style={{ padding: "1rem 1.75rem 0.75rem" }}>
+              <div
+                className="w-full relative cursor-pointer mb-2"
+                style={{
+                  height: 4,
+                  background: "rgba(255,255,255,0.08)",
+                  borderRadius: 2,
+                }}
+                onClick={seekTo}
+              >
+                <div
+                  className="h-full pointer-events-none"
+                  style={{
+                    width: `${progress}%`,
+                    borderRadius: 2,
+                    background: "linear-gradient(to right,#009B9B,#E8624A)",
+                    transition: "width .25s linear",
+                  }}
+                />
+              </div>
+              <div
+                className="flex justify-between text-[10px] tracking-[0.06em]"
+                style={{ color: "#8ab8b8" }}
+              >
+                <span>{fmt(elapsed)}</span>
+                <span>{duration > 0 ? fmt(duration) : "0:00"}</span>
+              </div>
+            </div>
+
+            {/* ── Controls ── */}
+            <div
+              className="flex items-center justify-center"
+              style={{ padding: "0.75rem 1.75rem 1rem", gap: "1.25rem" }}
+            >
+              <button
+                className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]"
+                style={{ color: isShuffled ? "#009B9B" : "#8ab8b8" }}
+                onClick={toggleShuffle}
+                title="Shuffle"
+              >
+                🔀
+              </button>
+              <button
+                className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]"
+                style={{ color: "#8ab8b8" }}
+                onClick={skipBack}
+                title="Back 10s"
+              >
+                ⏪
+              </button>
+              <button
+                className="border-none cursor-pointer flex items-center justify-center text-[1.5rem] transition-all"
+                style={{
+                  width: 58,
+                  height: 58,
+                  borderRadius: "50%",
+                  background: isPlaying ? "#E8624A" : "#009B9B",
+                  color: "#0a0a0a",
+                  boxShadow: isPlaying
+                    ? "0 0 28px rgba(232,98,74,0.4)"
+                    : "0 0 28px rgba(0,155,155,0.4)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.filter = "brightness(1.15)";
+                  e.currentTarget.style.transform = "scale(1.06)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.filter = "brightness(1)";
+                  e.currentTarget.style.transform = "scale(1)";
+                }}
+                onClick={togglePlay}
+              >
+                {isPlaying ? "⏸" : "▶"}
+              </button>
+              <button
+                className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]"
+                style={{ color: "#8ab8b8" }}
+                onClick={skipFwd}
+                title="Forward 10s"
+              >
+                ⏩
+              </button>
+              <button
+                className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]"
+                style={{ color: isLooping ? "#009B9B" : "#8ab8b8" }}
+                onClick={toggleLoop}
+                title="Loop"
+              >
+                🔁
+              </button>
+            </div>
+
+            {/* ── Volume ── */}
+            <div
+              className="flex items-center w-full"
+              style={{ padding: "0 1.75rem 1.25rem", gap: "0.75rem" }}
+            >
+              <span
+                className="text-[14px] cursor-pointer"
+                style={{ color: "#8ab8b8" }}
+                onClick={toggleMute}
+              >
+                {isMuted ? "🔇" : "🔈"}
+              </span>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={volume}
+                onChange={(e) => handleVolume(Number(e.target.value))}
+              />
+              <span
+                className="text-[11px] min-w-[32px] text-right"
+                style={{
+                  color: "#8ab8b8",
+                  fontFamily: "'Share Tech Mono', monospace",
+                }}
+              >
+                {volume}%
+              </span>
+            </div>
+
+            {/* ── Upload Section ── */}
+            <div
+              className="grid grid-cols-2"
+              style={{
+                borderTop: "1px solid rgba(0,155,155,0.08)",
+                padding: "1.25rem 1.75rem",
+                gap: "0.75rem",
+              }}
+            >
+              <button
+                className="flex flex-col items-center gap-[0.4rem] cursor-pointer text-center transition-all"
+                style={{
+                  background: "rgba(0,155,155,0.05)",
+                  border: "1px dashed rgba(0,155,155,0.25)",
+                  padding: "1rem",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(0,155,155,0.12)";
+                  e.currentTarget.style.borderColor = "rgba(0,155,155,0.5)";
+                  e.currentTarget.style.borderStyle = "solid";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(0,155,155,0.05)";
+                  e.currentTarget.style.borderColor = "rgba(0,155,155,0.25)";
+                  e.currentTarget.style.borderStyle = "dashed";
+                }}
+                onClick={() => audioInputRef.current?.click()}
+              >
+                <div className="text-[1.4rem]">🎵</div>
+                <div
+                  className="font-montserrat font-bold text-[10px] tracking-[0.15em] uppercase"
+                  style={{ color: "#009B9B" }}
+                >
+                  Upload Track
+                </div>
+                <div className="text-[10px]" style={{ color: "#8ab8b8" }}>
+                  MP3, WAV, OGG
+                </div>
+              </button>
+              <button
+                className="flex flex-col items-center gap-[0.4rem] cursor-pointer text-center transition-all"
+                style={{
+                  background: "rgba(232,98,74,0.05)",
+                  border: "1px dashed rgba(232,98,74,0.25)",
+                  padding: "1rem",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(232,98,74,0.12)";
+                  e.currentTarget.style.borderColor = "rgba(232,98,74,0.5)";
+                  e.currentTarget.style.borderStyle = "solid";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(232,98,74,0.05)";
+                  e.currentTarget.style.borderColor = "rgba(232,98,74,0.25)";
+                  e.currentTarget.style.borderStyle = "dashed";
+                }}
+                onClick={() => imgInputRef.current?.click()}
+              >
+                <div className="text-[1.4rem]">🖼️</div>
+                <div
+                  className="font-montserrat font-bold text-[10px] tracking-[0.15em] uppercase"
+                  style={{ color: "#E8624A" }}
+                >
+                  Album Art
+                </div>
+                <div className="text-[10px]" style={{ color: "#8ab8b8" }}>
+                  JPG, PNG, WebP
+                </div>
+              </button>
+            </div>
+
+            {/* ── Metadata Fields ── */}
+            <div
+              className="grid grid-cols-2"
+              style={{
+                borderTop: "1px solid rgba(0,155,155,0.08)",
+                padding: "1.25rem 1.75rem",
+                gap: "0.75rem",
+              }}
+            >
+              {[
+                {
+                  label: "Track Title",
+                  value: metaTitle,
+                  set: setMetaTitle,
+                  ph: "Song name",
+                },
+                {
+                  label: "Artist",
+                  value: metaArtist,
+                  set: setMetaArtist,
+                  ph: "Artist name",
+                },
+                {
+                  label: "Album",
+                  value: metaAlbum,
+                  set: setMetaAlbum,
+                  ph: "Album title",
+                },
+                {
+                  label: "Year",
+                  value: metaYear,
+                  set: setMetaYear,
+                  ph: "2024",
+                },
+              ].map((f) => (
+                <div key={f.label}>
+                  <label
+                    className="block font-montserrat font-bold text-[9px] tracking-[0.2em] uppercase mb-[0.35rem]"
+                    style={{ color: "#009B9B" }}
+                  >
+                    {f.label}
+                  </label>
+                  <input
+                    type="text"
+                    value={f.value}
+                    onChange={(e) => f.set(e.target.value)}
+                    placeholder={f.ph}
+                    className="w-full font-montserrat text-[12px] text-white outline-none"
+                    style={{
+                      background: "rgba(0,155,155,0.05)",
+                      border: "1px solid rgba(0,155,155,0.2)",
+                      padding: "8px 10px",
+                      transition: "border-color .2s",
+                    }}
+                    onFocus={(e) =>
+                      (e.currentTarget.style.borderColor = "#009B9B")
+                    }
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderColor =
+                        "rgba(0,155,155,0.2)")
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Footer Links (below player card) ── */}
+          <div className="w-full flex gap-3 mt-3" style={{ maxWidth: 520 }}>
+            <a
+              href="https://hello.citrus3.com:2020/public/voicesandvibes"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 text-center font-montserrat font-bold text-[11px] tracking-[0.1em] uppercase no-underline transition-all"
+              style={{
+                background: "#009B9B",
+                color: "#0a0a0a",
+                padding: 11,
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "#00C4C4")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "#009B9B")
+              }
+            >
+              🎙️ Full Live Stream
+            </a>
+            <button
+              className="flex-1 text-center font-montserrat font-bold text-[11px] tracking-[0.1em] uppercase bg-transparent cursor-pointer transition-all"
+              style={{
+                border: "1px solid rgba(0,155,155,0.3)",
+                color: "#009B9B",
+                padding: 11,
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "rgba(0,155,155,0.1)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "transparent")
+              }
+              onClick={() => navigate("/home")}
+            >
+              ← Back to Site
+            </button>
+          </div>
+
+          {/* ── Feature Pills ── */}
+          <div className="flex flex-wrap justify-center gap-2 mt-5 w-full" style={{ maxWidth: 520 }}>
+            {[
+              "Real Audio Visualizer",
+              "Album Art",
+              "MP3 · WAV · OGG",
+              "voicesandvibesradio.com",
+            ].map((p) => (
+              <span
+                key={p}
+                className="font-montserrat font-bold text-[9px] tracking-[0.15em] uppercase"
+                style={{
+                  padding: "4px 12px",
+                  border: "1px solid rgba(0,155,155,0.25)",
+                  color: "#8ab8b8",
+                }}
+              >
+                {p}
+              </span>
             ))}
           </div>
         </div>
 
-        {/* ── Footer Links ── */}
-        <div className="w-full flex gap-3 mt-3" style={{ maxWidth: 520 }}>
-          <a
-            href="https://hello.citrus3.com:2020/public/voicesandvibes"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 text-center font-montserrat font-bold text-[11px] tracking-[0.1em] uppercase no-underline transition-all"
-            style={{
-              background: "#009B9B",
-              color: "#0a0a0a",
-              padding: 11,
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.background = "#00C4C4")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.background = "#009B9B")
-            }
-          >
-            🎙️ Full Live Stream
-          </a>
-          <button
-            className="flex-1 text-center font-montserrat font-bold text-[11px] tracking-[0.1em] uppercase bg-transparent cursor-pointer transition-all"
-            style={{
-              border: "1px solid rgba(0,155,155,0.3)",
-              color: "#009B9B",
-              padding: 11,
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.background = "rgba(0,155,155,0.1)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.background = "transparent")
-            }
-            onClick={() => navigate("/home")}
-          >
-            ← Back to Site
-          </button>
-        </div>
+        {/* ===== RIGHT COLUMN — Info Panels ===== */}
+        <div className="flex flex-col gap-8">
 
-        {/* ── Feature Pills ── */}
-        <div
-          className="flex flex-wrap justify-center gap-2 mt-5"
-          style={{ maxWidth: 520 }}
-        >
-          {[
-            "Real Audio Visualizer",
-            "Album Art",
-            "MP3 · WAV · OGG",
-            "voicesandvibesradio.com",
-          ].map((p) => (
-            <span
-              key={p}
-              className="font-montserrat font-bold text-[9px] tracking-[0.15em] uppercase"
+          {/* ── Row 1: Artist Bio Card ── */}
+          <div
+            className="relative overflow-hidden"
+            style={{
+              background: "#1a1a1a",
+              border: "1px solid rgba(0,155,155,0.2)",
+              padding: "2rem",
+            }}
+          >
+            {/* glow */}
+            <div
+              className="absolute top-0 right-0 pointer-events-none"
               style={{
-                padding: "4px 12px",
-                border: "1px solid rgba(0,155,155,0.25)",
-                color: "#8ab8b8",
+                width: 180,
+                height: 180,
+                background: "radial-gradient(circle at top right, rgba(0,155,155,0.08), transparent 70%)",
+              }}
+            />
+
+            {/* This Week pill */}
+            <span
+              className="inline-block font-montserrat font-bold text-[9px] tracking-[0.2em] uppercase mb-5"
+              style={{
+                background: "rgba(0,155,155,0.15)",
+                border: "1px solid rgba(0,155,155,0.3)",
+                color: "#009B9B",
+                padding: "4px 14px",
               }}
             >
-              {p}
+              This Week
             </span>
-          ))}
+
+            <h2
+              className="font-dancing font-bold text-[2.2rem] mb-2"
+              style={{ color: "#E8624A" }}
+            >
+              {metaArtist || "Artist Name"}
+            </h2>
+
+            {/* Genre / Location badges */}
+            <div className="flex flex-wrap gap-2 mb-5">
+              {["Jazz", "Neo-Soul", "Healing"].map((tag) => (
+                <span
+                  key={tag}
+                  className="font-montserrat font-bold text-[9px] tracking-[0.15em] uppercase"
+                  style={{
+                    padding: "3px 10px",
+                    border: "1px solid rgba(0,155,155,0.3)",
+                    color: "#009B9B",
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            <p
+              className="font-montserrat font-light text-[14px] leading-relaxed mb-6"
+              style={{ color: "#8ab8b8", maxWidth: 480 }}
+            >
+              A healing journey through sound and rhythm. This artist brings
+              restorative energy to every performance, blending jazz traditions
+              with modern soul and afrobeat influences.
+            </p>
+
+            {/* Social row */}
+            <div className="flex items-center gap-3 mb-5">
+              {["🌐", "📸", "🎵", "📧"].map((icon, i) => (
+                <span
+                  key={i}
+                  className="cursor-pointer text-[1.1rem] transition-all hover:scale-110"
+                  style={{ opacity: 0.6 }}
+                >
+                  {icon}
+                </span>
+              ))}
+            </div>
+
+            <button
+              className="font-montserrat font-bold text-[11px] tracking-[0.15em] uppercase cursor-pointer bg-transparent transition-all"
+              style={{
+                border: "1px solid rgba(0,155,155,0.3)",
+                color: "#009B9B",
+                padding: "10px 24px",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "rgba(0,155,155,0.1)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "transparent")
+              }
+            >
+              Contact Artist
+            </button>
+          </div>
+
+          {/* ── Row 2: About This Track ── */}
+          <div
+            className="relative overflow-hidden"
+            style={{
+              background: "#1a1a1a",
+              border: "1px solid rgba(0,155,155,0.2)",
+              padding: "2rem",
+            }}
+          >
+            <div
+              className="font-montserrat font-bold text-[10px] tracking-[0.2em] uppercase mb-4"
+              style={{ color: "#009B9B" }}
+            >
+              About This Track
+            </div>
+
+            <textarea
+              value={trackStory}
+              onChange={(e) => setTrackStory(e.target.value)}
+              placeholder="Write the story behind this track..."
+              rows={3}
+              className="w-full font-montserrat text-[12px] text-white outline-none resize-none mb-5"
+              style={{
+                background: "rgba(0,155,155,0.05)",
+                border: "1px solid rgba(0,155,155,0.2)",
+                padding: "10px 12px",
+                transition: "border-color .2s",
+                color: "white",
+              }}
+              onFocus={(e) =>
+                (e.currentTarget.style.borderColor = "#009B9B")
+              }
+              onBlur={(e) =>
+                (e.currentTarget.style.borderColor = "rgba(0,155,155,0.2)")
+              }
+            />
+
+            {/* Tags */}
+            <div className="flex flex-wrap gap-2">
+              {[
+                `Release: ${metaYear || "2024"}`,
+                "Genre: Jazz",
+                "Mood: Healing",
+                "Tempo: Midtempo",
+              ].map((tag) => (
+                <span
+                  key={tag}
+                  className="font-montserrat font-bold text-[9px] tracking-[0.12em] uppercase"
+                  style={{
+                    padding: "3px 10px",
+                    background: "rgba(0,155,155,0.08)",
+                    border: "1px solid rgba(0,155,155,0.2)",
+                    color: "#8ab8b8",
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Row 3: Past Artist Spotlights ── */}
+          <div>
+            <div
+              className="font-montserrat font-bold text-[10px] tracking-[0.2em] uppercase mb-4"
+              style={{ color: "#009B9B" }}
+            >
+              Previous Spotlights
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {pastSpotlights.map((spot) => (
+                <button
+                  key={spot.id}
+                  className="flex items-center gap-3 text-left cursor-pointer transition-all"
+                  style={{
+                    background: "#1a1a1a",
+                    border: "1px solid rgba(0,155,155,0.2)",
+                    padding: "0.75rem",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(232,98,74,0.5)";
+                    e.currentTarget.style.boxShadow =
+                      "0 0 16px rgba(232,98,74,0.12)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(0,155,155,0.2)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                  onClick={() => loadSpotlight(spot)}
+                >
+                  {/* Thumbnail */}
+                  <div
+                    className="flex-shrink-0 flex items-center justify-center"
+                    style={{
+                      width: 52,
+                      height: 52,
+                      background: `linear-gradient(135deg, ${spot.color}, #111)`,
+                      border: "1px solid rgba(0,155,155,0.15)",
+                    }}
+                  >
+                    <span className="text-[1.2rem] opacity-50">🎵</span>
+                  </div>
+                  <div className="min-w-0">
+                    <div
+                      className="font-montserrat font-bold text-[12px] text-white truncate"
+                    >
+                      {spot.name}
+                    </div>
+                    <div
+                      className="font-montserrat font-light text-[11px] truncate"
+                      style={{ color: "#8ab8b8" }}
+                    >
+                      {spot.track}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -817,6 +1064,20 @@ const ArtistPlayer = () => {
         className="hidden"
         onChange={(e) => e.target.files?.[0] && loadImage(e.target.files[0])}
       />
+
+      {/* ── Responsive: stack on mobile ── */}
+      <style>{`
+        @media (max-width: 960px) {
+          .min-h-screen > div:nth-child(3) {
+            grid-template-columns: 1fr !important;
+          }
+        }
+        @media (min-width: 961px) and (max-width: 1200px) {
+          .min-h-screen > div:nth-child(3) {
+            grid-template-columns: 380px 1fr !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };
