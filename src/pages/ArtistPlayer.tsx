@@ -212,7 +212,7 @@ const ArtistPlayer = () => {
             {/* ── Album Art Zone ── */}
             <div
               className="w-full relative overflow-hidden flex items-center justify-center"
-              style={{ aspectRatio: "1/1", maxHeight: 340, background: "#0d0d0d" }}
+              style={{ aspectRatio: "16/9", maxHeight: 340, background: "#0d0d0d" }}
             >
               {artSrc && (
                 <img
