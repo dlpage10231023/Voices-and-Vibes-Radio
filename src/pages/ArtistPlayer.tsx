@@ -160,7 +160,6 @@ const ArtistPlayer = () => {
   const togglePlay = useCallback(async () => {
     const a = audioRef.current!;
     if (!a.src) {
-      audioInputRef.current?.click();
       return;
     }
     initAnalyser();
