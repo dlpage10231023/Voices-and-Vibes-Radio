@@ -1,36 +1,112 @@
-import { createContext, useContext, useState, useRef, useCallback, ReactNode } from "react";
+import { createContext, useContext, useState, useRef, useCallback, useEffect, ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { DayAudio } from "@/hooks/useDayAudio";
+
+const DAY_SLUGS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+
+function getTodaySlug() {
+  return DAY_SLUGS[new Date().getDay()];
+}
 
 interface AudioContextType {
   isPlaying: boolean;
   togglePlay: () => void;
+  currentTrack: DayAudio | null;
+  hasTracks: boolean;
+  /** Day pages call this to override the active day slug */
+  setDayOverride: (slug: string | null) => void;
 }
 
-const AudioCtx = createContext<AudioContextType>({ isPlaying: false, togglePlay: () => {} });
+const AudioCtx = createContext<AudioContextType>({
+  isPlaying: false,
+  togglePlay: () => {},
+  currentTrack: null,
+  hasTracks: false,
+  setDayOverride: () => {},
+});
 
 export const useAudioPlayer = () => useContext(AudioCtx);
 
-const STREAM_URL = "https://hello.citrus3.com:2020/public/voicesandvibes";
-
 export const AudioProvider = ({ children }: { children: ReactNode }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [currentTrack, setCurrentTrack] = useState<DayAudio | null>(null);
+  const [tracks, setTracks] = useState<DayAudio[]>([]);
+  const [dayOverride, setDayOverride] = useState<string | null>(null);
 
-  const togglePlay = useCallback(() => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio(STREAM_URL);
-    }
-    if (isPlaying) {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const indexRef = useRef(0);
+  const tracksRef = useRef<DayAudio[]>([]);
+
+  const activeSlug = dayOverride || getTodaySlug();
+
+  // Fetch tracks when active slug changes
+  useEffect(() => {
+    let cancelled = false;
+    const fetch = async () => {
+      const { data } = await supabase
+        .from("day_audio")
+        .select("*")
+        .eq("day_slug", activeSlug)
+        .order("sort_order", { ascending: true });
+      if (!cancelled) {
+        const t = (data as DayAudio[]) ?? [];
+        setTracks(t);
+        tracksRef.current = t;
+      }
+    };
+    fetch();
+    return () => { cancelled = true; };
+  }, [activeSlug]);
+
+  // Stop playback when tracks change
+  useEffect(() => {
+    stopAudio();
+    setCurrentTrack(null);
+    indexRef.current = 0;
+  }, [tracks]);
+
+  const stopAudio = useCallback(() => {
+    if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.src = "";
       audioRef.current = null;
+    }
+  }, []);
+
+  const playTrackAtIndex = useCallback((idx: number) => {
+    const t = tracksRef.current;
+    if (!t.length) return;
+    const i = idx % t.length;
+    indexRef.current = i;
+    const track = t[i];
+    setCurrentTrack(track);
+
+    stopAudio();
+
+    const audio = new Audio(track.audio_url);
+    audio.volume = 0.25;
+    audio.onended = () => playTrackAtIndex(i + 1);
+    audioRef.current = audio;
+    audio.play().then(() => setIsPlaying(true)).catch(() => {});
+  }, [stopAudio]);
+
+  const togglePlay = useCallback(() => {
+    if (isPlaying) {
+      stopAudio();
       setIsPlaying(false);
     } else {
-      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+      playTrackAtIndex(indexRef.current);
     }
-  }, [isPlaying]);
+  }, [isPlaying, playTrackAtIndex, stopAudio]);
 
   return (
-    <AudioCtx.Provider value={{ isPlaying, togglePlay }}>
+    <AudioCtx.Provider value={{
+      isPlaying,
+      togglePlay,
+      currentTrack,
+      hasTracks: tracks.length > 0,
+      setDayOverride,
+    }}>
       {children}
     </AudioCtx.Provider>
   );

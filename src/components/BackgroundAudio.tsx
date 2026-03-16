@@ -1,67 +1,27 @@
-import { useEffect, useRef, useCallback, useState } from "react";
-import { useDayAudio, DayAudio } from "@/hooks/useDayAudio";
+import { useEffect, useState } from "react";
+import { useAudioPlayer } from "@/components/AudioProvider";
 import { motion, AnimatePresence } from "framer-motion";
 import NowPlayingPanel from "@/components/NowPlayingPanel";
+import { useDayAudio } from "@/hooks/useDayAudio";
 
 const BackgroundAudio = ({ daySlug }: { daySlug: string }) => {
+  const { setDayOverride, currentTrack } = useAudioPlayer();
   const { tracks } = useDayAudio(daySlug);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const indexRef = useRef(0);
-  const [videoSrc, setVideoSrc] = useState<string | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [currentTrack, setCurrentTrack] = useState<DayAudio | null>(null);
 
-  const playTrack = useCallback((index: number) => {
-    if (!tracks.length) return;
-    const idx = index % tracks.length;
-    indexRef.current = idx;
-    const track = tracks[idx];
-    setCurrentTrack(track);
+  // Find current track's media_type for video overlay
+  const videoTrack = currentTrack?.media_type === "video" ? currentTrack : null;
 
-    // Stop any current audio
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = "";
-      audioRef.current = null;
-    }
-
-    if (track.media_type === "video") {
-      setVideoSrc(track.audio_url);
-    } else {
-      setVideoSrc(null);
-      const audio = new Audio(track.audio_url);
-      audio.volume = 0.15;
-      audio.onended = () => playTrack(idx + 1);
-      audioRef.current = audio;
-      audio.play().catch(() => {});
-    }
-  }, [tracks]);
-
-  const handleVideoEnded = useCallback(() => {
-    setVideoSrc(null);
-    playTrack(indexRef.current + 1);
-  }, [playTrack]);
-
+  // Override the AudioProvider's day slug while on this page
   useEffect(() => {
-    if (tracks.length > 0) {
-      playTrack(0);
-    }
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = "";
-        audioRef.current = null;
-      }
-      setVideoSrc(null);
-      setCurrentTrack(null);
-    };
-  }, [tracks, playTrack]);
+    setDayOverride(daySlug);
+    return () => setDayOverride(null);
+  }, [daySlug, setDayOverride]);
 
   return (
     <>
       <NowPlayingPanel currentTrack={currentTrack} />
       <AnimatePresence>
-        {videoSrc && (
+        {videoTrack && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -70,11 +30,9 @@ const BackgroundAudio = ({ daySlug }: { daySlug: string }) => {
             className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90"
           >
             <video
-              ref={videoRef}
-              src={videoSrc}
+              src={videoTrack.audio_url}
               autoPlay
               playsInline
-              onEnded={handleVideoEnded}
               className="max-w-[90vw] max-h-[80vh] rounded"
               onLoadedMetadata={(e) => { (e.target as HTMLVideoElement).volume = 1; }}
             />
