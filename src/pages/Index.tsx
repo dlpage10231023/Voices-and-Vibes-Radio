@@ -5,6 +5,7 @@ import About from "@/components/About";
 import ListenNow from "@/components/ListenNow";
 import WeeklySchedule from "@/components/WeeklySchedule";
 import GospelSunday from "@/components/GospelSunday";
+import ArtistSpotlight from "@/components/ArtistSpotlight";
 import BookSpotlight from "@/components/BookSpotlight";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
@@ -20,6 +21,7 @@ const Index = () => {
       <ListenNow />
       <WeeklySchedule />
       <GospelSunday />
+      <ArtistSpotlight />
       <BookSpotlight />
       <Contact />
       <Footer />
