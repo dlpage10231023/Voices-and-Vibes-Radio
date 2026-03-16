@@ -278,7 +278,7 @@ const ArtistPlayer = () => {
 
       {/* ── Two Column Grid ── */}
       <div
-        className="grid gap-8 px-[5vw] pb-[80px] items-end"
+        className="artist-grid grid gap-8 px-[5vw] pb-[80px] items-start"
         style={{
           gridTemplateColumns: "480px 1fr",
           maxWidth: "none",
@@ -1072,13 +1072,13 @@ const ArtistPlayer = () => {
 
       {/* ── Responsive: stack on mobile ── */}
       <style>{`
-        @media (max-width: 960px) {
-          .min-h-screen > div:nth-child(3) {
+        @media (max-width: 768px) {
+          .artist-grid {
             grid-template-columns: 1fr !important;
           }
         }
-        @media (min-width: 961px) and (max-width: 1200px) {
-          .min-h-screen > div:nth-child(3) {
+        @media (min-width: 769px) and (max-width: 1200px) {
+          .artist-grid {
             grid-template-columns: 380px 1fr !important;
           }
         }
