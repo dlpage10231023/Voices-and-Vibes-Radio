@@ -285,7 +285,7 @@ const ArtistPlayer = () => {
         }}
       >
         {/* ===== LEFT COLUMN — Player Card ===== */}
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center justify-end h-full">
           {/* Player Card */}
           <div
             className="w-full relative overflow-hidden"
