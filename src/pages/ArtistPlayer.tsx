@@ -142,7 +142,7 @@ const ArtistPlayer = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <Navbar />
 
       {/* inline styles for animations */}
@@ -179,9 +179,9 @@ const ArtistPlayer = () => {
       </div>
 
       {/* ── Two Column Grid ── */}
-      <div className="artist-grid grid grid-cols-1 lg:grid-cols-[480px_1fr] gap-8 px-[5vw] pb-[80px] items-start flex-1">
+      <div className="artist-grid grid grid-cols-1 lg:grid-cols-[480px_1fr] gap-8 px-[5vw] pb-[80px] items-start">
         {/* ===== LEFT COLUMN — Player Card ===== */}
-        <div className="flex flex-col items-center justify-end h-full my-0 mx-0 gap-0">
+        <div className="flex-col h-full my-0 mx-0 gap-[10px] flex items-center justify-center">
           <div
             className="w-full relative overflow-hidden"
             style={{
