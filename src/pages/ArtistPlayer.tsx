@@ -278,10 +278,7 @@ const ArtistPlayer = () => {
 
       {/* ── Two Column Grid ── */}
       <div
-        className="artist-grid grid gap-8 px-[5vw] pb-[80px] items-start"
-        style={{
-          gridTemplateColumns: "480px 1fr",
-        }}
+        className="artist-grid grid grid-cols-1 lg:grid-cols-[480px_1fr] gap-8 px-[5vw] pb-[80px] items-start"
       >
         {/* ===== LEFT COLUMN — Player Card ===== */}
         <div className="flex flex-col items-center justify-end h-full">
@@ -1071,15 +1068,8 @@ const ArtistPlayer = () => {
 
       {/* ── Responsive: stack on mobile ── */}
       <style>{`
-        @media (max-width: 768px) {
-          .artist-grid {
-            grid-template-columns: 1fr !important;
-          }
-        }
-        @media (min-width: 769px) and (max-width: 1200px) {
-          .artist-grid {
-            grid-template-columns: 380px minmax(0, 600px) !important;
-          }
+        .artist-grid {
+          /* responsive handled by Tailwind lg: breakpoint */
         }
       `}</style>
     </div>
