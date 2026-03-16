@@ -278,7 +278,7 @@ const ArtistPlayer = () => {
 
       {/* ── Two Column Grid ── */}
       <div
-        className="grid gap-8 px-[5vw] pb-[80px]"
+        className="grid gap-8 px-[5vw] pb-[80px] items-end"
         style={{
           gridTemplateColumns: "480px 1fr",
           maxWidth: "none",
