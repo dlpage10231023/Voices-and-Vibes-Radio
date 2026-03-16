@@ -695,6 +695,7 @@ const ArtistPlayer = () => {
                   JPG, PNG, WebP
                 </div>
               </button>
+            </div>
           </div>
         </div>
 
