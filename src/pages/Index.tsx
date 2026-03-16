@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Ticker from "@/components/Ticker";
 import About from "@/components/About";
+import ListenNow from "@/components/ListenNow";
 import WeeklySchedule from "@/components/WeeklySchedule";
 import GospelSunday from "@/components/GospelSunday";
 import BookSpotlight from "@/components/BookSpotlight";
@@ -16,6 +17,7 @@ const Index = () => {
       <Hero />
       <Ticker />
       <About />
+      <ListenNow />
       <WeeklySchedule />
       <GospelSunday />
       <BookSpotlight />
