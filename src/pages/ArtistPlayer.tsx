@@ -828,157 +828,173 @@ const ArtistPlayer = () => {
         </div>
 
         {/* ===== RIGHT COLUMN — Info Panels ===== */}
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-3">
+
+          {/* ── Section label ── */}
+          <div
+            className="font-montserrat text-[9px] tracking-[0.25em] uppercase"
+            style={{ color: "#5a9090", paddingLeft: 2 }}
+          >
+            Artist info
+          </div>
 
           {/* ── Row 1: Artist Bio Card ── */}
           <div
-            className="relative overflow-hidden"
             style={{
               background: "#1a1a1a",
               border: "1px solid rgba(0,155,155,0.2)",
-              padding: "2rem",
+              padding: "1rem 1.25rem",
             }}
           >
-            {/* glow */}
-            <div
-              className="absolute top-0 right-0 pointer-events-none"
-              style={{
-                width: 180,
-                height: 180,
-                background: "radial-gradient(circle at top right, rgba(0,155,155,0.08), transparent 70%)",
-              }}
-            />
-
-            {/* This Week pill */}
-            <span
-              className="inline-block font-montserrat font-bold text-[9px] tracking-[0.2em] uppercase mb-5"
-              style={{
-                background: "rgba(0,155,155,0.15)",
-                border: "1px solid rgba(0,155,155,0.3)",
-                color: "#009B9B",
-                padding: "4px 14px",
-              }}
-            >
-              This Week
-            </span>
-
-            <h2
-              className="font-dancing font-bold text-[2.2rem] mb-2"
-              style={{ color: "#E8624A" }}
-            >
-              {metaArtist || "Artist Name"}
-            </h2>
-
-            {/* Genre / Location badges */}
-            <div className="flex flex-wrap gap-2 mb-5">
-              {["Jazz", "Neo-Soul", "Healing"].map((tag) => (
-                <span
-                  key={tag}
-                  className="font-montserrat font-bold text-[9px] tracking-[0.15em] uppercase"
-                  style={{
-                    padding: "3px 10px",
-                    border: "1px solid rgba(0,155,155,0.3)",
-                    color: "#009B9B",
-                  }}
+            {/* Top row: avatar + name/pills */}
+            <div className="flex items-start gap-3 mb-3">
+              {/* Avatar thumbnail */}
+              <div
+                className="flex-shrink-0 flex items-center justify-center overflow-hidden"
+                style={{
+                  width: 56,
+                  height: 56,
+                  background: "linear-gradient(135deg, #1a2a2a, #0a1010)",
+                  border: "1px solid rgba(0,155,155,0.3)",
+                }}
+              >
+                {artSrc ? (
+                  <img src={artSrc} alt="Artist" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-[1.4rem] opacity-60">🎩</span>
+                )}
+              </div>
+              <div className="min-w-0">
+                <div
+                  className="font-dancing font-bold text-[1.25rem] leading-tight mb-[2px]"
+                  style={{ color: "#E8624A" }}
                 >
-                  {tag}
-                </span>
-              ))}
+                  {metaArtist || "Artist Name"}
+                </div>
+                <div
+                  className="font-montserrat text-[10px] tracking-[0.12em] uppercase mb-2"
+                  style={{ color: "#8ab8b8" }}
+                >
+                  Houston, TX · Jazz · Gospel
+                </div>
+                <div className="flex flex-wrap gap-[5px]">
+                  {["Jazz", "Gospel"].map((tag) => (
+                    <span
+                      key={tag}
+                      className="font-montserrat font-bold text-[8px] tracking-[0.12em] uppercase"
+                      style={{
+                        padding: "2px 8px",
+                        border: "1px solid rgba(0,155,155,0.3)",
+                        background: "rgba(0,155,155,0.1)",
+                        color: "#009B9B",
+                      }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                  <span
+                    className="font-montserrat font-bold text-[8px] tracking-[0.12em] uppercase"
+                    style={{
+                      padding: "2px 8px",
+                      border: "1px solid rgba(232,98,74,0.3)",
+                      background: "rgba(232,98,74,0.1)",
+                      color: "#E8624A",
+                    }}
+                  >
+                    Soon 2025
+                  </span>
+                </div>
+              </div>
             </div>
 
+            {/* Bio text */}
             <p
-              className="font-montserrat font-light text-[14px] leading-relaxed mb-6"
-              style={{ color: "#8ab8b8", maxWidth: 480 }}
+              className="font-montserrat font-light text-[12px] leading-[1.7] mb-3"
+              style={{ color: "#8ab8b8" }}
             >
-              A healing journey through sound and rhythm. This artist brings
-              restorative energy to every performance, blending jazz traditions
-              with modern soul and afrobeat influences.
+              A soulful guitarist bringing healing through music. Known for blending smooth jazz with gospel influences, his sound is a journey through faith and feeling.
             </p>
 
             {/* Social row */}
-            <div className="flex items-center gap-3 mb-5">
-              {["🌐", "📸", "🎵", "📧"].map((icon, i) => (
-                <span
-                  key={i}
-                  className="cursor-pointer text-[1.1rem] transition-all hover:scale-110"
-                  style={{ opacity: 0.6 }}
+            <div className="flex items-center gap-2">
+              {["Facebook", "Instagram"].map((label) => (
+                <button
+                  key={label}
+                  className="font-montserrat font-bold text-[8px] tracking-[0.1em] uppercase bg-transparent cursor-pointer transition-all"
+                  style={{
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    color: "#8ab8b8",
+                    padding: "4px 10px",
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.borderColor = "rgba(0,155,155,0.4)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)")
+                  }
                 >
-                  {icon}
-                </span>
+                  {label}
+                </button>
               ))}
+              <button
+                className="font-montserrat font-bold text-[8px] tracking-[0.1em] uppercase bg-transparent cursor-pointer transition-all"
+                style={{
+                  border: "1px solid rgba(232,98,74,0.35)",
+                  color: "#E8624A",
+                  padding: "4px 10px",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = "rgba(232,98,74,0.1)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = "transparent")
+                }
+              >
+                Book Artist
+              </button>
             </div>
-
-            <button
-              className="font-montserrat font-bold text-[11px] tracking-[0.15em] uppercase cursor-pointer bg-transparent transition-all"
-              style={{
-                border: "1px solid rgba(0,155,155,0.3)",
-                color: "#009B9B",
-                padding: "10px 24px",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.background = "rgba(0,155,155,0.1)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.background = "transparent")
-              }
-            >
-              Contact Artist
-            </button>
           </div>
 
           {/* ── Row 2: About This Track ── */}
           <div
-            className="relative overflow-hidden"
+            className="font-montserrat font-bold text-[9px] tracking-[0.22em] uppercase"
+            style={{ color: "#009B9B" }}
+          >
+            About this track
+          </div>
+          <div
             style={{
               background: "#1a1a1a",
               border: "1px solid rgba(0,155,155,0.2)",
-              padding: "2rem",
+              padding: "0.85rem 1rem",
             }}
           >
-            <div
-              className="font-montserrat font-bold text-[10px] tracking-[0.2em] uppercase mb-4"
-              style={{ color: "#009B9B" }}
-            >
-              About This Track
-            </div>
-
             <textarea
               value={trackStory}
               onChange={(e) => setTrackStory(e.target.value)}
-              placeholder="Write the story behind this track..."
+              placeholder="A powerful upcoming release blending smooth jazz guitar with gospel soul. This track carries a message of hope and healing — a perfect fit for the Voices & Vibes community."
               rows={3}
-              className="w-full font-montserrat text-[12px] text-white outline-none resize-none mb-5"
+              className="w-full font-montserrat text-[11px] outline-none resize-none mb-3"
               style={{
-                background: "rgba(0,155,155,0.05)",
-                border: "1px solid rgba(0,155,155,0.2)",
-                padding: "10px 12px",
-                transition: "border-color .2s",
-                color: "white",
+                background: "transparent",
+                border: "none",
+                padding: 0,
+                color: "#8ab8b8",
+                lineHeight: "1.65",
               }}
-              onFocus={(e) =>
-                (e.currentTarget.style.borderColor = "#009B9B")
-              }
-              onBlur={(e) =>
-                (e.currentTarget.style.borderColor = "rgba(0,155,155,0.2)")
-              }
             />
 
             {/* Tags */}
-            <div className="flex flex-wrap gap-2">
-              {[
-                `Release: ${metaYear || "2024"}`,
-                "Genre: Jazz",
-                "Mood: Healing",
-                "Tempo: Midtempo",
-              ].map((tag) => (
+            <div className="flex flex-wrap gap-[5px]">
+              {["Smooth Jazz", "Gospel Soul", "Healing", "2025 Release"].map((tag) => (
                 <span
                   key={tag}
-                  className="font-montserrat font-bold text-[9px] tracking-[0.12em] uppercase"
+                  className="font-montserrat text-[8px] tracking-[0.08em]"
                   style={{
-                    padding: "3px 10px",
-                    background: "rgba(0,155,155,0.08)",
-                    border: "1px solid rgba(0,155,155,0.2)",
-                    color: "#8ab8b8",
+                    padding: "2px 8px",
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    color: "#5a9090",
                   }}
                 >
                   {tag}
@@ -988,62 +1004,94 @@ const ArtistPlayer = () => {
           </div>
 
           {/* ── Row 3: Past Artist Spotlights ── */}
-          <div>
-            <div
-              className="font-montserrat font-bold text-[10px] tracking-[0.2em] uppercase mb-4"
-              style={{ color: "#009B9B" }}
-            >
-              Previous Spotlights
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              {pastSpotlights.map((spot) => (
+          <div
+            className="font-montserrat font-bold text-[9px] tracking-[0.22em] uppercase"
+            style={{ color: "#009B9B" }}
+          >
+            Previous spotlights
+          </div>
+          <div
+            style={{
+              background: "#1a1a1a",
+              border: "1px solid rgba(0,155,155,0.2)",
+              padding: "0.85rem 1rem",
+            }}
+          >
+            <div className="grid grid-cols-2 gap-2">
+              {pastSpotlights.slice(0, 3).map((spot) => (
                 <button
                   key={spot.id}
-                  className="flex items-center gap-3 text-left cursor-pointer transition-all"
+                  className="text-left cursor-pointer transition-all overflow-hidden"
                   style={{
-                    background: "#1a1a1a",
-                    border: "1px solid rgba(0,155,155,0.2)",
-                    padding: "0.75rem",
+                    background: "#0f1a1a",
+                    border: "1px solid rgba(0,155,155,0.15)",
+                    padding: 0,
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = "rgba(232,98,74,0.5)";
                     e.currentTarget.style.boxShadow =
-                      "0 0 16px rgba(232,98,74,0.12)";
+                      "0 0 14px rgba(232,98,74,0.1)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(0,155,155,0.2)";
+                    e.currentTarget.style.borderColor = "rgba(0,155,155,0.15)";
                     e.currentTarget.style.boxShadow = "none";
                   }}
                   onClick={() => loadSpotlight(spot)}
                 >
-                  {/* Thumbnail */}
+                  {/* Thumbnail art */}
                   <div
-                    className="flex-shrink-0 flex items-center justify-center"
+                    className="flex items-center justify-center"
                     style={{
-                      width: 52,
-                      height: 52,
-                      background: `linear-gradient(135deg, ${spot.color}, #111)`,
-                      border: "1px solid rgba(0,155,155,0.15)",
+                      height: 48,
+                      background: `linear-gradient(135deg, ${spot.color}, #0d1818)`,
                     }}
                   >
-                    <span className="text-[1.2rem] opacity-50">🎵</span>
+                    <span className="text-[1.1rem] opacity-50">🎵</span>
                   </div>
-                  <div className="min-w-0">
-                    <div
-                      className="font-montserrat font-bold text-[12px] text-white truncate"
-                    >
+                  <div style={{ padding: "5px 8px" }}>
+                    <div className="font-montserrat font-bold text-[10px] text-white truncate">
                       {spot.name}
                     </div>
                     <div
-                      className="font-montserrat font-light text-[11px] truncate"
-                      style={{ color: "#8ab8b8" }}
+                      className="font-montserrat text-[9px] truncate"
+                      style={{ color: "#5a9090" }}
                     >
                       {spot.track}
                     </div>
                   </div>
                 </button>
               ))}
+
+              {/* Submit Your Artist card */}
+              <div
+                className="flex items-center justify-center cursor-pointer transition-all"
+                style={{
+                  border: "1px dashed rgba(0,155,155,0.2)",
+                  background: "transparent",
+                  minHeight: 82,
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.borderColor = "rgba(0,155,155,0.5)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.borderColor = "rgba(0,155,155,0.2)")
+                }
+              >
+                <div className="text-center">
+                  <div
+                    className="font-montserrat font-bold text-[11px]"
+                    style={{ color: "#009B9B" }}
+                  >
+                    + Submit
+                  </div>
+                  <div
+                    className="font-montserrat text-[9px]"
+                    style={{ color: "#5a9090" }}
+                  >
+                    Your Artist
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
