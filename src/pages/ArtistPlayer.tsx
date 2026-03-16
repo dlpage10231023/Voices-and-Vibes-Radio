@@ -13,11 +13,11 @@ const fmt = (s: number) => {
 
 /* ── Past Spotlights data ── */
 const pastSpotlights = [
-  { id: 1, name: "Nia Soleil", track: "Golden Hour", color: "#007A7A" },
-  { id: 2, name: "Marcus Reed", track: "Soul Revival", color: "#0d1a1a" },
-  { id: 3, name: "Amara Joy", track: "Still Waters", color: "#1a0d0d" },
-  { id: 4, name: "David Okon", track: "Restoration", color: "#007A7A" },
-];
+{ id: 1, name: "Nia Soleil", track: "Golden Hour", color: "#007A7A" },
+{ id: 2, name: "Marcus Reed", track: "Soul Revival", color: "#0d1a1a" },
+{ id: 3, name: "Amara Joy", track: "Still Waters", color: "#1a0d0d" },
+{ id: 4, name: "David Okon", track: "Restoration", color: "#007A7A" }];
+
 
 const ArtistPlayer = () => {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ const ArtistPlayer = () => {
     toggleLoop, toggleShuffle, toggleMute, setVolume,
     loadAudioFile, loadImageFile, setArtSrc,
     setMetaTitle, setMetaArtist, setMetaAlbum, setMetaYear,
-    audioElement,
+    audioElement
   } = ctx;
 
   const audioInputRef = useRef<HTMLInputElement | null>(null);
@@ -78,12 +78,12 @@ const ArtistPlayer = () => {
       c.fillStyle = floor;
       c.fillRect(0, 0, canvas.width, canvas.height);
 
-      const barW = (canvas.width / bufLen) * 2.2;
+      const barW = canvas.width / bufLen * 2.2;
       let x = 0;
       for (let i = 0; i < bufLen; i++) {
-        const barH = (data[i] / 255) * canvas.height * 0.95;
+        const barH = data[i] / 255 * canvas.height * 0.95;
         c.fillStyle =
-          i % 2 === 0 ? "rgba(0,155,155,0.85)" : "rgba(232,98,74,0.7)";
+        i % 2 === 0 ? "rgba(0,155,155,0.85)" : "rgba(232,98,74,0.7)";
         c.fillRect(x, canvas.height - barH, barW - 1, barH);
         x += barW + 1;
       }
@@ -101,7 +101,7 @@ const ArtistPlayer = () => {
   // Start/stop visualizer based on play state
   useEffect(() => {
     if (isPlaying && audioElement) {
-      try { initAnalyser(); } catch {}
+      try {initAnalyser();} catch {}
       if (ctxAudioRef.current?.state === "suspended") ctxAudioRef.current.resume();
       drawVis();
     } else {
@@ -115,15 +115,15 @@ const ArtistPlayer = () => {
   const dispTitle = metaTitle || "Upload a track to begin";
   const dispArtist = metaArtist || "Artist Name";
   const dispAlbum =
-    (metaAlbum || "Album") + (metaYear ? " · " + metaYear : " · Year");
+  (metaAlbum || "Album") + (metaYear ? " · " + metaYear : " · Year");
   const scrollTitle = dispTitle.length > 28;
 
   /* ── drag & drop ── */
   const onDrop = (e: React.DragEvent) => {
     e.preventDefault();
     for (const f of Array.from(e.dataTransfer.files)) {
-      if (f.type.startsWith("audio/")) loadAudioFile(f);
-      else if (f.type.startsWith("image/")) loadImageFile(f);
+      if (f.type.startsWith("audio/")) loadAudioFile(f);else
+      if (f.type.startsWith("image/")) loadImageFile(f);
     }
   };
 
@@ -165,15 +165,15 @@ const ArtistPlayer = () => {
           style={{
             background: "linear-gradient(135deg,#009B9B,#E8624A)",
             WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}
-        >
+            WebkitTextFillColor: "transparent"
+          }}>
+          
           Voices &amp; Vibes Radio
         </span>
         <div
           className="text-[10px] tracking-[0.3em] uppercase"
-          style={{ color: "#8ab8b8", fontFamily: "'Share Tech Mono', monospace" }}
-        >
+          style={{ color: "#8ab8b8", fontFamily: "'Share Tech Mono', monospace" }}>
+          
           Artist Spotlight Player
         </div>
       </div>
@@ -181,90 +181,90 @@ const ArtistPlayer = () => {
       {/* ── Two Column Grid ── */}
       <div className="artist-grid grid grid-cols-1 lg:grid-cols-[480px_1fr] gap-8 px-[5vw] pb-[80px] items-start">
         {/* ===== LEFT COLUMN — Player Card ===== */}
-        <div className="flex flex-col items-center justify-end h-full">
+        <div className="flex flex-col items-center justify-end h-full my-0 mx-0 gap-0">
           <div
             className="w-full relative overflow-hidden"
             style={{
               maxWidth: 520,
               background: "#1a1a1a",
               border: "1px solid rgba(0,155,155,0.2)",
-              transition: "border-color .2s, box-shadow .2s",
+              transition: "border-color .2s, box-shadow .2s"
             }}
             onDragOver={(e) => e.preventDefault()}
-            onDrop={onDrop}
-          >
+            onDrop={onDrop}>
+            
             {/* glow effects */}
             <div
               className="absolute top-0 left-0 pointer-events-none"
               style={{
                 width: 200, height: 200,
-                background: "radial-gradient(circle at top left, rgba(0,155,155,0.1), transparent 70%)",
-              }}
-            />
+                background: "radial-gradient(circle at top left, rgba(0,155,155,0.1), transparent 70%)"
+              }} />
+            
             <div
               className="absolute bottom-0 right-0 pointer-events-none"
               style={{
                 width: 160, height: 160,
-                background: "radial-gradient(circle at bottom right, rgba(232,98,74,0.08), transparent 70%)",
-              }}
-            />
+                background: "radial-gradient(circle at bottom right, rgba(232,98,74,0.08), transparent 70%)"
+              }} />
+            
 
             {/* ── Album Art Zone ── */}
             <div
               className="w-full relative overflow-hidden flex items-center justify-center"
-              style={{ aspectRatio: "16/9", maxHeight: 340, background: "#0d0d0d" }}
-            >
-              {artSrc && (
-                <img
-                  src={artSrc}
-                  alt="Album Art"
-                  className={`w-full h-full object-contain ${!isPlaying ? "art-float" : ""}`}
-                  style={{
-                    transition: "transform .6s ease, filter .4s ease",
-                    transform: isPlaying ? "scale(1.04)" : undefined,
-                    filter: isPlaying ? "brightness(0.85)" : "brightness(1)",
-                  }}
-                />
-              )}
+              style={{ aspectRatio: "16/9", maxHeight: 340, background: "#0d0d0d" }}>
+              
+              {artSrc &&
+              <img
+                src={artSrc}
+                alt="Album Art"
+                className={`w-full h-full object-contain ${!isPlaying ? "art-float" : ""}`}
+                style={{
+                  transition: "transform .6s ease, filter .4s ease",
+                  transform: isPlaying ? "scale(1.04)" : undefined,
+                  filter: isPlaying ? "brightness(0.85)" : "brightness(1)"
+                }} />
 
-              {!artSrc && (
-                <div
-                  className="absolute inset-0 flex flex-col items-center justify-center gap-4"
-                  style={{ background: "linear-gradient(135deg,#0d1a1a,#1a0d0d)" }}
-                >
+              }
+
+              {!artSrc &&
+              <div
+                className="absolute inset-0 flex flex-col items-center justify-center gap-4"
+                style={{ background: "linear-gradient(135deg,#0d1a1a,#1a0d0d)" }}>
+                
                   <div className="text-[4rem] opacity-40">🎙️</div>
                   <p className="text-[11px] tracking-[0.2em] uppercase text-center px-8" style={{ color: "#8ab8b8", maxWidth: 200 }}>
                     Upload album art or drag &amp; drop an image here
                   </p>
                   <button
-                    className="font-montserrat font-bold text-[11px] tracking-[0.15em] uppercase cursor-pointer"
-                    style={{
-                      background: "rgba(0,155,155,0.15)",
-                      border: "1px solid rgba(0,155,155,0.4)",
-                      color: "#009B9B",
-                      padding: "8px 20px",
-                      transition: "background .2s",
-                    }}
-                    onClick={(e) => { e.stopPropagation(); imgInputRef.current?.click(); }}
-                  >
+                  className="font-montserrat font-bold text-[11px] tracking-[0.15em] uppercase cursor-pointer"
+                  style={{
+                    background: "rgba(0,155,155,0.15)",
+                    border: "1px solid rgba(0,155,155,0.4)",
+                    color: "#009B9B",
+                    padding: "8px 20px",
+                    transition: "background .2s"
+                  }}
+                  onClick={(e) => {e.stopPropagation();imgInputRef.current?.click();}}>
+                  
                     Choose Image
                   </button>
                 </div>
-              )}
+              }
 
               {/* Vinyl ring */}
               <div
                 className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                style={{ opacity: isPlaying ? 1 : 0, transition: "opacity .4s" }}
-              >
+                style={{ opacity: isPlaying ? 1 : 0, transition: "opacity .4s" }}>
+                
                 <div
                   style={{
                     width: 80, height: 80, borderRadius: "50%",
                     background: "radial-gradient(circle,rgba(0,0,0,0.85) 30%,rgba(0,155,155,0.3) 31%,rgba(0,0,0,0.6) 60%,rgba(232,98,74,0.2) 61%,rgba(0,0,0,0.7) 100%)",
                     border: "2px solid rgba(0,155,155,0.3)",
-                    animation: isPlaying ? "spin 4s linear infinite" : "none",
-                  }}
-                />
+                    animation: isPlaying ? "spin 4s linear infinite" : "none"
+                  }} />
+                
                 <div className="absolute" style={{ width: 14, height: 14, borderRadius: "50%", background: "#009B9B", boxShadow: "0 0 12px rgba(0,155,155,0.6)" }} />
               </div>
 
@@ -276,9 +276,9 @@ const ArtistPlayer = () => {
                 className="absolute top-4 left-4 flex items-center gap-[6px] font-montserrat font-bold text-[10px] tracking-[0.2em] uppercase text-white"
                 style={{
                   background: "rgba(232,98,74,0.85)", padding: "5px 12px",
-                  opacity: isPlaying ? 1 : 0, transition: "opacity .3s",
-                }}
-              >
+                  opacity: isPlaying ? 1 : 0, transition: "opacity .3s"
+                }}>
+                
                 <span className="inline-block rounded-full bg-white" style={{ width: 6, height: 6, animation: "blink 1.2s infinite" }} />
                 Now Playing
               </div>
@@ -286,8 +286,8 @@ const ArtistPlayer = () => {
               {/* Watermark */}
               <div
                 className="absolute bottom-3 right-4 font-dancing font-bold text-[1rem] pointer-events-none"
-                style={{ color: "rgba(255,255,255,0.35)", opacity: isPlaying ? 1 : 0, transition: "opacity .3s" }}
-              >
+                style={{ color: "rgba(255,255,255,0.35)", opacity: isPlaying ? 1 : 0, transition: "opacity .3s" }}>
+                
                 Voices &amp; Vibes Radio
               </div>
             </div>
@@ -315,16 +315,16 @@ const ArtistPlayer = () => {
               <div
                 className="w-full relative cursor-pointer mb-2"
                 style={{ height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 2 }}
-                onClick={handleSeekClick}
-              >
+                onClick={handleSeekClick}>
+                
                 <div
                   className="h-full pointer-events-none"
                   style={{
                     width: `${progress}%`, borderRadius: 2,
                     background: "linear-gradient(to right,#009B9B,#E8624A)",
-                    transition: "width .25s linear",
-                  }}
-                />
+                    transition: "width .25s linear"
+                  }} />
+                
               </div>
               <div className="flex justify-between text-[10px] tracking-[0.06em]" style={{ color: "#8ab8b8" }}>
                 <span>{fmt(elapsed)}</span>
@@ -342,10 +342,10 @@ const ArtistPlayer = () => {
                   width: 58, height: 58, borderRadius: "50%",
                   background: isPlaying ? "#E8624A" : "#009B9B",
                   color: "#0a0a0a",
-                  boxShadow: isPlaying ? "0 0 28px rgba(232,98,74,0.4)" : "0 0 28px rgba(0,155,155,0.4)",
+                  boxShadow: isPlaying ? "0 0 28px rgba(232,98,74,0.4)" : "0 0 28px rgba(0,155,155,0.4)"
                 }}
-                onClick={(e) => { e.stopPropagation(); togglePlay(); }}
-              >
+                onClick={(e) => {e.stopPropagation();togglePlay();}}>
+                
                 {isPlaying ? "⏸" : "▶"}
               </button>
               <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: "#8ab8b8" }} onClick={skipFwd} title="Forward 10s">⏩</button>
@@ -368,8 +368,8 @@ const ArtistPlayer = () => {
               <button
                 className="flex flex-col items-center gap-[0.4rem] cursor-pointer text-center transition-all"
                 style={{ background: "rgba(0,155,155,0.05)", border: "1px dashed rgba(0,155,155,0.25)", padding: "1rem" }}
-                onClick={() => audioInputRef.current?.click()}
-              >
+                onClick={() => audioInputRef.current?.click()}>
+                
                 <div className="text-[1.4rem]">🎵</div>
                 <div className="font-montserrat font-bold text-[10px] tracking-[0.15em] uppercase" style={{ color: "#009B9B" }}>Upload Track</div>
                 <div className="text-[10px]" style={{ color: "#8ab8b8" }}>MP3, WAV, OGG</div>
@@ -377,8 +377,8 @@ const ArtistPlayer = () => {
               <button
                 className="flex flex-col items-center gap-[0.4rem] cursor-pointer text-center transition-all"
                 style={{ background: "rgba(232,98,74,0.05)", border: "1px dashed rgba(232,98,74,0.25)", padding: "1rem" }}
-                onClick={() => imgInputRef.current?.click()}
-              >
+                onClick={() => imgInputRef.current?.click()}>
+                
                 <div className="text-[1.4rem]">🖼️</div>
                 <div className="font-montserrat font-bold text-[10px] tracking-[0.15em] uppercase" style={{ color: "#E8624A" }}>Album Art</div>
                 <div className="text-[10px]" style={{ color: "#8ab8b8" }}>JPG, PNG, WebP</div>
@@ -405,9 +405,9 @@ const ArtistPlayer = () => {
                   Houston, TX · Jazz · Gospel
                 </div>
                 <div className="flex flex-wrap gap-[5px]">
-                  {["Jazz", "Gospel"].map((tag) => (
-                    <span key={tag} className="font-montserrat font-bold text-[8px] tracking-[0.12em] uppercase" style={{ padding: "2px 8px", border: "1px solid rgba(0,155,155,0.3)", background: "rgba(0,155,155,0.1)", color: "#009B9B" }}>{tag}</span>
-                  ))}
+                  {["Jazz", "Gospel"].map((tag) =>
+                  <span key={tag} className="font-montserrat font-bold text-[8px] tracking-[0.12em] uppercase" style={{ padding: "2px 8px", border: "1px solid rgba(0,155,155,0.3)", background: "rgba(0,155,155,0.1)", color: "#009B9B" }}>{tag}</span>
+                  )}
                   <span className="font-montserrat font-bold text-[8px] tracking-[0.12em] uppercase" style={{ padding: "2px 8px", border: "1px solid rgba(232,98,74,0.3)", background: "rgba(232,98,74,0.1)", color: "#E8624A" }}>Soon 2025</span>
                 </div>
               </div>
@@ -416,9 +416,9 @@ const ArtistPlayer = () => {
               A soulful guitarist bringing healing through music. Known for blending smooth jazz with gospel influences, his sound is a journey through faith and feeling.
             </p>
             <div className="flex items-center gap-2">
-              {["Facebook", "Instagram"].map((label) => (
-                <button key={label} className="font-montserrat font-bold text-[8px] tracking-[0.1em] uppercase bg-transparent cursor-pointer transition-all" style={{ border: "1px solid rgba(255,255,255,0.12)", color: "#8ab8b8", padding: "4px 10px" }}>{label}</button>
-              ))}
+              {["Facebook", "Instagram"].map((label) =>
+              <button key={label} className="font-montserrat font-bold text-[8px] tracking-[0.1em] uppercase bg-transparent cursor-pointer transition-all" style={{ border: "1px solid rgba(255,255,255,0.12)", color: "#8ab8b8", padding: "4px 10px" }}>{label}</button>
+              )}
               <button className="font-montserrat font-bold text-[8px] tracking-[0.1em] uppercase bg-transparent cursor-pointer transition-all" style={{ border: "1px solid rgba(232,98,74,0.35)", color: "#E8624A", padding: "4px 10px" }}>Book Artist</button>
             </div>
           </div>
@@ -430,9 +430,9 @@ const ArtistPlayer = () => {
               A powerful upcoming release blending smooth jazz guitar with gospel soul. This track carries a message of hope and healing — a perfect fit for the Voices &amp; Vibes community.
             </p>
             <div className="flex flex-wrap gap-[5px]">
-              {["Smooth Jazz", "Gospel Soul", "Healing", "2025 Release"].map((tag) => (
-                <span key={tag} className="font-montserrat text-[8px] tracking-[0.08em]" style={{ padding: "2px 8px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#5a9090" }}>{tag}</span>
-              ))}
+              {["Smooth Jazz", "Gospel Soul", "Healing", "2025 Release"].map((tag) =>
+              <span key={tag} className="font-montserrat text-[8px] tracking-[0.08em]" style={{ padding: "2px 8px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#5a9090" }}>{tag}</span>
+              )}
             </div>
           </div>
 
@@ -440,13 +440,13 @@ const ArtistPlayer = () => {
           <div className="font-montserrat font-bold text-[9px] tracking-[0.22em] uppercase" style={{ color: "#009B9B" }}>Previous spotlights</div>
           <div style={{ background: "#1a1a1a", border: "1px solid rgba(0,155,155,0.2)", padding: "0.85rem 1rem" }}>
             <div className="grid grid-cols-2 gap-2">
-              {pastSpotlights.slice(0, 3).map((spot) => (
-                <button
-                  key={spot.id}
-                  className="text-left cursor-pointer transition-all overflow-hidden"
-                  style={{ background: "#0f1a1a", border: "1px solid rgba(0,155,155,0.15)", padding: 0 }}
-                  onClick={() => loadSpotlight(spot)}
-                >
+              {pastSpotlights.slice(0, 3).map((spot) =>
+              <button
+                key={spot.id}
+                className="text-left cursor-pointer transition-all overflow-hidden"
+                style={{ background: "#0f1a1a", border: "1px solid rgba(0,155,155,0.15)", padding: 0 }}
+                onClick={() => loadSpotlight(spot)}>
+                
                   <div className="flex items-center justify-center" style={{ height: 48, background: `linear-gradient(135deg, ${spot.color}, #0d1818)` }}>
                     <span className="text-[1.1rem] opacity-50">🎵</span>
                   </div>
@@ -455,7 +455,7 @@ const ArtistPlayer = () => {
                     <div className="font-montserrat text-[9px] truncate" style={{ color: "#5a9090" }}>{spot.track}</div>
                   </div>
                 </button>
-              ))}
+              )}
               <div className="flex items-center justify-center cursor-pointer transition-all" style={{ border: "1px dashed rgba(0,155,155,0.2)", background: "transparent", minHeight: 82 }}>
                 <div className="text-center">
                   <div className="font-montserrat font-bold text-[11px]" style={{ color: "#009B9B" }}>+ Submit</div>
@@ -470,25 +470,25 @@ const ArtistPlayer = () => {
           <div style={{ background: "#1a1a1a", border: "1px solid rgba(0,155,155,0.2)", padding: "0.85rem 1rem" }}>
             <div className="grid grid-cols-2 gap-3">
               {[
-                { label: "Track Title", value: metaTitle, set: setMetaTitle, ph: "Song name" },
-                { label: "Artist", value: metaArtist, set: setMetaArtist, ph: "Artist name" },
-                { label: "Album", value: metaAlbum, set: setMetaAlbum, ph: "Album title" },
-                { label: "Year", value: metaYear, set: setMetaYear, ph: "2024" },
-              ].map((f) => (
-                <div key={f.label}>
+              { label: "Track Title", value: metaTitle, set: setMetaTitle, ph: "Song name" },
+              { label: "Artist", value: metaArtist, set: setMetaArtist, ph: "Artist name" },
+              { label: "Album", value: metaAlbum, set: setMetaAlbum, ph: "Album title" },
+              { label: "Year", value: metaYear, set: setMetaYear, ph: "2024" }].
+              map((f) =>
+              <div key={f.label}>
                   <label className="block font-montserrat font-bold text-[8px] tracking-[0.18em] uppercase mb-[0.3rem]" style={{ color: "#009B9B" }}>{f.label}</label>
                   <input
-                    type="text"
-                    value={f.value}
-                    onChange={(e) => f.set(e.target.value)}
-                    placeholder={f.ph}
-                    className="w-full font-montserrat text-[11px] text-white outline-none"
-                    style={{ background: "rgba(0,155,155,0.05)", border: "1px solid rgba(0,155,155,0.2)", padding: "7px 9px", transition: "border-color .2s" }}
-                    onFocus={(e) => (e.currentTarget.style.borderColor = "#009B9B")}
-                    onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(0,155,155,0.2)")}
-                  />
+                  type="text"
+                  value={f.value}
+                  onChange={(e) => f.set(e.target.value)}
+                  placeholder={f.ph}
+                  className="w-full font-montserrat text-[11px] text-white outline-none"
+                  style={{ background: "rgba(0,155,155,0.05)", border: "1px solid rgba(0,155,155,0.2)", padding: "7px 9px", transition: "border-color .2s" }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = "#009B9B"}
+                  onBlur={(e) => e.currentTarget.style.borderColor = "rgba(0,155,155,0.2)"} />
+                
                 </div>
-              ))}
+              )}
             </div>
           </div>
 
@@ -499,24 +499,24 @@ const ArtistPlayer = () => {
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 text-center font-montserrat font-bold text-[10px] tracking-[0.1em] uppercase no-underline transition-all"
-              style={{ background: "#009B9B", color: "#0a0a0a", padding: 9 }}
-            >
+              style={{ background: "#009B9B", color: "#0a0a0a", padding: 9 }}>
+              
               🎙️ Full Live Stream
             </a>
             <button
               className="flex-1 text-center font-montserrat font-bold text-[10px] tracking-[0.1em] uppercase bg-transparent cursor-pointer transition-all"
               style={{ border: "1px solid rgba(0,155,155,0.3)", color: "#009B9B", padding: 9 }}
-              onClick={() => navigate("/home")}
-            >
+              onClick={() => navigate("/home")}>
+              
               ← Back to Site
             </button>
           </div>
 
           {/* ── Feature Pills ── */}
           <div className="flex flex-wrap gap-[5px] mt-1">
-            {["Real Audio Visualizer", "Album Art", "MP3 · WAV · OGG", "voicesandvibesradio.com"].map((p) => (
-              <span key={p} className="font-montserrat font-bold text-[8px] tracking-[0.12em] uppercase" style={{ padding: "3px 9px", border: "1px solid rgba(0,155,155,0.25)", color: "#8ab8b8" }}>{p}</span>
-            ))}
+            {["Real Audio Visualizer", "Album Art", "MP3 · WAV · OGG", "voicesandvibesradio.com"].map((p) =>
+            <span key={p} className="font-montserrat font-bold text-[8px] tracking-[0.12em] uppercase" style={{ padding: "3px 9px", border: "1px solid rgba(0,155,155,0.25)", color: "#8ab8b8" }}>{p}</span>
+            )}
           </div>
         </div>
       </div>
@@ -528,17 +528,17 @@ const ArtistPlayer = () => {
         type="file"
         accept="audio/*"
         className="hidden"
-        onChange={(e) => e.target.files?.[0] && loadAudioFile(e.target.files[0])}
-      />
+        onChange={(e) => e.target.files?.[0] && loadAudioFile(e.target.files[0])} />
+      
       <input
         ref={imgInputRef}
         type="file"
         accept="image/*"
         className="hidden"
-        onChange={(e) => e.target.files?.[0] && loadImageFile(e.target.files[0])}
-      />
-    </div>
-  );
+        onChange={(e) => e.target.files?.[0] && loadImageFile(e.target.files[0])} />
+      
+    </div>);
+
 };
 
 export default ArtistPlayer;
