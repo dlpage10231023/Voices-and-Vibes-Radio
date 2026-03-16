@@ -281,7 +281,9 @@ const ArtistPlayer = () => {
         className="artist-grid grid gap-8 px-[5vw] pb-[80px] items-start"
         style={{
           gridTemplateColumns: "480px minmax(0, 720px)",
-          maxWidth: "1300px",
+          maxWidth: "1424px",
+          marginLeft: "max(0px, calc((100vw - 1200px) / 2))",
+          marginRight: "auto",
         }}
       >
         {/* ===== LEFT COLUMN — Player Card ===== */}
