@@ -21,6 +21,7 @@ const Index = () => {
       <ListenNow />
       <WeeklySchedule />
       <GospelSunday />
+      <ArtistSpotlight />
       <BookSpotlight />
       <Contact />
       <Footer />
