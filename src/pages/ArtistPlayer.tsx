@@ -150,7 +150,7 @@ const ArtistPlayer = () => {
         @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
         @keyframes blink{0%,100%{opacity:1}50%{opacity:.1}}
         @keyframes tscroll{0%,15%{transform:translateX(0)}85%,100%{transform:translateX(-40%)}}
-        @keyframes float{0%{transform:scale(0.85)}50%{transform:scale(1.05) translate(-2%,-1%)}100%{transform:scale(0.85)}}
+        @keyframes float{0%{transform:scale(0.68)}50%{transform:scale(0.82) translate(-1%,-1%)}100%{transform:scale(0.68)}}
         .art-float{animation:float 12s ease-in-out infinite}
         .art-canvas-wrap{position:absolute;bottom:0;left:0;right:0;height:80px;pointer-events:none;transition:opacity .4s}
         input[type=range]{-webkit-appearance:none;appearance:none;background:rgba(255,255,255,.1);height:3px;border-radius:2px;cursor:pointer;outline:none;flex:1}
