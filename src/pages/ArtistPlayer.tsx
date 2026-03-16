@@ -1072,13 +1072,13 @@ const ArtistPlayer = () => {
 
       {/* ── Responsive: stack on mobile ── */}
       <style>{`
-        @media (max-width: 960px) {
-          .min-h-screen > div:nth-child(3) {
+        @media (max-width: 768px) {
+          .artist-grid {
             grid-template-columns: 1fr !important;
           }
         }
-        @media (min-width: 961px) and (max-width: 1200px) {
-          .min-h-screen > div:nth-child(3) {
+        @media (min-width: 769px) and (max-width: 1200px) {
+          .artist-grid {
             grid-template-columns: 380px 1fr !important;
           }
         }
