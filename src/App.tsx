@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AudioProvider } from "./components/AudioProvider";
+import Splash from "./pages/Splash.tsx";
 import Index from "./pages/Index.tsx";
 import DayPage from "./pages/DayPage.tsx";
 import AudioAdmin from "./pages/AudioAdmin.tsx";
@@ -19,7 +20,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<Splash />} />
+            <Route path="/home" element={<Index />} />
             <Route path="/admin/audio" element={<AudioAdmin />} />
             <Route path="/:day" element={<DayPage />} />
             <Route path="*" element={<NotFound />} />
