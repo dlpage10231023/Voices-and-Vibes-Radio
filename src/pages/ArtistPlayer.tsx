@@ -257,7 +257,7 @@ const ArtistPlayer = () => {
       `}</style>
 
       {/* ── Page Header ── */}
-      <div className="text-center pt-[80px] px-[5vw] mb-4">
+      <div className="text-center pt-[100px] px-[5vw] mb-8">
         <span
           className="font-dancing text-[2rem] font-bold block mb-1"
           style={{
@@ -278,14 +278,14 @@ const ArtistPlayer = () => {
 
       {/* ── Two Column Grid ── */}
       <div
-        className="grid gap-8 px-[5vw] pb-[80px]"
+        className="grid gap-8 px-[5vw] pb-[80px] items-end"
         style={{
           gridTemplateColumns: "480px 1fr",
           maxWidth: "none",
         }}
       >
         {/* ===== LEFT COLUMN — Player Card ===== */}
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center justify-end h-full">
           {/* Player Card */}
           <div
             className="w-full relative overflow-hidden"
