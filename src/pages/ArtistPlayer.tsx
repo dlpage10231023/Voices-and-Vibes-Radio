@@ -218,10 +218,10 @@ const ArtistPlayer = () => {
                 <img
                   src={artSrc}
                   alt="Album Art"
-                  className="w-full h-full object-cover"
+                  className={`w-full h-full object-cover ${!isPlaying ? "art-float" : ""}`}
                   style={{
                     transition: "transform .6s ease, filter .4s ease",
-                    transform: isPlaying ? "scale(1.04)" : "scale(1)",
+                    transform: isPlaying ? "scale(1.04)" : undefined,
                     filter: isPlaying ? "brightness(0.85)" : "brightness(1)",
                   }}
                 />
