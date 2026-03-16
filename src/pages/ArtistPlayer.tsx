@@ -278,10 +278,10 @@ const ArtistPlayer = () => {
 
       {/* ── Two Column Grid ── */}
       <div
-        className="artist-grid grid gap-8 px-[5vw] pb-[80px] items-start mx-auto"
+        className="artist-grid grid gap-8 px-[5vw] pb-[80px] items-start"
         style={{
-          gridTemplateColumns: "480px minmax(0, 600px)",
-          maxWidth: "1200px",
+          gridTemplateColumns: "480px minmax(0, 720px)",
+          maxWidth: "1300px",
         }}
       >
         {/* ===== LEFT COLUMN — Player Card ===== */}
