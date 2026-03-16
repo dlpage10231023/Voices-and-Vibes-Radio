@@ -3,7 +3,7 @@ import { useAudioPlayer } from "./AudioProvider";
 const barHeights = [14, 20, 10, 18, 14];
 
 const StickyPlayer = () => {
-  const { isPlaying, togglePlay } = useAudioPlayer();
+  const { isPlaying, togglePlay, currentTrack, hasTracks } = useAudioPlayer();
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[300] bg-primary flex items-center justify-between px-[5vw] h-[58px]">
@@ -11,10 +11,12 @@ const StickyPlayer = () => {
         <span className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-secondary animate-blink' : 'bg-secondary/50'}`} />
         <div>
           <div className="text-[12px] font-bold text-primary-foreground tracking-[0.1em] uppercase">
-            🎙️ Voices & Vibes Radio — {isPlaying ? 'Live' : 'Offline'}
+            {isPlaying && currentTrack?.song_title
+              ? `🎵 ${currentTrack.song_title}${currentTrack.artist_name ? ` — ${currentTrack.artist_name}` : ''}`
+              : '🎙️ Voices & Vibes Radio'}
           </div>
           <div className="text-[11px] text-primary-foreground/50 tracking-[0.05em]">
-            voicesandvibesradio.com · Houston, TX
+            {isPlaying ? 'Now Playing' : hasTracks ? 'Tap to listen' : 'No tracks available'}
           </div>
         </div>
         {isPlaying && (
@@ -36,7 +38,8 @@ const StickyPlayer = () => {
         </span>
         <button
           onClick={togglePlay}
-          className="bg-primary-foreground text-primary px-5 py-2 text-[11px] font-bold tracking-[0.12em] uppercase cursor-pointer border-none hover:opacity-90 transition-opacity"
+          disabled={!hasTracks}
+          className="bg-primary-foreground text-primary px-5 py-2 text-[11px] font-bold tracking-[0.12em] uppercase cursor-pointer border-none hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {isPlaying ? '⏸ Pause' : '🎵 Listen Now'}
         </button>
