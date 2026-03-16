@@ -142,7 +142,7 @@ const ArtistPlayer = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-[#0a0a0a] flex flex-col">
       <Navbar />
 
       {/* inline styles for animations */}
