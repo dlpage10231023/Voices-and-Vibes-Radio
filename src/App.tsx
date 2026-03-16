@@ -24,6 +24,7 @@ const App = () => (
             <Route path="/" element={<Splash />} />
             <Route path="/home" element={<Index />} />
             <Route path="/admin/audio" element={<AudioAdmin />} />
+            <Route path="/artist-player" element={<ArtistPlayer />} />
             <Route path="/:day" element={<DayPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
