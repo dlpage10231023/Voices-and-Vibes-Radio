@@ -966,6 +966,91 @@ const ArtistPlayer = () => {
               </div>
             </div>
           </div>
+
+          {/* ── Metadata Fields ── */}
+          <div
+            className="font-montserrat font-bold text-[9px] tracking-[0.22em] uppercase"
+            style={{ color: "#009B9B" }}
+          >
+            Track details
+          </div>
+          <div
+            style={{
+              background: "#1a1a1a",
+              border: "1px solid rgba(0,155,155,0.2)",
+              padding: "0.85rem 1rem",
+            }}
+          >
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: "Track Title", value: metaTitle, set: setMetaTitle, ph: "Song name" },
+                { label: "Artist", value: metaArtist, set: setMetaArtist, ph: "Artist name" },
+                { label: "Album", value: metaAlbum, set: setMetaAlbum, ph: "Album title" },
+                { label: "Year", value: metaYear, set: setMetaYear, ph: "2024" },
+              ].map((f) => (
+                <div key={f.label}>
+                  <label
+                    className="block font-montserrat font-bold text-[8px] tracking-[0.18em] uppercase mb-[0.3rem]"
+                    style={{ color: "#009B9B" }}
+                  >
+                    {f.label}
+                  </label>
+                  <input
+                    type="text"
+                    value={f.value}
+                    onChange={(e) => f.set(e.target.value)}
+                    placeholder={f.ph}
+                    className="w-full font-montserrat text-[11px] text-white outline-none"
+                    style={{
+                      background: "rgba(0,155,155,0.05)",
+                      border: "1px solid rgba(0,155,155,0.2)",
+                      padding: "7px 9px",
+                      transition: "border-color .2s",
+                    }}
+                    onFocus={(e) => (e.currentTarget.style.borderColor = "#009B9B")}
+                    onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(0,155,155,0.2)")}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Footer Links ── */}
+          <div className="flex gap-2 mt-1">
+            <a
+              href="https://hello.citrus3.com:2020/public/voicesandvibes"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 text-center font-montserrat font-bold text-[10px] tracking-[0.1em] uppercase no-underline transition-all"
+              style={{ background: "#009B9B", color: "#0a0a0a", padding: 9 }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#00C4C4")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "#009B9B")}
+            >
+              🎙️ Full Live Stream
+            </a>
+            <button
+              className="flex-1 text-center font-montserrat font-bold text-[10px] tracking-[0.1em] uppercase bg-transparent cursor-pointer transition-all"
+              style={{ border: "1px solid rgba(0,155,155,0.3)", color: "#009B9B", padding: 9 }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(0,155,155,0.1)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+              onClick={() => navigate("/home")}
+            >
+              ← Back to Site
+            </button>
+          </div>
+
+          {/* ── Feature Pills ── */}
+          <div className="flex flex-wrap gap-[5px] mt-1">
+            {["Real Audio Visualizer", "Album Art", "MP3 · WAV · OGG", "voicesandvibesradio.com"].map((p) => (
+              <span
+                key={p}
+                className="font-montserrat font-bold text-[8px] tracking-[0.12em] uppercase"
+                style={{ padding: "3px 9px", border: "1px solid rgba(0,155,155,0.25)", color: "#8ab8b8" }}
+              >
+                {p}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
