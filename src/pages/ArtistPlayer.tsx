@@ -569,7 +569,7 @@ const ArtistPlayer = () => {
                   e.currentTarget.style.filter = "brightness(1)";
                   e.currentTarget.style.transform = "scale(1)";
                 }}
-                onClick={togglePlay}
+                onClick={(e) => { e.stopPropagation(); togglePlay(); }}
               >
                 {isPlaying ? "⏸" : "▶"}
               </button>
