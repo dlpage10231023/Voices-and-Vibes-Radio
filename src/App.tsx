@@ -7,6 +7,7 @@ import { AudioProvider } from "./components/AudioProvider";
 import Splash from "./pages/Splash.tsx";
 import Index from "./pages/Index.tsx";
 import DayPage from "./pages/DayPage.tsx";
+import ArtistPlayer from "./pages/ArtistPlayer.tsx";
 import AudioAdmin from "./pages/AudioAdmin.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
