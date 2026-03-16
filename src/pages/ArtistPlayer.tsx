@@ -1079,7 +1079,7 @@ const ArtistPlayer = () => {
         }
         @media (min-width: 769px) and (max-width: 1200px) {
           .artist-grid {
-            grid-template-columns: 380px 1fr !important;
+            grid-template-columns: 380px minmax(0, 600px) !important;
           }
         }
       `}</style>
