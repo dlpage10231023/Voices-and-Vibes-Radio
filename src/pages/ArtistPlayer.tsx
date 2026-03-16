@@ -1068,15 +1068,8 @@ const ArtistPlayer = () => {
 
       {/* ── Responsive: stack on mobile ── */}
       <style>{`
-        @media (max-width: 768px) {
-          .artist-grid {
-            grid-template-columns: 1fr !important;
-          }
-        }
-        @media (min-width: 769px) and (max-width: 1200px) {
-          .artist-grid {
-            grid-template-columns: 380px minmax(0, 600px) !important;
-          }
+        .artist-grid {
+          /* responsive handled by Tailwind lg: breakpoint */
         }
       `}</style>
     </div>
