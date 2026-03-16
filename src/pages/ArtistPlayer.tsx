@@ -33,15 +33,6 @@ const ArtistPlayer = () => {
     audioElement,
   } = ctx;
 
-  /* ── local-only state ── */
-  const [dragOver, setDragOver] = [false, () => {}] as any; // simple flag
-  const dragOverRef = useRef(false);
-  const [trackStory, setTrackStoryState] = [useRef(""), (v: string) => {}] as any;
-
-  // Actually use React state for these local-only things
-  const { useState } = require("react");
-
-  // We need to handle these properly — let me use a simpler approach
   const audioInputRef = useRef<HTMLInputElement | null>(null);
   const imgInputRef = useRef<HTMLInputElement | null>(null);
 
