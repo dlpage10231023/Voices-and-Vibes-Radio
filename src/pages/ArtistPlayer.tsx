@@ -278,10 +278,10 @@ const ArtistPlayer = () => {
 
       {/* ── Two Column Grid ── */}
       <div
-        className="artist-grid grid gap-8 px-[5vw] pb-[80px] items-start"
+        className="artist-grid grid gap-8 px-[5vw] pb-[80px] items-start mx-auto"
         style={{
-          gridTemplateColumns: "480px 1fr",
-          maxWidth: "none",
+          gridTemplateColumns: "480px minmax(0, 600px)",
+          maxWidth: "1200px",
         }}
       >
         {/* ===== LEFT COLUMN — Player Card ===== */}
@@ -1079,7 +1079,7 @@ const ArtistPlayer = () => {
         }
         @media (min-width: 769px) and (max-width: 1200px) {
           .artist-grid {
-            grid-template-columns: 380px 1fr !important;
+            grid-template-columns: 380px minmax(0, 600px) !important;
           }
         }
       `}</style>
