@@ -21,7 +21,7 @@ const Navbar = () => {
           Voices & Vibes
         </a>
       ) : (
-        <Link to="/" className="font-dancing text-[1.6rem] font-bold bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent no-underline">
+        <Link to="/home" className="font-dancing text-[1.6rem] font-bold bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent no-underline">
           Voices & Vibes
         </Link>
       )}
