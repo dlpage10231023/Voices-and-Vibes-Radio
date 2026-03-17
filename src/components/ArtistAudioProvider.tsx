@@ -212,26 +212,7 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     set("vv_last_image", file).catch(() => {});
   }, []);
 
-  /* ── Metadata setters with debounced cloud sync ── */
-  const setMetaTitleWrapped = useCallback((v: string) => {
-    setMetaTitle(v);
-    debouncedMetaSync("title", v);
-  }, []);
-
-  const setMetaArtistWrapped = useCallback((v: string) => {
-    setMetaArtist(v);
-    debouncedMetaSync("artist", v);
-  }, []);
-
-  const setMetaAlbumWrapped = useCallback((v: string) => {
-    setMetaAlbum(v);
-    debouncedMetaSync("album", v);
-  }, []);
-
-  const setMetaYearWrapped = useCallback((v: string) => {
-    setMetaYear(v);
-    debouncedMetaSync("year", v);
-  }, []);
+  /* ── Metadata setters — local state only, no DB sync ── */
 
   const value: Ctx = {
     isPlaying, elapsed, duration, progress, volume, isMuted, isLooping, isShuffled,
