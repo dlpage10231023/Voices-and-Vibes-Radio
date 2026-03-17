@@ -1,4 +1,5 @@
 import { createContext, useContext, useRef, useState, useCallback, useEffect, ReactNode } from "react";
+import { get, set } from "idb-keyval";
 
 export interface ArtistAudioState {
   isPlaying: boolean;
