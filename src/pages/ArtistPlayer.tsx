@@ -401,9 +401,7 @@ const ArtistPlayer = () => {
                 <div className="font-dancing font-bold text-[1.25rem] leading-tight mb-[2px]" style={{ color: "#E8624A" }}>
                   {metaArtist || "Artist Name"}
                 </div>
-                <div className="font-montserrat text-[10px] tracking-[0.12em] uppercase mb-2" style={{ color: "#8ab8b8" }}>
-                  Houston, TX · Jazz · Gospel
-                </div>
+                <div className="mb-2" />
                 <div className="flex flex-wrap gap-[5px]">
                   {["Jazz", "Gospel"].map((tag) =>
                   <span key={tag} className="font-montserrat font-bold text-[8px] tracking-[0.12em] uppercase" style={{ padding: "2px 8px", border: "1px solid rgba(0,155,155,0.3)", background: "rgba(0,155,155,0.1)", color: "#009B9B" }}>{tag}</span>
