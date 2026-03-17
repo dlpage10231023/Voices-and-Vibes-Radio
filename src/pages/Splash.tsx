@@ -125,6 +125,7 @@ const Splash = () => {
 
   const enterSite = useCallback(() => {
     stopMusicFn();
+    localStorage.setItem("vv_intro_seen", "true");
     navigate("/home");
   }, [navigate]);
 

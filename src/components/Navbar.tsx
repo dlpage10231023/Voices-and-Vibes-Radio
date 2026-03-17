@@ -21,7 +21,7 @@ const Navbar = () => {
           Voices & Vibes
         </a>
       ) : (
-        <Link to="/" className="font-dancing text-[1.6rem] font-bold bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent no-underline">
+        <Link to="/home" className="font-dancing text-[1.6rem] font-bold bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent no-underline">
           Voices & Vibes
         </Link>
       )}
@@ -41,7 +41,7 @@ const Navbar = () => {
         ) : (
           <li>
             <Link
-              to="/#schedule"
+              to="/home#schedule"
               className="text-[11px] tracking-[0.14em] uppercase text-muted font-medium no-underline hover:text-primary transition-colors"
             >
               ← Back to Home
