@@ -38,7 +38,7 @@ const ArtistSpotlight = () => {
             style={{ background: "linear-gradient(135deg, #007A7A, #0a1818)" }}
           >
             {artSrc ? (
-              <img src={artSrc} alt={`${displayArtist} album art`} className="w-full h-full object-cover animate-[sway_6s_ease-in-out_infinite]" />
+              <img src={artSrc} alt={`${displayArtist} album art`} className="w-full h-full object-contain animate-[sway_6s_ease-in-out_infinite]" />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center">
                 <Music className="w-20 h-20 text-primary/40" strokeWidth={1} />
