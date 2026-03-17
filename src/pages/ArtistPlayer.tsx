@@ -127,10 +127,14 @@ const ArtistPlayer = () => {
   }, [isPlaying, audioElement, initAnalyser, drawVis, clearCanvas]);
 
   /* ── computed display values ── */
-  const dispTitle = metaTitle || "Upload a track to begin";
-  const dispArtist = metaArtist || "Artist Name";
-  const dispAlbum =
-  (metaAlbum || "Album") + (metaYear ? " · " + metaYear : " · Year");
+  const hasTitle = Boolean(metaTitle?.trim());
+  const hasArtist = Boolean(metaArtist?.trim());
+  const hasAlbumInfo = Boolean(metaAlbum?.trim() || metaYear?.trim());
+  const dispTitle = hasTitle ? metaTitle.trim() : "Not provided";
+  const dispArtist = hasArtist ? metaArtist.trim() : "Not provided";
+  const dispAlbum = hasAlbumInfo
+    ? [metaAlbum?.trim(), metaYear?.trim()].filter(Boolean).join(" · ")
+    : "Not provided";
   const scrollTitle = dispTitle.length > 28;
 
   /* ── drag & drop ── */

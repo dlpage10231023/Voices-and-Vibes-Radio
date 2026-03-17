@@ -6,11 +6,14 @@ const ArtistSpotlight = () => {
   const { metaTitle, metaArtist, metaAlbum, metaYear, artSrc, hasSource, isPlaying } = useArtistAudio();
 
   const showLive = hasSource || isPlaying;
-  const displayArtist = showLive && metaArtist ? metaArtist : "Artist Name";
-  const displayTitle = showLive && metaTitle ? metaTitle : "Track Title";
-  const displayAlbumLine = showLive
-    ? `${metaAlbum || "Album"} · ${metaYear || "Year"}`
-    : "Album · Year";
+  const hasArtist = Boolean(metaArtist?.trim());
+  const hasTitle = Boolean(metaTitle?.trim());
+  const hasAlbumInfo = Boolean(metaAlbum?.trim() || metaYear?.trim());
+  const displayArtist = hasArtist ? metaArtist.trim() : "Not provided";
+  const displayTitle = hasTitle ? metaTitle.trim() : "Not provided";
+  const displayAlbumLine = hasAlbumInfo
+    ? [metaAlbum?.trim(), metaYear?.trim()].filter(Boolean).join(" · ")
+    : "Not provided";
   const displayDesc = showLive
     ? "Currently playing on the Artist Spotlight Player."
     : "A healing journey through sound and rhythm.";
