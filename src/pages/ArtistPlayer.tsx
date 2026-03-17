@@ -24,6 +24,19 @@ interface ArchivedSpot {
 const ArtistPlayer = () => {
   const navigate = useNavigate();
   const ctx = useArtistAudio();
+  const [archivedSpots, setArchivedSpots] = useState<ArchivedSpot[]>([]);
+  const [featuredWeek, setFeaturedWeek] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Fetch featured week from live row
+    supabase.from("artist_spotlight").select("featured_week").eq("status", "live").maybeSingle().then(({ data }) => {
+      if (data?.featured_week) setFeaturedWeek(data.featured_week);
+    });
+    // Fetch archived spotlights
+    supabase.from("artist_spotlight").select("id,artist,title,image_url,featured_week").eq("status", "archived").order("updated_at", { ascending: false }).limit(4).then(({ data }) => {
+      if (data) setArchivedSpots(data);
+    });
+  }, []);
 
   const {
     isPlaying, elapsed, duration, progress, volume, isMuted, isLooping, isShuffled,
