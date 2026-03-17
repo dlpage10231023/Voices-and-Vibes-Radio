@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      artist_spotlight: {
+        Row: {
+          album: string | null
+          artist: string | null
+          audio_url: string | null
+          id: string
+          image_url: string | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+          year: string | null
+        }
+        Insert: {
+          album?: string | null
+          artist?: string | null
+          audio_url?: string | null
+          id?: string
+          image_url?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          year?: string | null
+        }
+        Update: {
+          album?: string | null
+          artist?: string | null
+          audio_url?: string | null
+          id?: string
+          image_url?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          year?: string | null
+        }
+        Relationships: []
+      }
       day_audio: {
         Row: {
           album_art_url: string | null
