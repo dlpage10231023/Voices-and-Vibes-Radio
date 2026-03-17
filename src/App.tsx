@@ -29,7 +29,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Splash />} />
+              <Route path="/" element={<SplashGate />} />
               <Route path="/home" element={<Index />} />
               <Route path="/admin/audio" element={<AudioAdmin />} />
               <Route path="/artist-player" element={<ArtistPlayer />} />
