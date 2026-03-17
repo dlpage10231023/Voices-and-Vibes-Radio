@@ -1,4 +1,5 @@
 import { createContext, useContext, useRef, useState, useCallback, useEffect, ReactNode } from "react";
+import { get, set } from "idb-keyval";
 
 export interface ArtistAudioState {
   isPlaying: boolean;
@@ -99,6 +100,20 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
+  // Restore last uploaded audio & image from IndexedDB
+  useEffect(() => {
+    const restore = async () => {
+      const [savedAudio, savedImage] = await Promise.all([
+        get<File>("vv_last_audio").catch(() => undefined),
+        get<File>("vv_last_image").catch(() => undefined),
+      ]);
+      if (savedAudio instanceof File) loadAudioFile(savedAudio);
+      if (savedImage instanceof File) loadImageFile(savedImage);
+    };
+    restore();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const stopPlay = useCallback(() => {
     audioRef.current?.pause();
     setIsPlaying(false);
@@ -158,14 +173,15 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
       a.src = url;
       a.load();
       setHasSource(true);
-      // Auto-set title from filename if empty
       const name = file.name.replace(/\.[^/.]+$/, "");
       setMetaTitle((prev) => prev || name);
     }
+    set("vv_last_audio", file).catch(() => {});
   }, []);
 
   const loadImageFile = useCallback((file: File) => {
     setArtSrc(URL.createObjectURL(file));
+    set("vv_last_image", file).catch(() => {});
   }, []);
 
   const value: Ctx = {
