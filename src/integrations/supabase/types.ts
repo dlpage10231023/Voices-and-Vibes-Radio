@@ -18,7 +18,9 @@ export type Database = {
         Row: {
           album: string | null
           artist: string | null
+          artist_slug: string | null
           audio_url: string | null
+          featured_week: string | null
           id: string
           image_url: string | null
           status: string | null
@@ -29,7 +31,9 @@ export type Database = {
         Insert: {
           album?: string | null
           artist?: string | null
+          artist_slug?: string | null
           audio_url?: string | null
+          featured_week?: string | null
           id?: string
           image_url?: string | null
           status?: string | null
@@ -40,7 +44,9 @@ export type Database = {
         Update: {
           album?: string | null
           artist?: string | null
+          artist_slug?: string | null
           audio_url?: string | null
+          featured_week?: string | null
           id?: string
           image_url?: string | null
           status?: string | null

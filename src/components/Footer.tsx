@@ -29,8 +29,11 @@ const Footer = () => {
           </a>
         ))}
       </div>
-      <div className="text-[11px] text-muted/40 tracking-[0.05em]">
-        © 2026 Voices and Vibes Radio · Houston, TX · All rights reserved
+      <div className="flex items-center justify-center gap-4">
+        <div className="text-[11px] text-muted/40 tracking-[0.05em]">
+          © 2026 Voices and Vibes Radio · Houston, TX · All rights reserved
+        </div>
+        <a href="/admin/spotlight" className="text-[8px] no-underline" style={{ color: "rgba(138,184,184,0.3)" }}>Admin</a>
       </div>
     </footer>
   );

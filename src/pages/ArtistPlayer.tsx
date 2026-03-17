@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { useArtistAudio } from "@/components/ArtistAudioProvider";
+import { supabase } from "@/integrations/supabase/client";
 
 /* ── helpers ── */
 const fmt = (s: number) => {
@@ -11,17 +12,31 @@ const fmt = (s: number) => {
   return m + ":" + String(sec).padStart(2, "0");
 };
 
-/* ── Past Spotlights data ── */
-const pastSpotlights = [
-{ id: 1, name: "Nia Soleil", track: "Golden Hour", color: "#007A7A" },
-{ id: 2, name: "Marcus Reed", track: "Soul Revival", color: "#0d1a1a" },
-{ id: 3, name: "Amara Joy", track: "Still Waters", color: "#1a0d0d" },
-{ id: 4, name: "David Okon", track: "Restoration", color: "#007A7A" }];
+interface ArchivedSpot {
+  id: string;
+  artist: string | null;
+  title: string | null;
+  image_url: string | null;
+  featured_week: string | null;
+}
 
 
 const ArtistPlayer = () => {
   const navigate = useNavigate();
   const ctx = useArtistAudio();
+  const [archivedSpots, setArchivedSpots] = useState<ArchivedSpot[]>([]);
+  const [featuredWeek, setFeaturedWeek] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Fetch featured week from live row
+    supabase.from("artist_spotlight").select("featured_week").eq("status", "live").maybeSingle().then(({ data }) => {
+      if (data?.featured_week) setFeaturedWeek(data.featured_week);
+    });
+    // Fetch archived spotlights
+    supabase.from("artist_spotlight").select("id,artist,title,image_url,featured_week").eq("status", "archived").order("updated_at", { ascending: false }).limit(4).then(({ data }) => {
+      if (data) setArchivedSpots(data);
+    });
+  }, []);
 
   const {
     isPlaying, elapsed, duration, progress, volume, isMuted, isLooping, isShuffled,
@@ -128,9 +143,9 @@ const ArtistPlayer = () => {
   };
 
   /* ── load past spotlight into player ── */
-  const loadSpotlight = (spot: typeof pastSpotlights[0]) => {
-    setMetaArtist(spot.name);
-    setMetaTitle(spot.track);
+  const loadSpotlight = (spot: ArchivedSpot) => {
+    setMetaArtist(spot.artist || "");
+    setMetaTitle(spot.title || "");
     setMetaAlbum("");
     setMetaYear("");
   };
@@ -308,6 +323,11 @@ const ArtistPlayer = () => {
               <div className="font-montserrat font-light text-[11px] italic" style={{ color: "rgba(138,184,184,0.5)" }}>
                 {dispAlbum}
               </div>
+              {featuredWeek && (
+                <div className="font-montserrat text-[9px] mt-[2px]" style={{ color: "#8ab8b8" }}>
+                  Featured Week: {featuredWeek}
+                </div>
+              )}
             </div>
 
             {/* ── Progress ── */}
@@ -438,19 +458,23 @@ const ArtistPlayer = () => {
           <div className="font-montserrat font-bold text-[9px] tracking-[0.22em] uppercase" style={{ color: "#009B9B" }}>Previous spotlights</div>
           <div style={{ background: "#1a1a1a", border: "1px solid rgba(0,155,155,0.2)", padding: "0.85rem 1rem" }}>
             <div className="grid grid-cols-2 gap-2">
-              {pastSpotlights.slice(0, 3).map((spot) =>
+              {archivedSpots.slice(0, 3).map((spot) =>
               <button
                 key={spot.id}
                 className="text-left cursor-pointer transition-all overflow-hidden"
                 style={{ background: "#0f1a1a", border: "1px solid rgba(0,155,155,0.15)", padding: 0 }}
                 onClick={() => loadSpotlight(spot)}>
                 
-                  <div className="flex items-center justify-center" style={{ height: 48, background: `linear-gradient(135deg, ${spot.color}, #0d1818)` }}>
-                    <span className="text-[1.1rem] opacity-50">🎵</span>
-                  </div>
+                  {spot.image_url ? (
+                    <img src={spot.image_url} alt="" style={{ width: "100%", height: 48, objectFit: "cover", objectPosition: "top" }} />
+                  ) : (
+                    <div className="flex items-center justify-center" style={{ height: 48, background: "linear-gradient(135deg,#007A7A,#0d1818)" }}>
+                      <span className="text-[1.1rem] opacity-50">🎵</span>
+                    </div>
+                  )}
                   <div style={{ padding: "5px 8px" }}>
-                    <div className="font-montserrat font-bold text-[10px] text-white truncate">{spot.name}</div>
-                    <div className="font-montserrat text-[9px] truncate" style={{ color: "#5a9090" }}>{spot.track}</div>
+                    <div className="font-montserrat font-bold text-[10px] text-white truncate">{spot.artist}</div>
+                    <div className="font-montserrat text-[9px] truncate" style={{ color: "#5a9090" }}>{spot.title}</div>
                   </div>
                 </button>
               )}
