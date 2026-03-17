@@ -12,12 +12,13 @@ const fmt = (s: number) => {
   return m + ":" + String(sec).padStart(2, "0");
 };
 
-/* ── Past Spotlights data ── */
-const pastSpotlights = [
-{ id: 1, name: "Nia Soleil", track: "Golden Hour", color: "#007A7A" },
-{ id: 2, name: "Marcus Reed", track: "Soul Revival", color: "#0d1a1a" },
-{ id: 3, name: "Amara Joy", track: "Still Waters", color: "#1a0d0d" },
-{ id: 4, name: "David Okon", track: "Restoration", color: "#007A7A" }];
+interface ArchivedSpot {
+  id: string;
+  artist: string | null;
+  title: string | null;
+  image_url: string | null;
+  featured_week: string | null;
+}
 
 
 const ArtistPlayer = () => {
