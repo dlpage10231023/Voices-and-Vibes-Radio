@@ -131,7 +131,7 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
       const { data } = await supabase
         .from("artist_spotlight")
         .select("*")
-        .eq("status", "featured")
+        .eq("status", "live")
         .maybeSingle();
 
       if (data?.audio_url) {
