@@ -242,7 +242,7 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
       const { data: urlData } = supabase.storage.from("day-audio").getPublicUrl(path);
       // Append cache-buster so CDN serves the new version
       const publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
-      await upsertSpotlight({ audio_url: publicUrl, status: "featured" });
+      await upsertSpotlight({ audio_url: publicUrl, status: "live" });
     })();
   }, []);
 
