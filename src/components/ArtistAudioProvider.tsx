@@ -220,10 +220,10 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     togglePlay, stopPlay, skipBack, skipFwd, seekTo,
     toggleLoop, toggleShuffle, toggleMute, setVolume,
     loadAudioFile, loadImageFile, setArtSrc,
-    setMetaTitle: setMetaTitleWrapped,
-    setMetaArtist: setMetaArtistWrapped,
-    setMetaAlbum: setMetaAlbumWrapped,
-    setMetaYear: setMetaYearWrapped,
+    setMetaTitle,
+    setMetaArtist,
+    setMetaAlbum,
+    setMetaYear,
     audioElement: audioRef.current,
   };
 
