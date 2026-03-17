@@ -143,9 +143,9 @@ const ArtistPlayer = () => {
   };
 
   /* ── load past spotlight into player ── */
-  const loadSpotlight = (spot: typeof pastSpotlights[0]) => {
-    setMetaArtist(spot.name);
-    setMetaTitle(spot.track);
+  const loadSpotlight = (spot: ArchivedSpot) => {
+    setMetaArtist(spot.artist || "");
+    setMetaTitle(spot.title || "");
     setMetaAlbum("");
     setMetaYear("");
   };
