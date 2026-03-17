@@ -52,26 +52,6 @@ export const useArtistAudio = () => {
   return ctx;
 };
 
-/* ── Helper: upsert a partial update to the single spotlight row ── */
-const upsertSpotlight = async (fields: Record<string, unknown>) => {
-  await supabase
-    .from("artist_spotlight")
-    .upsert({ id: SPOTLIGHT_ID, ...fields }, { onConflict: "id" });
-};
-
-/* ── Helper: debounced metadata sync ── */
-let metaTimer: ReturnType<typeof setTimeout> | null = null;
-const pendingMeta: Record<string, string> = {};
-
-const debouncedMetaSync = (field: string, value: string) => {
-  pendingMeta[field] = value;
-  if (metaTimer) clearTimeout(metaTimer);
-  metaTimer = setTimeout(() => {
-    upsertSpotlight({ ...pendingMeta });
-    Object.keys(pendingMeta).forEach((k) => delete pendingMeta[k]);
-    metaTimer = null;
-  }, 1200);
-};
 
 export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
