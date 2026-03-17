@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { useArtistAudio } from "@/components/ArtistAudioProvider";
+import { supabase } from "@/integrations/supabase/client";
 
 /* ── helpers ── */
 const fmt = (s: number) => {
