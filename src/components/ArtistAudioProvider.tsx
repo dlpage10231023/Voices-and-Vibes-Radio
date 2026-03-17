@@ -193,59 +193,23 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     if (audioRef.current) audioRef.current.volume = val / 100;
   }, []);
 
-  /* ── Upload audio to cloud storage + upsert ── */
+  /* ── Load audio for local playback only (no cloud write) ── */
   const loadAudioFile = useCallback((file: File) => {
-    // Local playback immediately
     const url = URL.createObjectURL(file);
     const a = audioRef.current;
     if (a) {
       a.src = url;
       a.load();
       setHasSource(true);
-      const name = file.name.replace(/\.[^/.]+$/, "");
-      setMetaTitle((prev) => prev || name);
     }
-    // IndexedDB cache
     set("vv_last_audio", file).catch(() => {});
-
-    // Cloud upload
-    const ext = file.name.split(".").pop() || "mp3";
-    const path = `artist-spotlight/track.${ext}`;
-    (async () => {
-      const { error: uploadErr } = await supabase.storage
-        .from("day-audio")
-        .upload(path, file, { upsert: true, contentType: file.type });
-      if (uploadErr) {
-        console.error("Audio upload error:", uploadErr);
-        return;
-      }
-      const { data: urlData } = supabase.storage.from("day-audio").getPublicUrl(path);
-      // Append cache-buster so CDN serves the new version
-      const publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
-      await upsertSpotlight({ audio_url: publicUrl, status: "live" });
-    })();
   }, []);
 
-  /* ── Upload image to cloud storage + upsert ── */
+  /* ── Load image for local display only (no cloud write) ── */
   const loadImageFile = useCallback((file: File) => {
     const localUrl = URL.createObjectURL(file);
     setArtSrc(localUrl);
     set("vv_last_image", file).catch(() => {});
-
-    const ext = file.name.split(".").pop() || "jpg";
-    const path = `artist-spotlight/cover.${ext}`;
-    (async () => {
-      const { error: uploadErr } = await supabase.storage
-        .from("album-art")
-        .upload(path, file, { upsert: true, contentType: file.type });
-      if (uploadErr) {
-        console.error("Image upload error:", uploadErr);
-        return;
-      }
-      const { data: urlData } = supabase.storage.from("album-art").getPublicUrl(path);
-      const publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
-      await upsertSpotlight({ image_url: publicUrl });
-    })();
   }, []);
 
   /* ── Metadata setters with debounced cloud sync ── */
