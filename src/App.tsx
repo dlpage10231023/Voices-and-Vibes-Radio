@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,6 +12,11 @@ import DayPage from "./pages/DayPage.tsx";
 import ArtistPlayer from "./pages/ArtistPlayer.tsx";
 import AudioAdmin from "./pages/AudioAdmin.tsx";
 import NotFound from "./pages/NotFound.tsx";
+
+const SplashGate = () => {
+  const seen = localStorage.getItem("vv_intro_seen");
+  return seen ? <Navigate to="/home" replace /> : <Splash />;
+};
 
 const queryClient = new QueryClient();
 
