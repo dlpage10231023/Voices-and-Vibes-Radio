@@ -127,10 +127,14 @@ const ArtistPlayer = () => {
   }, [isPlaying, audioElement, initAnalyser, drawVis, clearCanvas]);
 
   /* ── computed display values ── */
-  const dispTitle = metaTitle || "Upload a track to begin";
-  const dispArtist = metaArtist || "Artist Name";
-  const dispAlbum =
-  (metaAlbum || "Album") + (metaYear ? " · " + metaYear : " · Year");
+  const hasTitle = Boolean(metaTitle?.trim());
+  const hasArtist = Boolean(metaArtist?.trim());
+  const hasAlbumInfo = Boolean(metaAlbum?.trim() || metaYear?.trim());
+  const dispTitle = hasTitle ? metaTitle.trim() : "Not provided";
+  const dispArtist = hasArtist ? metaArtist.trim() : "Not provided";
+  const dispAlbum = hasAlbumInfo
+    ? [metaAlbum?.trim(), metaYear?.trim()].filter(Boolean).join(" · ")
+    : "Not provided";
   const scrollTitle = dispTitle.length > 28;
 
   /* ── drag & drop ── */
@@ -312,15 +316,15 @@ const ArtistPlayer = () => {
               <div className="font-montserrat font-bold text-[10px] tracking-[0.2em] uppercase mb-[0.4rem]" style={{ color: "#009B9B" }}>
                 🎙️ Voices &amp; Vibes Radio · Artist Spotlight
               </div>
-              <div className="text-[1.15rem] font-montserrat font-bold text-white mb-[0.2rem] whitespace-nowrap overflow-hidden">
+              <div className="text-[1.15rem] font-montserrat font-bold mb-[0.2rem] whitespace-nowrap overflow-hidden" style={{ color: hasTitle ? "#ffffff" : "#8ab8b8" }}>
                 <span className="inline-block" style={{ animation: scrollTitle ? "tscroll 14s linear infinite" : "none" }}>
                   {dispTitle}
                 </span>
               </div>
-              <div className="font-montserrat text-[13px] mb-[0.1rem]" style={{ color: "#8ab8b8" }}>
+              <div className="font-montserrat text-[13px] mb-[0.1rem]" style={{ color: hasArtist ? "#8ab8b8" : "rgba(138,184,184,0.6)" }}>
                 {dispArtist}
               </div>
-              <div className="font-montserrat font-light text-[11px] italic" style={{ color: "rgba(138,184,184,0.5)" }}>
+              <div className="font-montserrat font-light text-[11px] italic" style={{ color: hasAlbumInfo ? "rgba(138,184,184,0.5)" : "#8ab8b8" }}>
                 {dispAlbum}
               </div>
               {featuredWeek && (
@@ -418,15 +422,15 @@ const ArtistPlayer = () => {
                 {artSrc ? <img src={artSrc} alt="Artist" className="w-full h-full object-cover" /> : <span className="text-[1.4rem] opacity-60">🎩</span>}
               </div>
               <div className="min-w-0">
-                <div className="font-dancing font-bold text-[1.25rem] leading-tight mb-[2px]" style={{ color: "#E8624A" }}>
-                  {metaArtist || "Artist Name"}
+                <div className="font-dancing font-bold text-[1.25rem] leading-tight mb-[2px]" style={{ color: hasArtist ? "#E8624A" : "#8ab8b8" }}>
+                  {dispArtist}
                 </div>
                 <div className="mb-2" />
                 <div className="flex flex-wrap gap-[5px]">
                   {["Jazz", "Gospel"].map((tag) =>
                   <span key={tag} className="font-montserrat font-bold text-[8px] tracking-[0.12em] uppercase" style={{ padding: "2px 8px", border: "1px solid rgba(0,155,155,0.3)", background: "rgba(0,155,155,0.1)", color: "#009B9B" }}>{tag}</span>
                   )}
-                  <span className="font-montserrat font-bold text-[8px] tracking-[0.12em] uppercase" style={{ padding: "2px 8px", border: "1px solid rgba(232,98,74,0.3)", background: "rgba(232,98,74,0.1)", color: "#E8624A" }}>Soon 2025</span>
+                  <span className="font-montserrat font-bold text-[8px] tracking-[0.12em] uppercase" style={{ padding: "2px 8px", border: hasAlbumInfo ? "1px solid rgba(232,98,74,0.3)" : "1px solid rgba(138,184,184,0.2)", background: hasAlbumInfo ? "rgba(232,98,74,0.1)" : "rgba(138,184,184,0.08)", color: hasAlbumInfo ? "#E8624A" : "#8ab8b8" }}>{dispAlbum}</span>
                 </div>
               </div>
             </div>
