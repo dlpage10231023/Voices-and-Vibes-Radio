@@ -159,14 +159,15 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
       a.src = url;
       a.load();
       setHasSource(true);
-      // Auto-set title from filename if empty
       const name = file.name.replace(/\.[^/.]+$/, "");
       setMetaTitle((prev) => prev || name);
     }
+    set("vv_last_audio", file).catch(() => {});
   }, []);
 
   const loadImageFile = useCallback((file: File) => {
     setArtSrc(URL.createObjectURL(file));
+    set("vv_last_image", file).catch(() => {});
   }, []);
 
   const value: Ctx = {
