@@ -52,26 +52,6 @@ export const useArtistAudio = () => {
   return ctx;
 };
 
-/* ── Helper: upsert a partial update to the single spotlight row ── */
-const upsertSpotlight = async (fields: Record<string, unknown>) => {
-  await supabase
-    .from("artist_spotlight")
-    .upsert({ id: SPOTLIGHT_ID, ...fields }, { onConflict: "id" });
-};
-
-/* ── Helper: debounced metadata sync ── */
-let metaTimer: ReturnType<typeof setTimeout> | null = null;
-const pendingMeta: Record<string, string> = {};
-
-const debouncedMetaSync = (field: string, value: string) => {
-  pendingMeta[field] = value;
-  if (metaTimer) clearTimeout(metaTimer);
-  metaTimer = setTimeout(() => {
-    upsertSpotlight({ ...pendingMeta });
-    Object.keys(pendingMeta).forEach((k) => delete pendingMeta[k]);
-    metaTimer = null;
-  }, 1200);
-};
 
 export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -213,81 +193,26 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     if (audioRef.current) audioRef.current.volume = val / 100;
   }, []);
 
-  /* ── Upload audio to cloud storage + upsert ── */
+  /* ── Load audio for local playback only (no cloud write) ── */
   const loadAudioFile = useCallback((file: File) => {
-    // Local playback immediately
     const url = URL.createObjectURL(file);
     const a = audioRef.current;
     if (a) {
       a.src = url;
       a.load();
       setHasSource(true);
-      const name = file.name.replace(/\.[^/.]+$/, "");
-      setMetaTitle((prev) => prev || name);
     }
-    // IndexedDB cache
     set("vv_last_audio", file).catch(() => {});
-
-    // Cloud upload
-    const ext = file.name.split(".").pop() || "mp3";
-    const path = `artist-spotlight/track.${ext}`;
-    (async () => {
-      const { error: uploadErr } = await supabase.storage
-        .from("day-audio")
-        .upload(path, file, { upsert: true, contentType: file.type });
-      if (uploadErr) {
-        console.error("Audio upload error:", uploadErr);
-        return;
-      }
-      const { data: urlData } = supabase.storage.from("day-audio").getPublicUrl(path);
-      // Append cache-buster so CDN serves the new version
-      const publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
-      await upsertSpotlight({ audio_url: publicUrl, status: "live" });
-    })();
   }, []);
 
-  /* ── Upload image to cloud storage + upsert ── */
+  /* ── Load image for local display only (no cloud write) ── */
   const loadImageFile = useCallback((file: File) => {
     const localUrl = URL.createObjectURL(file);
     setArtSrc(localUrl);
     set("vv_last_image", file).catch(() => {});
-
-    const ext = file.name.split(".").pop() || "jpg";
-    const path = `artist-spotlight/cover.${ext}`;
-    (async () => {
-      const { error: uploadErr } = await supabase.storage
-        .from("album-art")
-        .upload(path, file, { upsert: true, contentType: file.type });
-      if (uploadErr) {
-        console.error("Image upload error:", uploadErr);
-        return;
-      }
-      const { data: urlData } = supabase.storage.from("album-art").getPublicUrl(path);
-      const publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
-      await upsertSpotlight({ image_url: publicUrl });
-    })();
   }, []);
 
-  /* ── Metadata setters with debounced cloud sync ── */
-  const setMetaTitleWrapped = useCallback((v: string) => {
-    setMetaTitle(v);
-    debouncedMetaSync("title", v);
-  }, []);
-
-  const setMetaArtistWrapped = useCallback((v: string) => {
-    setMetaArtist(v);
-    debouncedMetaSync("artist", v);
-  }, []);
-
-  const setMetaAlbumWrapped = useCallback((v: string) => {
-    setMetaAlbum(v);
-    debouncedMetaSync("album", v);
-  }, []);
-
-  const setMetaYearWrapped = useCallback((v: string) => {
-    setMetaYear(v);
-    debouncedMetaSync("year", v);
-  }, []);
+  /* ── Metadata setters — local state only, no DB sync ── */
 
   const value: Ctx = {
     isPlaying, elapsed, duration, progress, volume, isMuted, isLooping, isShuffled,
@@ -295,10 +220,10 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     togglePlay, stopPlay, skipBack, skipFwd, seekTo,
     toggleLoop, toggleShuffle, toggleMute, setVolume,
     loadAudioFile, loadImageFile, setArtSrc,
-    setMetaTitle: setMetaTitleWrapped,
-    setMetaArtist: setMetaArtistWrapped,
-    setMetaAlbum: setMetaAlbumWrapped,
-    setMetaYear: setMetaYearWrapped,
+    setMetaTitle,
+    setMetaArtist,
+    setMetaAlbum,
+    setMetaYear,
     audioElement: audioRef.current,
   };
 

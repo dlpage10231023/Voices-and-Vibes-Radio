@@ -269,9 +269,9 @@ const AdminSpotlight = () => {
                     <div className="flex items-center justify-center" style={{ width: 80, height: 80, background: "#0d1a1a" }}><span className="text-[2rem] opacity-40">🎙️</span></div>
                   )}
                   <div>
-                    <div className="font-dancing font-bold text-[1.4rem]" style={{ color: "#E8624A" }}>{live.artist || "Unknown"}</div>
-                    <div className="font-montserrat font-semibold text-[1rem] text-white">{live.title || "Untitled"}</div>
-                    <div className="font-montserrat font-light text-[12px]" style={{ color: "#8ab8b8" }}>{live.album}{live.year ? ` · ${live.year}` : ""}</div>
+                    <div className="font-dancing font-bold text-[1.4rem]" style={{ color: live.artist ? "#E8624A" : "#8ab8b8" }}>{live.artist || "Not provided"}</div>
+                    <div className="font-montserrat font-semibold text-[1rem]" style={{ color: live.title ? "#fff" : "#8ab8b8" }}>{live.title || "Not provided"}</div>
+                    <div className="font-montserrat font-light text-[12px]" style={{ color: "#8ab8b8" }}>{(live.album || "Not provided")}{live.year ? ` · ${live.year}` : ""}</div>
                     {live.featured_week && <div className="font-montserrat text-[9px] mt-1" style={{ color: "#8ab8b8" }}>{live.featured_week}</div>}
                     <div className="font-montserrat text-[10px] mt-1" style={{ color: "#009B9B" }}>Playing for all visitors</div>
                   </div>
