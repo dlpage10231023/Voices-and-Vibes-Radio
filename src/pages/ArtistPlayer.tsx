@@ -323,6 +323,11 @@ const ArtistPlayer = () => {
               <div className="font-montserrat font-light text-[11px] italic" style={{ color: "rgba(138,184,184,0.5)" }}>
                 {dispAlbum}
               </div>
+              {featuredWeek && (
+                <div className="font-montserrat text-[9px] mt-[2px]" style={{ color: "#8ab8b8" }}>
+                  Featured Week: {featuredWeek}
+                </div>
+              )}
             </div>
 
             {/* ── Progress ── */}
