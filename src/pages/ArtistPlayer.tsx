@@ -422,15 +422,15 @@ const ArtistPlayer = () => {
                 {artSrc ? <img src={artSrc} alt="Artist" className="w-full h-full object-cover" /> : <span className="text-[1.4rem] opacity-60">🎩</span>}
               </div>
               <div className="min-w-0">
-                <div className="font-dancing font-bold text-[1.25rem] leading-tight mb-[2px]" style={{ color: "#E8624A" }}>
-                  {metaArtist || "Artist Name"}
+                <div className="font-dancing font-bold text-[1.25rem] leading-tight mb-[2px]" style={{ color: hasArtist ? "#E8624A" : "#8ab8b8" }}>
+                  {dispArtist}
                 </div>
                 <div className="mb-2" />
                 <div className="flex flex-wrap gap-[5px]">
                   {["Jazz", "Gospel"].map((tag) =>
                   <span key={tag} className="font-montserrat font-bold text-[8px] tracking-[0.12em] uppercase" style={{ padding: "2px 8px", border: "1px solid rgba(0,155,155,0.3)", background: "rgba(0,155,155,0.1)", color: "#009B9B" }}>{tag}</span>
                   )}
-                  <span className="font-montserrat font-bold text-[8px] tracking-[0.12em] uppercase" style={{ padding: "2px 8px", border: "1px solid rgba(232,98,74,0.3)", background: "rgba(232,98,74,0.1)", color: "#E8624A" }}>Soon 2025</span>
+                  <span className="font-montserrat font-bold text-[8px] tracking-[0.12em] uppercase" style={{ padding: "2px 8px", border: hasAlbumInfo ? "1px solid rgba(232,98,74,0.3)" : "1px solid rgba(138,184,184,0.2)", background: hasAlbumInfo ? "rgba(232,98,74,0.1)" : "rgba(138,184,184,0.08)", color: hasAlbumInfo ? "#E8624A" : "#8ab8b8" }}>{dispAlbum}</span>
                 </div>
               </div>
             </div>

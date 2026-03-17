@@ -69,10 +69,10 @@ const ArtistSpotlight = () => {
               {isPlaying ? "Playing Now" : "This Week"}
             </span>
 
-            <h3 className="font-montserrat font-black text-[2rem] text-foreground leading-tight">
+            <h3 className={`font-montserrat font-black text-[2rem] leading-tight ${hasArtist ? "text-foreground" : "text-muted"}`}>
               {displayArtist}
             </h3>
-            <p className="font-dancing font-bold text-[1.6rem] text-secondary leading-tight">
+            <p className={`font-dancing font-bold text-[1.6rem] leading-tight ${hasTitle ? "text-secondary" : "text-muted"}`}>
               {displayTitle}
             </p>
             <p className="font-montserrat font-light text-[13px] text-muted">
