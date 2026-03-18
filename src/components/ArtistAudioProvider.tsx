@@ -219,6 +219,29 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
 
   /* ── Metadata setters — local state only, no DB sync ── */
 
+  /* ── Shared Web Audio API analyser (persists across route changes) ── */
+  const getAnalyser = useCallback((): AnalyserNode | null => {
+    const a = audioRef.current;
+    if (!a) return null;
+    // Only create once per audio element lifetime
+    if (!audioCtxRef.current) {
+      const actx = new AudioContext();
+      const an = actx.createAnalyser();
+      an.fftSize = 128;
+      an.smoothingTimeConstant = 0.82;
+      const src = actx.createMediaElementSource(a);
+      src.connect(an);
+      an.connect(actx.destination);
+      audioCtxRef.current = actx;
+      analyserRef.current = an;
+      sourceRef.current = src;
+    }
+    if (audioCtxRef.current.state === "suspended") {
+      audioCtxRef.current.resume();
+    }
+    return analyserRef.current;
+  }, []);
+
   const value: Ctx = {
     isPlaying, elapsed, duration, progress, volume, isMuted, isLooping, isShuffled,
     metaTitle, metaArtist, metaAlbum, metaYear, artSrc, hasSource,
@@ -230,6 +253,7 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     setMetaAlbum,
     setMetaYear,
     audioElement: audioRef.current,
+    getAnalyser,
   };
 
   return <ArtistAudioCtx.Provider value={value}>{children}</ArtistAudioCtx.Provider>;
