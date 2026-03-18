@@ -40,6 +40,8 @@ export interface ArtistAudioActions {
   setMetaYear: (v: string) => void;
   /** Expose the audio element so the page can hook up a visualiser */
   audioElement: HTMLAudioElement | null;
+  /** Shared analyser node for visualizer — persists across route changes */
+  getAnalyser: () => AnalyserNode | null;
 }
 
 type Ctx = ArtistAudioState & ArtistAudioActions;
