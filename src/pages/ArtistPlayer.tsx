@@ -45,35 +45,18 @@ const ArtistPlayer = () => {
     toggleLoop, toggleShuffle, toggleMute, setVolume,
     loadAudioFile, loadImageFile, setArtSrc,
     setMetaTitle, setMetaArtist, setMetaAlbum, setMetaYear,
-    audioElement
+    audioElement, getAnalyser
   } = ctx;
 
   const audioInputRef = useRef<HTMLInputElement | null>(null);
   const imgInputRef = useRef<HTMLInputElement | null>(null);
 
-  /* ── Visualizer (local to this page) ── */
-  const ctxAudioRef = useRef<AudioContext | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
+  /* ── Visualizer (uses shared analyser from provider) ── */
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animRef = useRef<number>(0);
 
-  const initAnalyser = useCallback(() => {
-    if (ctxAudioRef.current || !audioElement) return;
-    const actx = new AudioContext();
-    const an = actx.createAnalyser();
-    an.fftSize = 128;
-    an.smoothingTimeConstant = 0.82;
-    const src = actx.createMediaElementSource(audioElement);
-    src.connect(an);
-    an.connect(actx.destination);
-    ctxAudioRef.current = actx;
-    analyserRef.current = an;
-    sourceRef.current = src;
-  }, [audioElement]);
-
   const drawVis = useCallback(() => {
-    const an = analyserRef.current;
+    const an = getAnalyser();
     const canvas = canvasRef.current;
     if (!an || !canvas) return;
     const c = canvas.getContext("2d")!;
@@ -104,7 +87,7 @@ const ArtistPlayer = () => {
       }
     };
     draw();
-  }, []);
+  }, [getAnalyser]);
 
   const clearCanvas = useCallback(() => {
     const canvas = canvasRef.current;
@@ -116,15 +99,13 @@ const ArtistPlayer = () => {
   // Start/stop visualizer based on play state
   useEffect(() => {
     if (isPlaying && audioElement) {
-      try {initAnalyser();} catch {}
-      if (ctxAudioRef.current?.state === "suspended") ctxAudioRef.current.resume();
       drawVis();
     } else {
       cancelAnimationFrame(animRef.current);
       clearCanvas();
     }
     return () => cancelAnimationFrame(animRef.current);
-  }, [isPlaying, audioElement, initAnalyser, drawVis, clearCanvas]);
+  }, [isPlaying, audioElement, drawVis, clearCanvas]);
 
   /* ── computed display values ── */
   const hasTitle = Boolean(metaTitle?.trim());
