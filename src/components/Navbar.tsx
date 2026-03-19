@@ -41,10 +41,10 @@ const Navbar = () => {
         ) : (
           <li>
             <Link
-              to="/home#schedule"
+              to="/"
               className="text-[11px] tracking-[0.14em] uppercase text-muted font-medium no-underline hover:text-primary transition-colors"
             >
-              ← Back to Home
+              ← Back to Promo
             </Link>
           </li>
         )}
