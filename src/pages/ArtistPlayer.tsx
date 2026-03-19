@@ -49,7 +49,6 @@ const ArtistPlayer = () => {
     audioElement, getAnalyser
   } = ctx;
 
-  const audioInputRef = useRef<HTMLInputElement | null>(null);
   const imgInputRef = useRef<HTMLInputElement | null>(null);
 
   /* ── Visualizer (uses shared analyser from provider) ── */
@@ -370,27 +369,6 @@ const ArtistPlayer = () => {
               </span>
             </div>
 
-            {/* ── Upload Section ── */}
-            <div className="grid grid-cols-2" style={{ borderTop: "1px solid rgba(0,155,155,0.08)", padding: "1.25rem 1.75rem", gap: "0.75rem" }}>
-              <button
-                className="flex flex-col items-center gap-[0.4rem] cursor-pointer text-center transition-all"
-                style={{ background: "rgba(0,155,155,0.05)", border: "1px dashed rgba(0,155,155,0.25)", padding: "1rem" }}
-                onClick={() => audioInputRef.current?.click()}>
-                
-                <div className="text-[1.4rem]">🎵</div>
-                <div className="font-montserrat font-bold text-[10px] tracking-[0.15em] uppercase" style={{ color: "#009B9B" }}>Upload Track</div>
-                <div className="text-[10px]" style={{ color: "#8ab8b8" }}>MP3, WAV, OGG</div>
-              </button>
-              <button
-                className="flex flex-col items-center gap-[0.4rem] cursor-pointer text-center transition-all"
-                style={{ background: "rgba(232,98,74,0.05)", border: "1px dashed rgba(232,98,74,0.25)", padding: "1rem" }}
-                onClick={() => imgInputRef.current?.click()}>
-                
-                <div className="text-[1.4rem]">🖼️</div>
-                <div className="font-montserrat font-bold text-[10px] tracking-[0.15em] uppercase" style={{ color: "#E8624A" }}>Album Art</div>
-                <div className="text-[10px]" style={{ color: "#8ab8b8" }}>JPG, PNG, WebP</div>
-              </button>
-            </div>
           </div>
         </div>
 
@@ -531,13 +509,6 @@ const ArtistPlayer = () => {
       </div>
 
       {/* Hidden inputs */}
-      <input
-        ref={audioInputRef}
-        id="audioInput"
-        type="file"
-        accept="audio/*"
-        className="hidden"
-        onChange={(e) => e.target.files?.[0] && loadAudioFile(e.target.files[0])} />
       
       <input
         ref={imgInputRef}
