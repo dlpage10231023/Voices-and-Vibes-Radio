@@ -1160,24 +1160,18 @@ export default function Studios() {
                         ? "1px solid rgba(0,155,155,0.3)"
                         : p.btnStyle === "purple"
                         ? "1px solid rgba(136,85,204,0.5)"
-                        : p.btnStyle === "coral"
-                        ? "1px solid rgba(232,98,74,0.5)"
                         : "none",
                     background:
                       p.btnStyle === "solid"
                         ? "#009B9B"
                         : p.btnStyle === "purple"
                         ? "rgba(136,85,204,0.15)"
-                        : p.btnStyle === "coral"
-                        ? "rgba(232,98,74,0.15)"
                         : "transparent",
                     color:
                       p.btnStyle === "solid"
                         ? "#000"
                         : p.btnStyle === "purple"
                         ? "#8855CC"
-                        : p.btnStyle === "coral"
-                        ? "#E8624A"
                         : "#009B9B",
                   }}
                 >
