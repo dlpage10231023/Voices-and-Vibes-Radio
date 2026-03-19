@@ -15,7 +15,7 @@ const CHANNELS = [
 const RecordBar = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [activeChannel, setActiveChannel] = useState(2);
-  const [showChannels, setShowChannels] = useState(false);
+  // showChannels state removed — channels are always visible
   const audioCtxRef = useRef<AudioContext | null>(null);
   const masterGainRef = useRef<GainNode | null>(null);
   const noiseBufferRef = useRef<AudioBuffer | null>(null);
