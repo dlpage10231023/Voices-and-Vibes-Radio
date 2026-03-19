@@ -180,13 +180,13 @@ const ArtistPlayer = () => {
       </div>
 
       {/* ── Two Column Grid ── */}
-      <div className="artist-grid grid grid-cols-1 lg:grid-cols-[480px_1fr] gap-8 px-[5vw] pb-[80px] items-start">
+      <div className="artist-grid grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 px-[5vw] pb-[80px] items-start">
         {/* ===== LEFT COLUMN — Player Card ===== */}
         <div className="flex-col h-full my-0 mx-0 gap-[10px] flex items-center justify-center">
           <div
             className="w-full relative overflow-hidden"
             style={{
-              maxWidth: 520,
+              maxWidth: 860,
               background: "#1a1a1a",
               border: "1px solid rgba(0,155,155,0.2)",
               transition: "border-color .2s, box-shadow .2s"
@@ -213,7 +213,7 @@ const ArtistPlayer = () => {
             {/* ── Album Art Zone ── */}
             <div
               className="w-full relative overflow-hidden flex items-center justify-center"
-              style={{ aspectRatio: "16/9", maxHeight: 340, background: "#0d0d0d" }}>
+              style={{ aspectRatio: "16/9", maxHeight: 520, background: "#0d0d0d" }}>
               
               {artSrc &&
               <img
