@@ -294,19 +294,19 @@ const ArtistPlayer = () => {
             </div>
 
             {/* ── Track Info ── */}
-            <div className="relative" style={{ padding: "1.5rem 1.75rem 1.25rem", borderBottom: "1px solid rgba(0,155,155,0.08)" }}>
-              <div className="font-montserrat font-bold text-[10px] tracking-[0.2em] uppercase mb-[0.4rem]" style={{ color: "#009B9B" }}>
+            <div className="relative text-center" style={{ padding: "1.5rem 1.75rem 1.25rem", borderBottom: "1px solid rgba(0,155,155,0.08)" }}>
+              <div className="font-montserrat font-bold text-[11px] tracking-[0.2em] uppercase mb-[0.5rem]" style={{ color: "#009B9B" }}>
                 🎙️ Voices &amp; Vibes Radio · Artist Spotlight
               </div>
-              <div className="text-[1.15rem] font-montserrat font-bold mb-[0.2rem] whitespace-nowrap overflow-hidden" style={{ color: hasTitle ? "#ffffff" : "#8ab8b8" }}>
+              <div className="text-[1.4rem] font-montserrat font-bold mb-[0.25rem] whitespace-nowrap overflow-hidden" style={{ color: hasTitle ? "#ffffff" : "#8ab8b8" }}>
                 <span className="inline-block" style={{ animation: scrollTitle ? "tscroll 14s linear infinite" : "none" }}>
                   {dispTitle}
                 </span>
               </div>
-              <div className="font-montserrat text-[13px] mb-[0.1rem]" style={{ color: hasArtist ? "#8ab8b8" : "rgba(138,184,184,0.6)" }}>
+              <div className="font-montserrat text-[15px] mb-[0.15rem]" style={{ color: hasArtist ? "#8ab8b8" : "rgba(138,184,184,0.6)" }}>
                 {dispArtist}
               </div>
-              <div className="font-montserrat font-light text-[11px] italic" style={{ color: hasAlbumInfo ? "rgba(138,184,184,0.5)" : "#8ab8b8" }}>
+              <div className="font-montserrat font-light text-[12px] italic" style={{ color: hasAlbumInfo ? "rgba(138,184,184,0.5)" : "#8ab8b8" }}>
                 {dispAlbum}
               </div>
               {featuredWeek && (
