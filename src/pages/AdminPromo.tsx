@@ -219,6 +219,26 @@ const AdminPromo = () => {
       .catch(() => "");
   };
 
+  const downloadPNG = async () => {
+    if (!cardRef.current) return;
+    setDownloading(true);
+    try {
+      const canvas = await html2canvas(cardRef.current, {
+        scale: 2,
+        backgroundColor: "#080c0c",
+        useCORS: true,
+      });
+      const link = document.createElement("a");
+      link.download = `${data.slug || "promo"}-promo.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+      t("✅ PNG downloaded!");
+    } catch {
+      t("❌ PNG export failed");
+    }
+    setDownloading(false);
+  };
+
   const downloadImage = async () => {
     if (!cardRef.current) return;
     setDownloading(true);
@@ -439,14 +459,23 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                 <input ref={audioInputRef} type="file" accept="audio/*" className="hidden" onChange={handleAudio} />
               </div>
 
-              {/* Download */}
+              {/* Download PNG */}
               <button
-                onClick={downloadImage}
+                onClick={downloadPNG}
                 disabled={downloading}
                 className="font-montserrat font-bold text-[11px] tracking-[0.15em] uppercase cursor-pointer disabled:opacity-40 mt-2"
                 style={{ background: "linear-gradient(135deg,#009B9B,#E8624A)", color: "#080c0c", border: "none", padding: "12px", width: "100%" }}
               >
-                {downloading ? "⏳ Generating..." : "📥 Download Card"}
+                {downloading ? "⏳ Generating..." : "📸 Download PNG (for sharing)"}
+              </button>
+              {/* Download HTML */}
+              <button
+                onClick={downloadImage}
+                disabled={downloading}
+                className="font-montserrat font-bold text-[9px] tracking-[0.15em] uppercase cursor-pointer disabled:opacity-40"
+                style={{ background: "rgba(0,155,155,0.1)", border: "1px solid rgba(0,155,155,0.3)", color: "#009B9B", padding: "10px", width: "100%" }}
+              >
+                {downloading ? "⏳ Generating..." : "📥 Download HTML (with audio)"}
               </button>
             </div>
           </div>
@@ -647,6 +676,13 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                   >
                     🎙️ Listen Live
                   </button>
+                </div>
+              </div>
+
+              {/* Site link banner for PNG export */}
+              <div style={{ padding: "0.75rem 1.5rem", background: "linear-gradient(135deg, rgba(0,155,155,0.15), rgba(232,98,74,0.1))", borderTop: "1px solid rgba(0,155,155,0.15)", textAlign: "center" }}>
+                <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", background: "linear-gradient(135deg, #009B9B, #E8624A)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                  🎧 Listen at voicesandvibesradio.com
                 </div>
               </div>
             </div>
