@@ -502,6 +502,7 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
               {/* audio moved outside card */}
               <div style={{ padding: "0 1.5rem 0.5rem" }}>
                 <div
+                  data-promo-progress-track=""
                   style={{ height: 2, background: "rgba(0,155,155,0.1)", position: "relative" as const, overflow: "hidden", marginBottom: "0.35rem", cursor: "pointer" }}
                   onClick={(e) => {
                     if (!audioRef.current || !audioRef.current.duration) return;
@@ -510,11 +511,11 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                     audioRef.current.currentTime = pct * audioRef.current.duration;
                   }}
                 >
-                  <div style={{ height: "100%", background: "linear-gradient(to right,#009B9B,#E8624A)", width: `${progress}%`, transition: "width 0.2s linear" }} />
+                  <div data-promo-progress="" style={{ height: "100%", background: "linear-gradient(to right,#009B9B,#E8624A)", width: `${progress}%`, transition: "width 0.2s linear" }} />
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", fontFamily: "'Share Tech Mono', monospace", fontSize: 9, color: "#5a9090" }}>
-                  <span>{currentTime}</span>
-                  <span>{duration}</span>
+                  <span data-promo-elapsed="">{currentTime}</span>
+                  <span data-promo-duration="">{duration}</span>
                 </div>
               </div>
 
