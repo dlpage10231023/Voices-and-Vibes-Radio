@@ -219,6 +219,26 @@ const AdminPromo = () => {
       .catch(() => "");
   };
 
+  const downloadPNG = async () => {
+    if (!cardRef.current) return;
+    setDownloading(true);
+    try {
+      const canvas = await html2canvas(cardRef.current, {
+        scale: 2,
+        backgroundColor: "#080c0c",
+        useCORS: true,
+      });
+      const link = document.createElement("a");
+      link.download = `${data.slug || "promo"}-promo.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+      t("✅ PNG downloaded!");
+    } catch {
+      t("❌ PNG export failed");
+    }
+    setDownloading(false);
+  };
+
   const downloadImage = async () => {
     if (!cardRef.current) return;
     setDownloading(true);
