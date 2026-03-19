@@ -1,6 +1,7 @@
 import { createContext, useContext, useRef, useState, useCallback, useEffect, ReactNode } from "react";
 import { get, set } from "idb-keyval";
 import { supabase } from "@/integrations/supabase/client";
+import { useAudioPlayer } from "./AudioProvider";
 
 const SPOTLIGHT_ID = "a0000000-0000-0000-0000-000000000001";
 
