@@ -405,11 +405,11 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
               <div>
                 <label className={`block ${label}`} style={{ color: "#009B9B" }}>Image Zoom — {imageZoom}%</label>
                 <div className="flex items-center gap-2">
-                  <span className="font-montserrat text-[9px]" style={{ color: "#5a9090" }}>100</span>
+                  <span className="font-montserrat text-[9px]" style={{ color: "#5a9090" }}>25</span>
                   <input
                     type="range"
-                    min={100}
-                    max={250}
+                    min={25}
+                    max={100}
                     step={5}
                     value={imageZoom}
                     onChange={(e) => setImageZoom(Number(e.target.value))}
