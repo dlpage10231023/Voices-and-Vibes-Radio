@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
+import RecordBar from "@/components/RecordBar";
 import { useArtistAudio } from "@/components/ArtistAudioProvider";
 import { supabase } from "@/integrations/supabase/client";
 
