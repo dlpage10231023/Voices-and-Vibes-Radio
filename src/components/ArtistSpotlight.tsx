@@ -91,7 +91,7 @@ const ArtistSpotlight = () => {
                 }}
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 text-[12px] font-montserrat font-bold tracking-[0.1em] uppercase hover:brightness-110 transition-all no-underline border-none cursor-pointer"
               >
-                {isPlaying ? "⏸ Open Player →" : "▶ Listen Now →"}
+                {isPlaying ? "🎵 Now Playing →" : "▶ Listen Now →"}
               </button>
               <Link
                 to="/artist-player"
