@@ -267,19 +267,32 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
   var statusEl = document.querySelector('[data-promo-status]');
   var eqBars = document.querySelectorAll('[data-promo-eq]');
   var vinyl = document.querySelector('[data-promo-vinyl]');
+  var lines = document.querySelectorAll('[data-promo-line]');
   var playing = false;
   var eqInterval = null;
+  var announced = false;
   function fmt(s){var m=Math.floor(s/60);var sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
   function startEQ(){if(eqInterval)clearInterval(eqInterval);eqInterval=setInterval(function(){eqBars.forEach(function(b){b.style.height=(3+Math.random()*18)+'px';});},80);}
   function stopEQ(){if(eqInterval)clearInterval(eqInterval);eqInterval=null;eqBars.forEach(function(b){b.style.height='4px';});}
   function startSpin(){if(vinyl)vinyl.style.animation='promoSpin 3s linear infinite';}
   function stopSpin(){if(vinyl)vinyl.style.animation='none';}
+  // Hide all non-pause lines initially
+  lines.forEach(function(el){if(el.getAttribute('data-line-type')!=='pause'){el.style.opacity='0';el.style.transform='translateY(8px)';}});
+  function startAnnouncement(){
+    if(announced)return;announced=true;
+    var delay=800;
+    lines.forEach(function(el){
+      var isPause=el.getAttribute('data-line-type')==='pause';
+      setTimeout(function(){el.style.opacity='1';el.style.transform='translateY(0)';},delay);
+      delay+=isPause?600:1800;
+    });
+  }
   audio.addEventListener('loadedmetadata',function(){if(durationEl)durationEl.textContent=fmt(audio.duration);});
   audio.addEventListener('timeupdate',function(){if(!audio.duration)return;var pct=(audio.currentTime/audio.duration)*100;if(progressBar)progressBar.style.width=pct+'%';if(elapsedEl)elapsedEl.textContent=fmt(audio.currentTime);});
   audio.addEventListener('ended',function(){playing=false;if(playBtn){playBtn.textContent='▶';playBtn.style.background='#009B9B';playBtn.style.boxShadow='0 0 20px rgba(0,155,155,0.4)';}if(statusEl)statusEl.textContent='Ready to play';stopEQ();stopSpin();});
   if(playBtn)playBtn.addEventListener('click',function(){
     if(playing){audio.pause();playing=false;playBtn.textContent='▶';playBtn.style.background='#009B9B';playBtn.style.boxShadow='0 0 20px rgba(0,155,155,0.4)';if(statusEl)statusEl.textContent='Ready to play';stopEQ();stopSpin();}
-    else{audio.play();playing=true;playBtn.textContent='⏸';playBtn.style.background='#E8624A';playBtn.style.boxShadow='0 0 20px rgba(232,98,74,0.4)';if(statusEl)statusEl.textContent='● Now Playing';startEQ();startSpin();}
+    else{audio.play();playing=true;playBtn.textContent='⏸';playBtn.style.background='#E8624A';playBtn.style.boxShadow='0 0 20px rgba(232,98,74,0.4)';if(statusEl)statusEl.textContent='● Now Playing';startEQ();startSpin();startAnnouncement();}
   });
   if(progressTrack)progressTrack.addEventListener('click',function(e){if(!audio.duration)return;var rect=progressTrack.getBoundingClientRect();audio.currentTime=(e.clientX-rect.left)/rect.width*audio.duration;});
 })();
@@ -473,11 +486,13 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                 </div>
                 <div style={{ display: "flex", flexDirection: "column" as const, gap: 0 }}>
                   {DEFAULT_LINES.map((line, i) => {
-                    if (line.type === "pause") return <div key={i} style={{ height: "0.5rem", border: "none" }} />;
+                    if (line.type === "pause") return <div key={i} data-promo-line={i} data-line-type="pause" style={{ height: "0.5rem", border: "none" }} />;
                     const visible = visibleLines.has(i);
                     return (
                       <div
                         key={i}
+                        data-promo-line={i}
+                        data-line-type={line.type}
                         style={{
                           fontSize: line.type === "station-name" ? "1.1rem" : line.type === "url" ? 11 : 13,
                           lineHeight: 1.9,
