@@ -46,7 +46,6 @@ const ArtistPlayer = () => {
     nextTrack, prevTrack, trackIndex, trackCount,
     toggleLoop, toggleShuffle, toggleMute, setVolume,
     loadAudioFile, loadImageFile, setArtSrc,
-    setMetaTitle, setMetaArtist, setMetaAlbum, setMetaYear,
     audioElement, getAnalyser
   } = ctx;
 
