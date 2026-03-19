@@ -36,6 +36,7 @@ const App = () => (
               <Route path="/admin/audio" element={<AudioAdmin />} />
               <Route path="/admin/spotlight" element={<AdminSpotlight />} />
               <Route path="/artist-player" element={<ArtistPlayer />} />
+              <Route path="/studios" element={<Studios />} />
               <Route path="/:day" element={<DayPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
