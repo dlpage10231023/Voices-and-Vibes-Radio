@@ -4,6 +4,7 @@ const LISTEN_LIVE_URL = "https://hello.citrus3.com:2020/public/voicesandvibes";
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isHome = location.pathname === "/";
 
   const navLinks = [
