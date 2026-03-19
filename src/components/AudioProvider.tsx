@@ -92,6 +92,11 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
     audio.play().then(() => setIsPlaying(true)).catch(() => {});
   }, [stopAudio]);
 
+  const externalStop = useCallback(() => {
+    stopAudio();
+    setIsPlaying(false);
+  }, [stopAudio]);
+
   const togglePlay = useCallback(() => {
     if (isPlaying) {
       stopAudio();
