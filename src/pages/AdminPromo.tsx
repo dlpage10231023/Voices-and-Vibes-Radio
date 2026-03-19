@@ -62,7 +62,7 @@ const DEFAULT_LINES = [
   { text: "Tony Williams — now featured on", type: "normal" },
   { text: "Voices and Vibes Radio.", type: "station-name" },
   { text: "", type: "pause" },
-  { text: "voicesandvibesradio.com/artists/tony-williams", type: "url" },
+  { text: "voicesandvibesradio.com", type: "url" },
   { text: "", type: "pause" },
   { text: "And that was...", type: "normal" },
   { text: '"Soon."', type: "station-name" },
