@@ -267,6 +267,28 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Fetch live commercials
+  useEffect(() => {
+    const fetchCommercials = async () => {
+      const { data } = await supabase
+        .from("commercials")
+        .select("*")
+        .eq("status", "live")
+        .order("sort_order", { ascending: true });
+      if (data) {
+        const mapped = data.map((d) => ({
+          id: d.id,
+          title: d.title,
+          audio_url: d.audio_url,
+          sort_order: d.sort_order,
+        }));
+        setCommercials(mapped);
+        commercialsRef.current = mapped;
+      }
+    };
+    fetchCommercials();
+  }, []);
+
   const stopPlay = useCallback(() => {
     audioRef.current?.pause();
     setIsPlaying(false);
