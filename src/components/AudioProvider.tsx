@@ -32,6 +32,7 @@ const AudioCtx = createContext<AudioContextType>({
 export const useAudioPlayer = () => useContext(AudioCtx);
 
 export const AudioProvider = ({ children }: { children: ReactNode }) => {
+  const otherStopRef = useRef<(() => void) | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState<DayAudio | null>(null);
   const [tracks, setTracks] = useState<DayAudio[]>([]);
