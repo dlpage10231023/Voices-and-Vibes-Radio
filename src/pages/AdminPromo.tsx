@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
 
@@ -69,8 +69,15 @@ const AdminPromo = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
+  const [audioSrc, setAudioSrc] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState("0:00");
+  const [duration, setDuration] = useState("0:00");
   const cardRef = useRef<HTMLDivElement>(null);
   const imgInputRef = useRef<HTMLInputElement>(null);
+  const audioInputRef = useRef<HTMLInputElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const [data, setData] = useState<PromoData>({
     artistName: "Tony Williams",
@@ -90,6 +97,49 @@ const AdminPromo = () => {
     setImageFile(file);
     setImagePreview(URL.createObjectURL(file));
   };
+
+  const handleAudio = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAudioSrc(URL.createObjectURL(file));
+    if (!data.trackTitle || data.trackTitle === "Soon") {
+      update("trackTitle", file.name.replace(/\.[^/.]+$/, ""));
+    }
+  };
+
+  const fmt = (s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return m + ":" + (sec < 10 ? "0" : "") + sec;
+  };
+
+  const togglePlay = useCallback(() => {
+    if (!audioRef.current || !audioSrc) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  }, [isPlaying, audioSrc]);
+
+  useEffect(() => {
+    const a = audioRef.current;
+    if (!a) return;
+    const onTime = () => {
+      if (a.duration) {
+        setProgress((a.currentTime / a.duration) * 100);
+        setCurrentTime(fmt(a.currentTime));
+      }
+    };
+    const onMeta = () => setDuration(fmt(a.duration));
+    const onEnd = () => { setIsPlaying(false); setProgress(0); setCurrentTime("0:00"); };
+    a.addEventListener("timeupdate", onTime);
+    a.addEventListener("loadedmetadata", onMeta);
+    a.addEventListener("ended", onEnd);
+    return () => { a.removeEventListener("timeupdate", onTime); a.removeEventListener("loadedmetadata", onMeta); a.removeEventListener("ended", onEnd); };
+  }, [audioSrc]);
 
   const processedLines = data.announcementLines
     .split("\n")
@@ -187,6 +237,19 @@ const AdminPromo = () => {
                 </span>
               </button>
               <input ref={imgInputRef} type="file" accept="image/*" className="hidden" onChange={handleImage} />
+            </div>
+
+            {/* Audio upload */}
+            <div className="mb-3">
+              <label className={`block ${label}`} style={{ color: "#009B9B" }}>Artist Track (Audio)</label>
+              <button onClick={() => audioInputRef.current?.click()} className="flex items-center gap-2 cursor-pointer" style={{ background: "rgba(0,155,155,0.05)", border: `1px dashed ${audioSrc ? "#22c55e" : "rgba(0,155,155,0.25)"}`, padding: "0.75rem 1rem", width: "100%" }}>
+                <span className="text-[1.2rem]">🎵</span>
+                <span className="font-montserrat font-bold text-[10px] tracking-[0.15em] uppercase" style={{ color: audioSrc ? "#22c55e" : "#009B9B" }}>
+                  {audioSrc ? "✓ Track Ready" : "Upload Audio Track"}
+                </span>
+                <span className="text-[10px] ml-auto" style={{ color: "#5a9090" }}>MP3, WAV, OGG</span>
+              </button>
+              <input ref={audioInputRef} type="file" accept="audio/*" className="hidden" onChange={handleAudio} />
             </div>
 
             {/* Announcement text */}
@@ -326,6 +389,38 @@ const AdminPromo = () => {
                     );
                   })}
                   <div style={{ clear: "both" as const }} />
+                </div>
+              </div>
+
+              {/* Audio player */}
+              {audioSrc && <audio ref={audioRef} src={audioSrc} preload="auto" />}
+              <div style={{ padding: "0 1.5rem 0.5rem" }}>
+                <div style={{ height: 2, background: "rgba(0,155,155,0.1)", position: "relative" as const, overflow: "hidden", marginBottom: "0.35rem", cursor: "pointer" }}
+                  onClick={(e) => {
+                    if (!audioRef.current) return;
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const pct = (e.clientX - rect.left) / rect.width;
+                    audioRef.current.currentTime = pct * audioRef.current.duration;
+                  }}
+                >
+                  <div style={{ height: "100%", background: "linear-gradient(to right,#009B9B,#E8624A)", width: `${progress}%`, transition: "width 0.2s linear" }} />
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontFamily: "'Share Tech Mono', monospace", fontSize: 9, color: "#5a9090" }}>
+                  <span>{currentTime}</span>
+                  <span>{duration}</span>
+                </div>
+              </div>
+
+              {/* Controls */}
+              <div style={{ padding: "1rem 1.5rem 1.25rem", borderTop: "1px solid rgba(0,155,155,0.12)", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                <button onClick={togglePlay} style={{ width: 48, height: 48, borderRadius: "50%", background: isPlaying ? "#E8624A" : "#009B9B", border: "none", cursor: audioSrc ? "pointer" : "default", fontSize: "1.1rem", color: "#080c0c", boxShadow: isPlaying ? "0 0 20px rgba(232,98,74,0.4)" : "0 0 20px rgba(0,155,155,0.4)", transition: "all 0.2s", flexShrink: 0, opacity: audioSrc ? 1 : 0.4 }}>
+                  {isPlaying ? "⏸" : "▶"}
+                </button>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" as const, color: "#5a9090", marginBottom: 2 }}>
+                    {isPlaying ? "● Now Playing" : audioSrc ? "Ready to play" : "No audio loaded"}
+                  </div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#e8f5f5" }}>{data.trackTitle} — {data.artistName}</div>
                 </div>
               </div>
 
