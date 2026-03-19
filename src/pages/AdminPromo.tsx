@@ -610,6 +610,17 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
       <style>{`
         @keyframes promoSpin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
         @keyframes promoBlink { 0%,100% { opacity: 1 } 50% { opacity: 0.1 } }
+        @media (max-width: 520px) {
+          [data-promo-float] {
+            float: none !important;
+            margin: 0 auto 1.5rem auto !important;
+            width: 180px !important;
+          }
+          [data-promo-float] > div:nth-child(2) {
+            width: 180px !important;
+            height: 180px !important;
+          }
+        }
       `}</style>
     </div>
   );
