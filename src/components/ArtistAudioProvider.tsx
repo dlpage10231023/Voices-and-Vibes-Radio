@@ -1,6 +1,7 @@
 import { createContext, useContext, useRef, useState, useCallback, useEffect, ReactNode } from "react";
 import { get, set } from "idb-keyval";
 import { supabase } from "@/integrations/supabase/client";
+import { useAudioPlayer } from "./AudioProvider";
 
 const SPOTLIGHT_ID = "a0000000-0000-0000-0000-000000000001";
 
@@ -56,6 +57,7 @@ export const useArtistAudio = () => {
 
 
 export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
+  const dayAudio = useAudioPlayer();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -151,16 +153,23 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     setIsPlaying(false);
   }, []);
 
+  // Register artist stop with day audio so day audio can pause artist when it starts
+  useEffect(() => {
+    dayAudio.registerOtherStop(stopPlay);
+  }, [dayAudio, stopPlay]);
+
   const togglePlay = useCallback(async () => {
     const a = audioRef.current;
     if (!a || !a.src) return;
     if (isPlaying) {
       stopPlay();
     } else {
+      // Stop day/radio audio before starting artist audio
+      dayAudio.stopPlay();
       await a.play().catch(() => {});
       setIsPlaying(true);
     }
-  }, [isPlaying, stopPlay]);
+  }, [isPlaying, stopPlay, dayAudio]);
 
   const skipBack = useCallback(() => {
     const a = audioRef.current;

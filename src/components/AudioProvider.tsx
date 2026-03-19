@@ -11,23 +11,28 @@ function getTodaySlug() {
 interface AudioContextType {
   isPlaying: boolean;
   togglePlay: () => void;
+  stopPlay: () => void;
   currentTrack: DayAudio | null;
   hasTracks: boolean;
-  /** Day pages call this to override the active day slug */
   setDayOverride: (slug: string | null) => void;
+  /** Called by ArtistAudioProvider to register its stop function */
+  registerOtherStop: (fn: () => void) => void;
 }
 
 const AudioCtx = createContext<AudioContextType>({
   isPlaying: false,
   togglePlay: () => {},
+  stopPlay: () => {},
   currentTrack: null,
   hasTracks: false,
   setDayOverride: () => {},
+  registerOtherStop: () => {},
 });
 
 export const useAudioPlayer = () => useContext(AudioCtx);
 
 export const AudioProvider = ({ children }: { children: ReactNode }) => {
+  const otherStopRef = useRef<(() => void) | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState<DayAudio | null>(null);
   const [tracks, setTracks] = useState<DayAudio[]>([]);
@@ -90,11 +95,22 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
     audio.play().then(() => setIsPlaying(true)).catch(() => {});
   }, [stopAudio]);
 
+  const externalStop = useCallback(() => {
+    stopAudio();
+    setIsPlaying(false);
+  }, [stopAudio]);
+
+  const registerOtherStop = useCallback((fn: () => void) => {
+    otherStopRef.current = fn;
+  }, []);
+
   const togglePlay = useCallback(() => {
     if (isPlaying) {
       stopAudio();
       setIsPlaying(false);
     } else {
+      // Stop artist audio before starting day audio
+      otherStopRef.current?.();
       playTrackAtIndex(indexRef.current);
     }
   }, [isPlaying, playTrackAtIndex, stopAudio]);
@@ -103,9 +119,11 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
     <AudioCtx.Provider value={{
       isPlaying,
       togglePlay,
+      stopPlay: externalStop,
       currentTrack,
       hasTracks: tracks.length > 0,
       setDayOverride,
+      registerOtherStop,
     }}>
       {children}
     </AudioCtx.Provider>
