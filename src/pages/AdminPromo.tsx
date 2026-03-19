@@ -400,6 +400,7 @@ const AdminPromo = () => {
                       </div>
                     );
                   })}
+                  <div style={{ clear: "both" as const }} />
                 </div>
               </div>
 
