@@ -421,7 +421,7 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
 
               {/* ARTIST ROW */}
               <div style={{ padding: "1.5rem", borderBottom: "1px solid rgba(0,155,155,0.12)", display: "flex", alignItems: "center", gap: "1.25rem" }}>
-                <div style={{ width: 64, height: 64, borderRadius: "50%", background: "linear-gradient(135deg,#009B9B,#E8624A)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 0 20px rgba(0,155,155,0.3)", overflow: "hidden", animation: isPlaying ? "promoSpin 3s linear infinite" : undefined }}>
+                <div data-promo-vinyl="" style={{ width: 64, height: 64, borderRadius: "50%", background: "linear-gradient(135deg,#009B9B,#E8624A)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 0 20px rgba(0,155,155,0.3)", overflow: "hidden", animation: isPlaying ? "promoSpin 3s linear infinite" : undefined }}>
                   <img src={voicesLogo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 </div>
                 <div>
