@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import vinylRecordImg from "@/assets/vinyl-record-new.jpg";
 
 const SCENE_DURATIONS = [4000, 5500, 5500, 5000, 6500, 5500, 5500, 7000];
 const TOTAL_SCENES = 8;
@@ -557,10 +558,54 @@ const Splash = () => {
           <Scanlines />
           <Vignette />
           <SoundBars bars={soundBarsS8} />
-          <div className="splash-scene-center">
-            <PulseRings style={{ position: "relative", margin: "0 auto 2rem" }}>
-              <div className="splash-mic-icon" style={{ position: "absolute" }}>🎙️</div>
-            </PulseRings>
+
+          {/* Spinning vinyl record background */}
+          <img
+            src={vinylRecordImg}
+            alt="Vinyl record"
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "min(90vw, 90vh)",
+              height: "min(90vw, 90vh)",
+              borderRadius: "50%",
+              objectFit: "cover",
+              zIndex: 0,
+              filter: "brightness(0.45)",
+              animation: musicPlaying ? "vinylSpin 12s linear infinite" : "none",
+            }}
+          />
+
+          {/* Dark radial overlay */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "radial-gradient(ellipse 70% 70% at 50% 50%, rgba(8,12,12,0.5) 0%, rgba(8,12,12,0.75) 55%, rgba(8,12,12,0.92) 100%)",
+              pointerEvents: "none",
+              zIndex: 1,
+            }}
+          />
+
+          {/* Center needle dot */}
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: 16,
+              height: 16,
+              borderRadius: "50%",
+              background: "#009B9B",
+              boxShadow: "0 0 14px #009B9B, 0 0 28px rgba(0,155,155,0.4)",
+              zIndex: 3,
+            }}
+          />
+
+          <div className="splash-scene-center" style={{ zIndex: 10 }}>
             <div className={`splash-mono-title splash-finale-title ${ac("splash-anim-fadeup splash-d2")}`}>Voices & <span className="splash-coral">Vibes</span></div>
             <div className={`splash-mono-title splash-finale-title ${ac("splash-anim-fadeup splash-d3")}`} style={{ fontSize: "clamp(1rem,3vw,2.2rem)", color: "#009B9B", letterSpacing: "0.2em" }}>RADIO</div>
             <DividerLine className={ac("splash-anim-fadein splash-d4")} />
@@ -709,6 +754,7 @@ const splashCSS = `
 .splash-bar-t { background: linear-gradient(to top, #007A7A, #00C4C4); }
 .splash-bar-c { background: linear-gradient(to top, #c04030, #F07A62); }
 @keyframes splashBarAnim { 0% { height: 8px } 100% { height: 55px } }
+@keyframes vinylSpin { from { transform: translate(-50%, -50%) rotate(0deg) } to { transform: translate(-50%, -50%) rotate(360deg) } }
 
 /* Text animations */
 @keyframes splashFadeUp { from { opacity: 0; transform: translateY(30px) } to { opacity: 1; transform: translateY(0) } }
