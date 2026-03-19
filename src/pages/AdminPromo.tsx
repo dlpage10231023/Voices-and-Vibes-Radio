@@ -188,17 +188,32 @@ const AdminPromo = () => {
     if (!cardRef.current) return;
     setDownloading(true);
     try {
-      const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: "#080c0c",
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      });
+      const cardHtml = cardRef.current.outerHTML;
+      const fullHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${data.artistName} — New Artist Announcement · Voices & Vibes Radio</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@300;400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;min-height:100vh;background:#080c0c;color:#e8f5f5;font-family:'Montserrat',sans-serif;display:flex;align-items:center;justify-content:center;padding:2rem}
+@keyframes promoSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes promoBlink{0%,100%{opacity:1}50%{opacity:0.1}}
+</style>
+</head>
+<body>
+${cardHtml}
+</body>
+</html>`;
+      const blob = new Blob([fullHtml], { type: "text/html" });
       const link = document.createElement("a");
-      link.download = `${data.slug || "promo"}-card.png`;
-      link.href = canvas.toDataURL("image/png");
+      link.download = `${data.slug || "promo"}-card.html`;
+      link.href = URL.createObjectURL(blob);
       link.click();
-      t("✅ Image downloaded!");
+      URL.revokeObjectURL(link.href);
+      t("✅ HTML downloaded!");
     } catch {
       t("❌ Download failed");
     }
