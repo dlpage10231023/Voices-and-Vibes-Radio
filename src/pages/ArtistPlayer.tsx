@@ -354,8 +354,8 @@ const ArtistPlayer = () => {
 
             {/* ── Controls ── */}
             <div className="flex items-center justify-center" style={{ padding: "0.75rem 1.75rem 1rem", gap: "1.25rem" }}>
-              <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: isShuffled ? "#009B9B" : "#8ab8b8" }} onClick={toggleShuffle} title="Shuffle">🔀</button>
-              <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: trackCount > 1 ? "#8ab8b8" : "#8ab8b840" }} onClick={prevTrack} title="Previous track">⏮</button>
+              <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: isShuffled ? "#009B9B" : "#8ab8b8", opacity: isPlayingCommercial ? 0.3 : 1, pointerEvents: isPlayingCommercial ? "none" : "auto" }} onClick={toggleShuffle} title="Shuffle">🔀</button>
+              <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: trackCount > 1 && !isPlayingCommercial ? "#8ab8b8" : "#8ab8b840", pointerEvents: isPlayingCommercial ? "none" : "auto" }} onClick={prevTrack} title="Previous track">⏮</button>
               <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: "#8ab8b8" }} onClick={skipBack} title="Back 10s">⏪</button>
               <button
                 className="border-none cursor-pointer flex items-center justify-center text-[1.5rem] transition-all"
@@ -370,8 +370,8 @@ const ArtistPlayer = () => {
                 {isPlaying ? "⏸" : "▶"}
               </button>
               <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: "#8ab8b8" }} onClick={skipFwd} title="Forward 10s">⏩</button>
-              <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: trackCount > 1 ? "#8ab8b8" : "#8ab8b840" }} onClick={nextTrack} title="Next track">⏭</button>
-              <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: isLooping ? "#009B9B" : "#8ab8b8" }} onClick={toggleLoop} title="Loop">🔁</button>
+              <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: trackCount > 1 && !isPlayingCommercial ? "#8ab8b8" : "#8ab8b840", pointerEvents: isPlayingCommercial ? "none" : "auto" }} onClick={nextTrack} title="Next track">⏭</button>
+              <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: isLooping ? "#009B9B" : "#8ab8b8", opacity: isPlayingCommercial ? 0.3 : 1, pointerEvents: isPlayingCommercial ? "none" : "auto" }} onClick={toggleLoop} title="Loop">🔁</button>
             </div>
             {/* Track counter */}
             {trackCount > 1 && (
