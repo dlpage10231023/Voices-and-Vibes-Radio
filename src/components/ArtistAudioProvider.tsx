@@ -153,6 +153,11 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     setIsPlaying(false);
   }, []);
 
+  // Register artist stop with day audio so day audio can pause artist when it starts
+  useEffect(() => {
+    dayAudio.registerOtherStop(stopPlay);
+  }, [dayAudio, stopPlay]);
+
   const togglePlay = useCallback(async () => {
     const a = audioRef.current;
     if (!a || !a.src) return;
