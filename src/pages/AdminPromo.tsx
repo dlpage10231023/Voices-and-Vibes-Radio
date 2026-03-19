@@ -450,7 +450,7 @@ ${cardHtml}
               </div>
 
               {/* PROGRESS */}
-              {audioSrc && <audio ref={audioRef} src={audioSrc} preload="auto" />}
+              {/* audio moved outside card */}
               <div style={{ padding: "0 1.5rem 0.5rem" }}>
                 <div
                   style={{ height: 2, background: "rgba(0,155,155,0.1)", position: "relative" as const, overflow: "hidden", marginBottom: "0.35rem", cursor: "pointer" }}
