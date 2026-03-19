@@ -12,6 +12,7 @@ import DayPage from "./pages/DayPage.tsx";
 import ArtistPlayer from "./pages/ArtistPlayer.tsx";
 import AudioAdmin from "./pages/AudioAdmin.tsx";
 import AdminSpotlight from "./pages/AdminSpotlight.tsx";
+import AdminPromo from "./pages/AdminPromo.tsx";
 import Studios from "./pages/Studios.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
