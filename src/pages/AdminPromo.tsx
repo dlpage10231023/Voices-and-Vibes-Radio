@@ -416,7 +416,7 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                     className="w-full"
                     style={{ accentColor: "#E8624A" }}
                   />
-                  <span className="font-montserrat text-[9px]" style={{ color: "#5a9090" }}>250</span>
+                  <span className="font-montserrat text-[9px]" style={{ color: "#5a9090" }}>100</span>
                 </div>
               </div>
 
