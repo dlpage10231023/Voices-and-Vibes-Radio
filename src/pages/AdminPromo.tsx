@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
+import voicesLogo from "@/assets/voices-logo.jpg";
 
 const ADMIN_PW = import.meta.env.VITE_ADMIN_PASSWORD || "";
 
@@ -24,49 +25,51 @@ const PasswordGate = ({ onAuth }: { onAuth: () => void }) => {
     if (pw === ADMIN_PW) { sessionStorage.setItem("vv_admin", "1"); onAuth(); } else setErr(true);
   };
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: "#0a0a0a" }}>
+    <div className="min-h-screen flex items-center justify-center" style={{ background: "#080c0c" }}>
       <div style={{ background: "#1a1a1a", border: "1px solid rgba(0,155,155,0.3)", padding: "2rem", maxWidth: 360, width: "100%" }}>
         <div className="font-montserrat font-bold text-[11px] tracking-[0.2em] uppercase mb-4" style={{ color: "#009B9B" }}>🔒 Admin Access</div>
         <input type="password" value={pw} onChange={(e) => { setPw(e.target.value); setErr(false); }} onKeyDown={(e) => e.key === "Enter" && submit()} placeholder="Enter password" className="w-full font-montserrat text-[12px] text-white outline-none mb-3" style={{ background: "rgba(0,155,155,0.05)", border: `1px solid ${err ? "rgba(232,98,74,0.6)" : "rgba(0,155,155,0.2)"}`, padding: "10px 12px" }} />
         {err && <div className="font-montserrat text-[10px] mb-2" style={{ color: "#E8624A" }}>Wrong password</div>}
-        <button onClick={submit} className="w-full font-montserrat font-bold text-[11px] tracking-[0.15em] uppercase cursor-pointer" style={{ background: "#009B9B", color: "#0a0a0a", border: "none", padding: "10px" }}>Enter</button>
+        <button onClick={submit} className="w-full font-montserrat font-bold text-[11px] tracking-[0.15em] uppercase cursor-pointer" style={{ background: "#009B9B", color: "#080c0c", border: "none", padding: "10px" }}>Enter</button>
       </div>
     </div>
   );
 };
 
-const DEFAULT_LINES = [
-  "You're listening to Voices and Vibes Radio —",
-  "where healing meets music.",
-  "",
-  "We're excited to welcome a new artist",
-  "to the platform —",
-  "",
-  "{ARTIST_NAME}.",
-  "",
-  'His track "{TRACK}" is that smooth, soulful',
-  "808 energy that hits you right in the spirit.",
-  "Jazz roots. Healing heart. Houston vibes.",
-  "",
-  "{ARTIST_NAME} — now featured on",
-  "Voices and Vibes Radio.",
-  "",
-  "voicesandvibesradio.com/artists/{SLUG}",
-];
-
 interface PromoData {
   artistName: string;
   trackTitle: string;
+  trackSubtitle: string;
   genres: string;
   location: string;
   slug: string;
-  announcementLines: string;
-  artistEmoji: string;
+  announcementLines: string[];
 }
+
+const DEFAULT_LINES = [
+  { text: "You're listening to Voices and Vibes Radio —", type: "normal" },
+  { text: "where healing meets music.", type: "normal" },
+  { text: "", type: "pause" },
+  { text: "We're excited to welcome a new artist", type: "normal" },
+  { text: "to the platform —", type: "normal" },
+  { text: "", type: "pause" },
+  { text: "Tony Williams.", type: "station-name" },
+  { text: "", type: "pause" },
+  { text: 'His track "Soon" is that smooth, soulful', type: "normal" },
+  { text: "808 energy that hits you right in the spirit.", type: "normal" },
+  { text: "Jazz roots. Healing heart. Houston vibes.", type: "normal" },
+  { text: "", type: "pause" },
+  { text: "Tony Williams — now featured on", type: "normal" },
+  { text: "Voices and Vibes Radio.", type: "station-name" },
+  { text: "", type: "pause" },
+  { text: "voicesandvibesradio.com/artists/tony-williams", type: "url" },
+  { text: "", type: "pause" },
+  { text: "And that was...", type: "normal" },
+  { text: '"Soon."', type: "station-name" },
+];
 
 const AdminPromo = () => {
   const [authed, setAuthed] = useState(sessionStorage.getItem("vv_admin") === "1");
-  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
@@ -74,19 +77,24 @@ const AdminPromo = () => {
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState("0:00");
   const [duration, setDuration] = useState("0:00");
+  const [visibleLines, setVisibleLines] = useState<Set<number>>(new Set());
+  const [announceDone, setAnnounceDone] = useState(false);
+  const [eqHeights, setEqHeights] = useState<number[]>([4, 4, 4, 4, 4, 4, 4, 4]);
   const cardRef = useRef<HTMLDivElement>(null);
   const imgInputRef = useRef<HTMLInputElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const eqIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lineTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const [data, setData] = useState<PromoData>({
     artistName: "Tony Williams",
     trackTitle: "Soon",
-    genres: "Jazz, Gospel, 808 Soul",
+    trackSubtitle: "808 Session",
+    genres: "Jazz,Gospel,808 Soul",
     location: "Houston, TX",
     slug: "tony-williams",
-    announcementLines: DEFAULT_LINES.join("\n"),
-    artistEmoji: "🎸",
+    announcementLines: [],
   });
 
   const update = (key: keyof PromoData, val: string) => setData((p) => ({ ...p, [key]: val }));
@@ -94,7 +102,6 @@ const AdminPromo = () => {
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setImageFile(file);
     setImagePreview(URL.createObjectURL(file));
   };
 
@@ -102,9 +109,6 @@ const AdminPromo = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     setAudioSrc(URL.createObjectURL(file));
-    if (!data.trackTitle || data.trackTitle === "Soon") {
-      update("trackTitle", file.name.replace(/\.[^/.]+$/, ""));
-    }
   };
 
   const fmt = (s: number) => {
@@ -113,16 +117,48 @@ const AdminPromo = () => {
     return m + ":" + (sec < 10 ? "0" : "") + sec;
   };
 
+  const startEQ = useCallback(() => {
+    if (eqIntervalRef.current) clearInterval(eqIntervalRef.current);
+    eqIntervalRef.current = setInterval(() => {
+      setEqHeights(Array.from({ length: 8 }, () => 3 + Math.random() * 18));
+    }, 80);
+  }, []);
+
+  const stopEQ = useCallback(() => {
+    if (eqIntervalRef.current) clearInterval(eqIntervalRef.current);
+    eqIntervalRef.current = null;
+    setEqHeights([4, 4, 4, 4, 4, 4, 4, 4]);
+  }, []);
+
+  const startAnnouncement = useCallback(() => {
+    lineTimeoutsRef.current.forEach((t) => clearTimeout(t));
+    lineTimeoutsRef.current = [];
+    setVisibleLines(new Set());
+    let delay = 800;
+    DEFAULT_LINES.forEach((line, i) => {
+      const isPause = line.type === "pause";
+      const timeout = setTimeout(() => {
+        setVisibleLines((prev) => new Set(prev).add(i));
+      }, delay);
+      lineTimeoutsRef.current.push(timeout);
+      delay += isPause ? 600 : 1800;
+    });
+    setAnnounceDone(true);
+  }, []);
+
   const togglePlay = useCallback(() => {
     if (!audioRef.current || !audioSrc) return;
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
+      stopEQ();
     } else {
       audioRef.current.play();
       setIsPlaying(true);
+      startEQ();
+      if (!announceDone) startAnnouncement();
     }
-  }, [isPlaying, audioSrc]);
+  }, [isPlaying, audioSrc, startEQ, stopEQ, announceDone, startAnnouncement]);
 
   useEffect(() => {
     const a = audioRef.current;
@@ -134,23 +170,19 @@ const AdminPromo = () => {
       }
     };
     const onMeta = () => setDuration(fmt(a.duration));
-    const onEnd = () => { setIsPlaying(false); setProgress(0); setCurrentTime("0:00"); };
+    const onEnd = () => { setIsPlaying(false); setProgress(0); setCurrentTime("0:00"); stopEQ(); };
     a.addEventListener("timeupdate", onTime);
     a.addEventListener("loadedmetadata", onMeta);
     a.addEventListener("ended", onEnd);
     return () => { a.removeEventListener("timeupdate", onTime); a.removeEventListener("loadedmetadata", onMeta); a.removeEventListener("ended", onEnd); };
-  }, [audioSrc]);
+  }, [audioSrc, stopEQ]);
 
-  const processedLines = data.announcementLines
-    .split("\n")
-    .map((line) =>
-      line
-        .replace(/\{ARTIST_NAME\}/g, data.artistName)
-        .replace(/\{TRACK\}/g, data.trackTitle)
-        .replace(/\{SLUG\}/g, data.slug)
-    );
-
-  const genreTags = data.genres.split(",").map((g) => g.trim()).filter(Boolean);
+  useEffect(() => {
+    return () => {
+      if (eqIntervalRef.current) clearInterval(eqIntervalRef.current);
+      lineTimeoutsRef.current.forEach((t) => clearTimeout(t));
+    };
+  }, []);
 
   const downloadImage = async () => {
     if (!cardRef.current) return;
@@ -181,223 +213,187 @@ const AdminPromo = () => {
     border: "1px solid rgba(0,155,155,0.2)",
     padding: "8px 10px",
   };
-  const tagColors = ["#009B9B", "#E8624A", "#D4A830", "#009B9B"];
+
+  const genreTags = data.genres.split(",").map((g) => g.trim()).filter(Boolean);
+  const tagStyles = [
+    { bg: "rgba(0,155,155,0.1)", border: "rgba(0,155,155,0.25)", color: "#009B9B" },
+    { bg: "rgba(232,98,74,0.1)", border: "rgba(232,98,74,0.25)", color: "#E8624A" },
+    { bg: "rgba(212,168,48,0.1)", border: "rgba(212,168,48,0.25)", color: "#D4A830" },
+    { bg: "rgba(0,155,155,0.1)", border: "rgba(0,155,155,0.25)", color: "#009B9B" },
+  ];
 
   return (
-    <div className="min-h-screen" style={{ background: "#0a0a0a", padding: "2rem 5vw" }}>
-      <div className="font-dancing font-bold text-[1.6rem] mb-1" style={{ background: "linear-gradient(135deg,#009B9B,#E8624A)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-        Voices & Vibes Radio
+    <div className="min-h-screen" style={{ background: "#080c0c" }}>
+      {/* ══════════ SPINNING BG RECORD ══════════ */}
+      <div style={{ position: "fixed", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none", zIndex: 0 }}>
+        <img
+          src={voicesLogo}
+          alt=""
+          style={{
+            width: "min(100vw,100vh)",
+            height: "min(100vw,100vh)",
+            borderRadius: "50%",
+            opacity: 0.06,
+            animation: isPlaying ? "promoSpin 20s linear infinite" : undefined,
+          }}
+        />
       </div>
-      <div className="font-montserrat font-bold text-[11px] tracking-[0.2em] uppercase mb-6" style={{ color: "#009B9B" }}>Promo Card Generator</div>
+      <div style={{ position: "fixed", inset: 0, zIndex: 1, pointerEvents: "none", background: "radial-gradient(ellipse 80% 80% at 50% 50%, rgba(8,12,12,0.6) 0%, rgba(8,12,12,0.85) 60%, rgba(8,12,12,0.97) 100%)" }} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* ══════════ FORM ══════════ */}
-        <div className="flex flex-col gap-4">
-          <div style={{ background: "#1a1a1a", border: "1px solid rgba(0,155,155,0.3)", padding: "1.5rem" }}>
-            <div className="font-montserrat font-bold text-[11px] tracking-[0.2em] uppercase mb-4" style={{ color: "#009B9B" }}>Artist Details</div>
+      <div style={{ position: "relative", zIndex: 10, display: "flex", gap: "2rem", padding: "2rem 5vw", minHeight: "100vh" }}>
+        {/* ══════════ LEFT: FORM ══════════ */}
+        <div style={{ width: 340, flexShrink: 0 }}>
+          <div style={{ background: "#131e1e", border: "1px solid rgba(0,155,155,0.3)", padding: "1.5rem", position: "sticky", top: "2rem" }}>
+            <div className="font-montserrat font-bold text-[11px] tracking-[0.2em] uppercase mb-4" style={{ color: "#009B9B" }}>⚙️ Promo Editor</div>
 
-            <div className="grid grid-cols-2 gap-3 mb-3">
-              <div>
-                <label className={`block ${label}`} style={{ color: "#009B9B" }}>Artist Name</label>
-                <input type="text" value={data.artistName} onChange={(e) => update("artistName", e.target.value)} className="w-full font-montserrat text-[11px] text-white outline-none" style={inputStyle} />
-              </div>
-              <div>
-                <label className={`block ${label}`} style={{ color: "#009B9B" }}>Track Title</label>
-                <input type="text" value={data.trackTitle} onChange={(e) => update("trackTitle", e.target.value)} className="w-full font-montserrat text-[11px] text-white outline-none" style={inputStyle} />
-              </div>
-              <div>
-                <label className={`block ${label}`} style={{ color: "#009B9B" }}>Genres (comma-separated)</label>
-                <input type="text" value={data.genres} onChange={(e) => update("genres", e.target.value)} className="w-full font-montserrat text-[11px] text-white outline-none" style={inputStyle} />
-              </div>
-              <div>
-                <label className={`block ${label}`} style={{ color: "#009B9B" }}>Location</label>
-                <input type="text" value={data.location} onChange={(e) => update("location", e.target.value)} className="w-full font-montserrat text-[11px] text-white outline-none" style={inputStyle} />
-              </div>
-              <div>
-                <label className={`block ${label}`} style={{ color: "#009B9B" }}>URL Slug</label>
-                <input type="text" value={data.slug} onChange={(e) => update("slug", e.target.value)} className="w-full font-montserrat text-[11px] text-white outline-none" style={inputStyle} />
-              </div>
-              <div>
-                <label className={`block ${label}`} style={{ color: "#009B9B" }}>Avatar Emoji</label>
-                <input type="text" value={data.artistEmoji} onChange={(e) => update("artistEmoji", e.target.value)} className="w-full font-montserrat text-[11px] text-white outline-none" style={inputStyle} />
-              </div>
-            </div>
+            <div className="flex flex-col gap-3">
+              {[
+                { l: "Artist Name", k: "artistName" as const, ph: "Tony Williams" },
+                { l: "Track Title", k: "trackTitle" as const, ph: "Soon" },
+                { l: "Track Subtitle", k: "trackSubtitle" as const, ph: "808 Session" },
+                { l: "Genres (comma)", k: "genres" as const, ph: "Jazz, Gospel, 808 Soul" },
+                { l: "Location", k: "location" as const, ph: "Houston, TX" },
+                { l: "URL Slug", k: "slug" as const, ph: "tony-williams" },
+              ].map((f) => (
+                <div key={f.l}>
+                  <label className={`block ${label}`} style={{ color: "#009B9B" }}>{f.l}</label>
+                  <input type="text" value={data[f.k] as string} onChange={(e) => update(f.k, e.target.value)} placeholder={f.ph} className="w-full font-montserrat text-[11px] text-white outline-none" style={inputStyle} />
+                </div>
+              ))}
 
-            {/* Image upload */}
-            <div className="mb-3">
-              <label className={`block ${label}`} style={{ color: "#009B9B" }}>Artist Photo</label>
-              <button onClick={() => imgInputRef.current?.click()} className="flex items-center gap-2 cursor-pointer" style={{ background: "rgba(232,98,74,0.05)", border: `1px dashed ${imagePreview ? "#22c55e" : "rgba(232,98,74,0.25)"}`, padding: "0.75rem 1rem", width: "100%" }}>
-                {imagePreview ? (
-                  <img src={imagePreview} alt="" style={{ width: 40, height: 40, objectFit: "cover" }} />
-                ) : (
-                  <span className="text-[1.2rem]">🖼️</span>
-                )}
-                <span className="font-montserrat font-bold text-[10px] tracking-[0.15em] uppercase" style={{ color: imagePreview ? "#22c55e" : "#E8624A" }}>
-                  {imagePreview ? "✓ Photo Ready" : "Upload Artist Photo"}
-                </span>
+              {/* Image upload */}
+              <div>
+                <label className={`block ${label}`} style={{ color: "#009B9B" }}>Artist Photo</label>
+                <button onClick={() => imgInputRef.current?.click()} className="flex items-center gap-2 cursor-pointer w-full" style={{ background: "rgba(232,98,74,0.05)", border: `1px dashed ${imagePreview ? "#22c55e" : "rgba(232,98,74,0.25)"}`, padding: "0.6rem 0.75rem" }}>
+                  {imagePreview ? <img src={imagePreview} alt="" style={{ width: 32, height: 32, objectFit: "cover", borderRadius: "50%" }} /> : <span className="text-[1rem]">🖼️</span>}
+                  <span className="font-montserrat font-bold text-[9px] tracking-[0.12em] uppercase" style={{ color: imagePreview ? "#22c55e" : "#E8624A" }}>
+                    {imagePreview ? "✓ Ready" : "Upload Photo"}
+                  </span>
+                </button>
+                <input ref={imgInputRef} type="file" accept="image/*" className="hidden" onChange={handleImage} />
+              </div>
+
+              {/* Audio upload */}
+              <div>
+                <label className={`block ${label}`} style={{ color: "#009B9B" }}>Audio Track</label>
+                <button onClick={() => audioInputRef.current?.click()} className="flex items-center gap-2 cursor-pointer w-full" style={{ background: "rgba(0,155,155,0.05)", border: `1px dashed ${audioSrc ? "#22c55e" : "rgba(0,155,155,0.25)"}`, padding: "0.6rem 0.75rem" }}>
+                  <span className="text-[1rem]">🎵</span>
+                  <span className="font-montserrat font-bold text-[9px] tracking-[0.12em] uppercase" style={{ color: audioSrc ? "#22c55e" : "#009B9B" }}>
+                    {audioSrc ? "✓ Track Ready" : "Upload Track"}
+                  </span>
+                </button>
+                <input ref={audioInputRef} type="file" accept="audio/*" className="hidden" onChange={handleAudio} />
+              </div>
+
+              {/* Download */}
+              <button
+                onClick={downloadImage}
+                disabled={downloading}
+                className="font-montserrat font-bold text-[11px] tracking-[0.15em] uppercase cursor-pointer disabled:opacity-40 mt-2"
+                style={{ background: "linear-gradient(135deg,#009B9B,#E8624A)", color: "#080c0c", border: "none", padding: "12px", width: "100%" }}
+              >
+                {downloading ? "⏳ Generating..." : "📥 Download Card"}
               </button>
-              <input ref={imgInputRef} type="file" accept="image/*" className="hidden" onChange={handleImage} />
-            </div>
-
-            {/* Audio upload */}
-            <div className="mb-3">
-              <label className={`block ${label}`} style={{ color: "#009B9B" }}>Artist Track (Audio)</label>
-              <button onClick={() => audioInputRef.current?.click()} className="flex items-center gap-2 cursor-pointer" style={{ background: "rgba(0,155,155,0.05)", border: `1px dashed ${audioSrc ? "#22c55e" : "rgba(0,155,155,0.25)"}`, padding: "0.75rem 1rem", width: "100%" }}>
-                <span className="text-[1.2rem]">🎵</span>
-                <span className="font-montserrat font-bold text-[10px] tracking-[0.15em] uppercase" style={{ color: audioSrc ? "#22c55e" : "#009B9B" }}>
-                  {audioSrc ? "✓ Track Ready" : "Upload Audio Track"}
-                </span>
-                <span className="text-[10px] ml-auto" style={{ color: "#5a9090" }}>MP3, WAV, OGG</span>
-              </button>
-              <input ref={audioInputRef} type="file" accept="audio/*" className="hidden" onChange={handleAudio} />
-            </div>
-
-            {/* Announcement text */}
-            <div>
-              <label className={`block ${label}`} style={{ color: "#009B9B" }}>Announcement Script</label>
-              <div className="font-montserrat text-[9px] mb-1" style={{ color: "#5a9090" }}>
-                Use {"{ARTIST_NAME}"}, {"{TRACK}"}, {"{SLUG}"} as placeholders. Empty lines = pauses.
-              </div>
-              <textarea
-                value={data.announcementLines}
-                onChange={(e) => update("announcementLines", e.target.value)}
-                rows={12}
-                className="w-full font-montserrat text-[11px] text-white outline-none resize-y"
-                style={{ ...inputStyle, lineHeight: "1.8" }}
-              />
             </div>
           </div>
-
-          {/* Download button */}
-          <button
-            onClick={downloadImage}
-            disabled={downloading}
-            className="font-montserrat font-bold text-[12px] tracking-[0.15em] uppercase cursor-pointer disabled:opacity-40"
-            style={{ background: "linear-gradient(135deg,#009B9B,#E8624A)", color: "#0a0a0a", border: "none", padding: "14px", width: "100%" }}
-          >
-            {downloading ? "⏳ Generating..." : "📥 Download Promo Card"}
-          </button>
         </div>
 
-        {/* ══════════ LIVE PREVIEW / DOWNLOADABLE CARD ══════════ */}
-        <div>
-          <div className="font-montserrat font-bold text-[11px] tracking-[0.2em] uppercase mb-3" style={{ color: "#009B9B" }}>Live Preview</div>
-
+        {/* ══════════ RIGHT: LIVE CARD (exact replica) ══════════ */}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
           <div
             ref={cardRef}
-            style={{
-              background: "#080c0c",
-              padding: "2rem",
-              maxWidth: 520,
-              fontFamily: "'Montserrat', sans-serif",
-              color: "#e8f5f5",
-            }}
+            style={{ width: "100%", maxWidth: 680, fontFamily: "'Montserrat', sans-serif", color: "#e8f5f5", background: "#080c0c", padding: "2rem 0" }}
           >
-            {/* Station header */}
-            <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 9, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" as const, color: "#009B9B", marginBottom: 4 }}>
-                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#009B9B", boxShadow: "0 0 6px #009B9B", display: "inline-block" }} />
+            {/* STATION HEADER */}
+            <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(232,98,74,0.12)", border: "1px solid rgba(232,98,74,0.3)", color: "#E8624A", fontSize: 8, fontWeight: 700, letterSpacing: "0.25em", textTransform: "uppercase" as const, padding: "4px 12px", marginBottom: "1rem" }}>
+                <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#E8624A", animation: "promoBlink 1.2s infinite", display: "inline-block" }} />
                 New Artist Announcement
               </div>
-              <div style={{ fontFamily: "'Dancing Script', cursive", fontSize: "1.3rem", fontWeight: 700, background: "linear-gradient(135deg,#009B9B,#E8624A)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+              <div style={{ fontFamily: "'Dancing Script', cursive", fontSize: "clamp(1.8rem, 5vw, 3.5rem)", fontWeight: 700, background: "linear-gradient(135deg,#009B9B,#E8624A)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", display: "block", lineHeight: 1.1, marginBottom: "0.25rem" }}>
                 Voices & Vibes Radio
               </div>
-              <div style={{ fontSize: 9, color: "#5a9090", letterSpacing: "0.08em" }}>
+              <div style={{ fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase" as const, color: "#5a9090" }}>
                 Houston, TX · Est. Jan 2026 · voicesandvibesradio.com
               </div>
             </div>
 
-            {/* Card */}
-            <div style={{ background: "#131e1e", border: "1px solid rgba(0,155,155,0.2)", overflow: "hidden" }}>
-              {/* Card header */}
-              <div style={{ background: "linear-gradient(135deg,rgba(0,155,155,0.15),rgba(232,98,74,0.08))", padding: "0.75rem 1.5rem", borderBottom: "1px solid rgba(0,155,155,0.12)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <span style={{ fontSize: 9, fontWeight: 900, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "#080c0c", background: "#009B9B", padding: "3px 10px" }}>New Artist</span>
-                <span style={{ fontSize: 10, color: "#5a9090" }}>Now joining the Voices & Vibes platform</span>
+            {/* ANNOUNCEMENT CARD */}
+            <div style={{ width: "100%", background: "rgba(19,30,30,0.92)", border: "1px solid rgba(0,155,155,0.25)", backdropFilter: "blur(10px)" }}>
+
+              {/* CARD HEADER */}
+              <div style={{ background: "linear-gradient(135deg,rgba(0,155,155,0.15),rgba(232,98,74,0.08))", borderBottom: "1px solid rgba(0,155,155,0.2)", padding: "1.25rem 1.5rem", display: "flex", alignItems: "center", gap: "1rem" }}>
+                <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase" as const, background: "#009B9B", color: "#080c0c", padding: "3px 10px", flexShrink: 0 }}>New Artist</div>
+                <div style={{ fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase" as const, color: "#5a9090" }}>Now joining the Voices & Vibes platform</div>
               </div>
 
-              {/* Artist row */}
-              <div style={{ padding: "1rem 1.5rem", display: "flex", alignItems: "center", gap: "1rem", borderBottom: "1px solid rgba(0,155,155,0.08)" }}>
-                <div style={{ width: 64, height: 64, borderRadius: "50%", background: "linear-gradient(135deg,#009B9B,#E8624A)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.6rem", flexShrink: 0, boxShadow: "0 0 20px rgba(0,155,155,0.3)" }}>
-                  {data.artistEmoji}
+              {/* ARTIST ROW */}
+              <div style={{ padding: "1.5rem", borderBottom: "1px solid rgba(0,155,155,0.12)", display: "flex", alignItems: "center", gap: "1.25rem" }}>
+                <div style={{ width: 64, height: 64, borderRadius: "50%", background: "linear-gradient(135deg,#009B9B,#E8624A)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 0 20px rgba(0,155,155,0.3)", overflow: "hidden", animation: isPlaying ? "promoSpin 3s linear infinite" : undefined }}>
+                  {imagePreview ? (
+                    <img src={imagePreview} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  ) : (
+                    <img src={voicesLogo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  )}
                 </div>
                 <div>
-                  <div style={{ fontFamily: "'Dancing Script', cursive", fontSize: "2rem", fontWeight: 700, color: "#E8624A", lineHeight: 1, marginBottom: 2 }}>{data.artistName}</div>
-                  <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 10, color: "#009B9B", letterSpacing: "0.12em", textTransform: "uppercase" as const, marginBottom: 4 }}>
-                    Now Playing: "{data.trackTitle}"
+                  <div style={{ fontFamily: "'Dancing Script', cursive", fontSize: "2rem", fontWeight: 700, color: "#E8624A", lineHeight: 1, marginBottom: "0.2rem" }}>{data.artistName}</div>
+                  <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 10, color: "#009B9B", letterSpacing: "0.12em", textTransform: "uppercase" as const, marginBottom: "0.3rem" }}>
+                    Now Playing: "{data.trackTitle}" — {data.trackSubtitle}
                   </div>
                   <div style={{ display: "flex", gap: 5, flexWrap: "wrap" as const }}>
                     {genreTags.map((g, i) => (
-                      <span key={i} style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, padding: "2px 8px", border: `1px solid ${tagColors[i % tagColors.length]}40`, background: `${tagColors[i % tagColors.length]}18`, color: tagColors[i % tagColors.length] }}>
+                      <span key={i} style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, padding: "2px 8px", background: tagStyles[i % tagStyles.length].bg, border: `1px solid ${tagStyles[i % tagStyles.length].border}`, color: tagStyles[i % tagStyles.length].color }}>
                         {g}
                       </span>
                     ))}
-                    <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, padding: "2px 8px", border: "1px solid rgba(0,155,155,0.25)", background: "rgba(0,155,155,0.1)", color: "#009B9B" }}>
+                    <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, padding: "2px 8px", background: "rgba(0,155,155,0.1)", border: "1px solid rgba(0,155,155,0.25)", color: "#009B9B" }}>
                       {data.location}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Announcement body with floating image */}
+              {/* ANNOUNCEMENT BODY */}
               <div style={{ padding: "1.5rem" }}>
                 <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase" as const, color: "#009B9B", marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                   On Air Announcement
                   <span style={{ flex: 1, height: 1, background: "rgba(0,155,155,0.15)" }} />
                 </div>
-
-                {/* Float image */}
-                <div style={{ float: "right" as const, margin: "0 0 1rem 1.5rem", width: 160, border: "1px solid rgba(0,155,155,0.2)", background: "linear-gradient(180deg,rgba(0,155,155,0.08),rgba(8,12,12,0.6))", overflow: "hidden" }}>
-                  <div style={{ width: "100%", height: 4, background: "linear-gradient(to right,#009B9B,#E8624A,#009B9B)" }} />
-                  <div style={{ width: 160, height: 160, background: "linear-gradient(135deg,#0d1a1a 0%,#1a1000 40%,#0a1a1a 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "4rem", position: "relative" as const, overflow: "hidden", borderBottom: "1px solid rgba(0,155,155,0.15)" }}>
-                    {imagePreview ? (
-                      <img src={imagePreview} alt={data.artistName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                    ) : (
-                      data.artistEmoji
-                    )}
-                  </div>
-                  <div style={{ padding: "0.6rem 0.75rem", background: "rgba(0,0,0,0.3)", borderTop: "1px solid rgba(0,155,155,0.15)" }}>
-                    <div style={{ fontFamily: "'Dancing Script', cursive", fontSize: "1rem", fontWeight: 700, color: "#E8624A", lineHeight: 1.1, marginBottom: 1 }}>{data.artistName}</div>
-                    <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 8, color: "#009B9B", letterSpacing: "0.1em", marginBottom: 5 }}>"{data.trackTitle}"</div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 7, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "#5a9090" }}>
-                      <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#009B9B", boxShadow: "0 0 5px #009B9B", display: "inline-block" }} />
-                      Now on Platform
-                    </div>
-                  </div>
-                </div>
-
-                {/* Announcement lines */}
                 <div style={{ display: "flex", flexDirection: "column" as const, gap: 0 }}>
-                  {processedLines.map((line, i) => {
-                    if (line.trim() === "") return <div key={i} style={{ height: "0.5rem" }} />;
-                    const isName = line === data.artistName + "." || line.includes("Voices and Vibes Radio.");
-                    const isUrl = line.includes("voicesandvibesradio.com");
+                  {DEFAULT_LINES.map((line, i) => {
+                    if (line.type === "pause") return <div key={i} style={{ height: "0.5rem", border: "none" }} />;
+                    const visible = visibleLines.has(i);
                     return (
                       <div
                         key={i}
                         style={{
-                          fontSize: isName ? "1.1rem" : 13,
+                          fontSize: line.type === "station-name" ? "1.1rem" : line.type === "url" ? 11 : 13,
                           lineHeight: 1.9,
-                          color: isName ? "#E8624A" : isUrl ? "#009B9B" : "rgba(232,245,245,0.85)",
-                          fontFamily: isName ? "'Dancing Script', cursive" : isUrl ? "'Share Tech Mono', monospace" : undefined,
+                          color: line.type === "station-name" ? "#E8624A" : line.type === "url" ? "#009B9B" : "rgba(232,245,245,0.85)",
+                          fontFamily: line.type === "station-name" ? "'Dancing Script', cursive" : line.type === "url" ? "'Share Tech Mono', monospace" : undefined,
+                          letterSpacing: line.type === "url" ? "0.08em" : undefined,
                           padding: "4px 0",
-                          borderBottom: isName || isUrl ? "none" : "1px solid rgba(0,155,155,0.05)",
-                          ...(isUrl ? { fontSize: 11, letterSpacing: "0.08em" } : {}),
+                          borderBottom: line.type === "station-name" || line.type === "url" ? "none" : "1px solid rgba(0,155,155,0.05)",
+                          opacity: visible ? 1 : 0,
+                          transform: visible ? "translateY(0)" : "translateY(8px)",
+                          transition: "opacity 0.5s ease, transform 0.5s ease",
                         }}
                       >
-                        {line}
+                        {line.text}
                       </div>
                     );
                   })}
-                  <div style={{ clear: "both" as const }} />
                 </div>
               </div>
 
-              {/* Audio player */}
+              {/* PROGRESS */}
               {audioSrc && <audio ref={audioRef} src={audioSrc} preload="auto" />}
               <div style={{ padding: "0 1.5rem 0.5rem" }}>
-                <div style={{ height: 2, background: "rgba(0,155,155,0.1)", position: "relative" as const, overflow: "hidden", marginBottom: "0.35rem", cursor: "pointer" }}
+                <div
+                  style={{ height: 2, background: "rgba(0,155,155,0.1)", position: "relative" as const, overflow: "hidden", marginBottom: "0.35rem", cursor: "pointer" }}
                   onClick={(e) => {
-                    if (!audioRef.current) return;
+                    if (!audioRef.current || !audioRef.current.duration) return;
                     const rect = e.currentTarget.getBoundingClientRect();
                     const pct = (e.clientX - rect.left) / rect.width;
                     audioRef.current.currentTime = pct * audioRef.current.duration;
@@ -411,9 +407,20 @@ const AdminPromo = () => {
                 </div>
               </div>
 
-              {/* Controls */}
+              {/* CONTROLS */}
               <div style={{ padding: "1rem 1.5rem 1.25rem", borderTop: "1px solid rgba(0,155,155,0.12)", display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                <button onClick={togglePlay} style={{ width: 48, height: 48, borderRadius: "50%", background: isPlaying ? "#E8624A" : "#009B9B", border: "none", cursor: audioSrc ? "pointer" : "default", fontSize: "1.1rem", color: "#080c0c", boxShadow: isPlaying ? "0 0 20px rgba(232,98,74,0.4)" : "0 0 20px rgba(0,155,155,0.4)", transition: "all 0.2s", flexShrink: 0, opacity: audioSrc ? 1 : 0.4 }}>
+                <button
+                  onClick={togglePlay}
+                  style={{
+                    width: 48, height: 48, borderRadius: "50%",
+                    background: isPlaying ? "#E8624A" : "#009B9B",
+                    border: "none", cursor: audioSrc ? "pointer" : "default",
+                    fontSize: "1.1rem", color: "#080c0c",
+                    boxShadow: isPlaying ? "0 0 20px rgba(232,98,74,0.4)" : "0 0 20px rgba(0,155,155,0.4)",
+                    transition: "all 0.2s", flexShrink: 0,
+                    opacity: audioSrc ? 1 : 0.4,
+                  }}
+                >
                   {isPlaying ? "⏸" : "▶"}
                 </button>
                 <div style={{ flex: 1 }}>
@@ -422,26 +429,57 @@ const AdminPromo = () => {
                   </div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: "#e8f5f5" }}>{data.trackTitle} — {data.artistName}</div>
                 </div>
+                {/* EQ Bars */}
+                <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 24, marginLeft: "0.5rem" }}>
+                  {eqHeights.map((h, i) => (
+                    <div key={i} style={{ width: 3, borderRadius: 1, background: i % 2 === 0 ? "#009B9B" : "#E8624A", height: h, transition: "height 0.08s" }} />
+                  ))}
+                </div>
+                {/* Volume */}
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ fontSize: 10, color: "#5a9090" }}>🔈</span>
+                  <input
+                    type="range"
+                    min="0" max="1" step="0.05" defaultValue="0.8"
+                    onChange={(e) => { if (audioRef.current) audioRef.current.volume = parseFloat(e.target.value); }}
+                    style={{ width: 80, height: 3, cursor: "pointer", accentColor: "#009B9B" }}
+                  />
+                </div>
               </div>
 
-              {/* Footer */}
+              {/* FOOTER */}
               <div style={{ padding: "0.75rem 1.5rem", borderTop: "1px solid rgba(0,155,155,0.1)", display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(0,0,0,0.2)", flexWrap: "wrap" as const, gap: "0.5rem" }}>
                 <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 9, color: "#009B9B", letterSpacing: "0.08em" }}>
                   voicesandvibesradio.com/artists/{data.slug}
                 </span>
                 <div style={{ display: "flex", gap: 6 }}>
-                  <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, padding: "4px 10px", background: "rgba(0,155,155,0.12)", border: "1px solid rgba(0,155,155,0.3)", color: "#009B9B" }}>
-                    📋 Share
-                  </span>
-                  <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, padding: "4px 10px", background: "rgba(232,98,74,0.12)", border: "1px solid rgba(232,98,74,0.3)", color: "#E8624A" }}>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(`https://voicesandvibesradio.com/artists/${data.slug}`).then(() => t("Link copied!"));
+                    }}
+                    className="cursor-pointer"
+                    style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, padding: "4px 10px", background: "rgba(0,155,155,0.12)", border: "1px solid rgba(0,155,155,0.3)", color: "#009B9B", fontFamily: "'Montserrat', sans-serif" }}
+                  >
+                    📋 Copy Link
+                  </button>
+                  <button
+                    onClick={() => window.open("https://hello.citrus3.com:2020/public/voicesandvibes", "_blank")}
+                    className="cursor-pointer"
+                    style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, padding: "4px 10px", background: "rgba(232,98,74,0.12)", border: "1px solid rgba(232,98,74,0.3)", color: "#E8624A", fontFamily: "'Montserrat', sans-serif" }}
+                  >
                     🎙️ Listen Live
-                  </span>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes promoSpin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
+        @keyframes promoBlink { 0%,100% { opacity: 1 } 50% { opacity: 0.1 } }
+      `}</style>
     </div>
   );
 };
