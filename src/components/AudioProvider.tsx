@@ -100,11 +100,17 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
     setIsPlaying(false);
   }, [stopAudio]);
 
+  const registerOtherStop = useCallback((fn: () => void) => {
+    otherStopRef.current = fn;
+  }, []);
+
   const togglePlay = useCallback(() => {
     if (isPlaying) {
       stopAudio();
       setIsPlaying(false);
     } else {
+      // Stop artist audio before starting day audio
+      otherStopRef.current?.();
       playTrackAtIndex(indexRef.current);
     }
   }, [isPlaying, playTrackAtIndex, stopAudio]);
