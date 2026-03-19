@@ -401,6 +401,7 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     isPlaying, elapsed, duration, progress, volume, isMuted, isLooping, isShuffled,
     metaTitle, metaArtist, metaAlbum, metaYear, artSrc, hasSource,
     trackIndex, trackCount: tracks.length,
+    isPlayingCommercial,
     togglePlay, stopPlay, skipBack, skipFwd, seekTo,
     nextTrack, prevTrack,
     toggleLoop, toggleShuffle, toggleMute, setVolume,
