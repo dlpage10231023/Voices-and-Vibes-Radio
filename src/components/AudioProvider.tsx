@@ -21,6 +21,7 @@ interface AudioContextType {
 const AudioCtx = createContext<AudioContextType>({
   isPlaying: false,
   togglePlay: () => {},
+  stopPlay: () => {},
   currentTrack: null,
   hasTracks: false,
   setDayOverride: () => {},
