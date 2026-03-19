@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useArtistAudio } from "./ArtistAudioProvider";
 
 const ArtistSpotlight = () => {
-  const { metaTitle, metaArtist, metaAlbum, metaYear, artSrc, hasSource, isPlaying } = useArtistAudio();
+  const navigate = useNavigate();
+  const { metaTitle, metaArtist, metaAlbum, metaYear, artSrc, hasSource, isPlaying, togglePlay } = useArtistAudio();
 
   const showLive = hasSource || isPlaying;
   const hasArtist = Boolean(metaArtist?.trim());
