@@ -200,8 +200,9 @@ const RecordBar = () => {
 
   return (
     <div
-      className="relative w-full flex items-center overflow-hidden"
+      className="fixed left-0 right-0 z-[199] flex items-center overflow-hidden"
       style={{
+        top: 66,
         height: 100,
         background: "linear-gradient(135deg, #080c0c, #0d1a1a, #080c0c)",
         borderBottom: "1px solid rgba(0,155,155,0.2)",

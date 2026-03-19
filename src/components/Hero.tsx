@@ -2,7 +2,7 @@ import ListenLiveButton from "./ListenLiveButton";
 
 const Hero = () => {
   return (
-    <section id="hero" className="min-h-screen flex flex-col items-center justify-center text-center px-[5vw] pt-[100px] pb-20 relative overflow-hidden">
+    <section id="hero" className="min-h-screen flex flex-col items-center justify-center text-center px-[5vw] pt-[200px] pb-20 relative overflow-hidden">
       <div className="absolute inset-0 bg-background" style={{
         background: `
           radial-gradient(ellipse 90% 70% at 50% 50%, hsla(180, 100%, 30%, 0.18) 0%, transparent 65%),
