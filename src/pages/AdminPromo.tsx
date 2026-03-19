@@ -483,15 +483,25 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
               >
                 {downloading ? "⏳ Generating..." : "📸 Download PNG (for sharing)"}
               </button>
-              {/* Download HTML */}
-              <button
-                onClick={downloadImage}
-                disabled={downloading}
-                className="font-montserrat font-bold text-[9px] tracking-[0.15em] uppercase cursor-pointer disabled:opacity-40"
-                style={{ background: "rgba(0,155,155,0.1)", border: "1px solid rgba(0,155,155,0.3)", color: "#009B9B", padding: "10px", width: "100%" }}
-              >
-                {downloading ? "⏳ Generating..." : "📥 Download HTML (with audio)"}
-              </button>
+              {/* Download HTML + Copy HTML */}
+              <div className="flex gap-2">
+                <button
+                  onClick={downloadImage}
+                  disabled={downloading}
+                  className="font-montserrat font-bold text-[9px] tracking-[0.15em] uppercase cursor-pointer disabled:opacity-40 flex-1"
+                  style={{ background: "rgba(0,155,155,0.1)", border: "1px solid rgba(0,155,155,0.3)", color: "#009B9B", padding: "10px" }}
+                >
+                  {downloading ? "⏳..." : "📥 Download HTML"}
+                </button>
+                <button
+                  onClick={copyHtml}
+                  disabled={downloading}
+                  className="font-montserrat font-bold text-[9px] tracking-[0.15em] uppercase cursor-pointer disabled:opacity-40 flex-1"
+                  style={{ background: "rgba(232,98,74,0.1)", border: "1px solid rgba(232,98,74,0.3)", color: "#E8624A", padding: "10px" }}
+                >
+                  {downloading ? "⏳..." : "📋 Copy HTML"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
