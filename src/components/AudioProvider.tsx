@@ -123,6 +123,7 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
       currentTrack,
       hasTracks: tracks.length > 0,
       setDayOverride,
+      registerOtherStop,
     }}>
       {children}
     </AudioCtx.Provider>
