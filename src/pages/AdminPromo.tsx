@@ -510,7 +510,7 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                   <div style={{ width: "100%", height: 4, background: "linear-gradient(to right,#009B9B,#E8624A,#009B9B)" }} />
                   <div style={{ width: imageSize, height: imageSize, background: "linear-gradient(135deg,#0d1a1a 0%,#1a1000 40%,#0a1a1a 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "4rem", position: "relative" as const, overflow: "hidden", borderBottom: "1px solid rgba(0,155,155,0.15)" }}>
                     {imagePreview ? (
-                      <img src={imagePreview} alt={data.artistName} style={{ width: "100%", height: "100%", objectFit: "cover", position: "relative", zIndex: 1 }} />
+                      <img src={imagePreview} alt={data.artistName} style={{ width: "100%", height: "100%", objectFit: "cover", position: "relative", zIndex: 1, transform: `scale(${imageZoom / 100})` }} />
                     ) : (
                       <img src={voicesLogo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     )}
