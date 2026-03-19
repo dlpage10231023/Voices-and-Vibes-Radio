@@ -49,7 +49,6 @@ const ArtistPlayer = () => {
     audioElement, getAnalyser
   } = ctx;
 
-  const audioInputRef = useRef<HTMLInputElement | null>(null);
   const imgInputRef = useRef<HTMLInputElement | null>(null);
 
   /* ── Visualizer (uses shared analyser from provider) ── */
