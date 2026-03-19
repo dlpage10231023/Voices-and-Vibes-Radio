@@ -14,8 +14,9 @@ interface AudioContextType {
   stopPlay: () => void;
   currentTrack: DayAudio | null;
   hasTracks: boolean;
-  /** Day pages call this to override the active day slug */
   setDayOverride: (slug: string | null) => void;
+  /** Called by ArtistAudioProvider to register its stop function */
+  registerOtherStop: (fn: () => void) => void;
 }
 
 const AudioCtx = createContext<AudioContextType>({
