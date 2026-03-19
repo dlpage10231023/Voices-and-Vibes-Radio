@@ -71,6 +71,7 @@ const DEFAULT_LINES = [
 const AdminPromo = () => {
   const [authed, setAuthed] = useState(sessionStorage.getItem("vv_admin") === "1");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageSize, setImageSize] = useState(220);
   const [downloading, setDownloading] = useState(false);
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -380,6 +381,25 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                 <input ref={imgInputRef} type="file" accept="image/*" className="hidden" onChange={handleImage} />
               </div>
 
+              {/* Image size adjuster */}
+              <div>
+                <label className={`block ${label}`} style={{ color: "#009B9B" }}>Image Size — {imageSize}px</label>
+                <div className="flex items-center gap-2">
+                  <span className="font-montserrat text-[9px]" style={{ color: "#5a9090" }}>120</span>
+                  <input
+                    type="range"
+                    min={120}
+                    max={360}
+                    step={10}
+                    value={imageSize}
+                    onChange={(e) => setImageSize(Number(e.target.value))}
+                    className="w-full"
+                    style={{ accentColor: "#009B9B" }}
+                  />
+                  <span className="font-montserrat text-[9px]" style={{ color: "#5a9090" }}>360</span>
+                </div>
+              </div>
+
               {/* Audio upload */}
               <div>
                 <label className={`block ${label}`} style={{ color: "#009B9B" }}>Audio Track</label>
@@ -466,9 +486,9 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                 </div>
 
                 {/* FLOAT ARTIST IMAGE */}
-                <div data-promo-float="" style={{ float: "right" as const, margin: "0 0 1.5rem 2rem", width: 220, border: "1px solid rgba(0,155,155,0.2)", background: "linear-gradient(180deg,rgba(0,155,155,0.08),rgba(8,12,12,0.6))", overflow: "hidden", flexShrink: 0 }}>
+                <div data-promo-float="" style={{ float: "right" as const, margin: "0 0 1.5rem 2rem", width: imageSize, border: "1px solid rgba(0,155,155,0.2)", background: "linear-gradient(180deg,rgba(0,155,155,0.08),rgba(8,12,12,0.6))", overflow: "hidden", flexShrink: 0 }}>
                   <div style={{ width: "100%", height: 4, background: "linear-gradient(to right,#009B9B,#E8624A,#009B9B)" }} />
-                  <div style={{ width: 220, height: 220, background: "linear-gradient(135deg,#0d1a1a 0%,#1a1000 40%,#0a1a1a 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "4rem", position: "relative" as const, overflow: "hidden", borderBottom: "1px solid rgba(0,155,155,0.15)" }}>
+                  <div style={{ width: imageSize, height: imageSize, background: "linear-gradient(135deg,#0d1a1a 0%,#1a1000 40%,#0a1a1a 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "4rem", position: "relative" as const, overflow: "hidden", borderBottom: "1px solid rgba(0,155,155,0.15)" }}>
                     {imagePreview ? (
                       <img src={imagePreview} alt={data.artistName} style={{ width: "100%", height: "100%", objectFit: "cover", position: "relative", zIndex: 1 }} />
                     ) : (
