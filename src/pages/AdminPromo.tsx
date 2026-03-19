@@ -204,7 +204,7 @@ const AdminPromo = () => {
     return fetch(url)
       .then((r) => r.blob())
       .then(
-        (blob) =>
+        (blob): Promise<string> =>
           new Promise((resolve) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result as string);
