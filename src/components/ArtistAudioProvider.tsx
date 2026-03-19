@@ -126,7 +126,36 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  // Handle track end — auto-advance to next track
+  // Helper to play a commercial by index
+  const playCommercial = useCallback((idx: number) => {
+    const c = commercialsRef.current;
+    if (!c.length) return false;
+    const i = idx % c.length;
+    const comm = c[i];
+    if (!comm.audio_url) return false;
+
+    const a = audioRef.current;
+    if (!a) return false;
+
+    setIsPlayingCommercial(true);
+    isPlayingCommercialRef.current = true;
+    setCommercialIndex(i);
+    commercialIdxRef.current = i;
+    setMetaTitle(`🔊 ${comm.title}`);
+    setMetaArtist("Commercial Break");
+    setMetaAlbum("");
+    setMetaYear("");
+    setArtSrc(null);
+
+    a.src = comm.audio_url;
+    a.load();
+    setHasSource(true);
+    a.play().catch(() => {});
+    setIsPlaying(true);
+    return true;
+  }, []);
+
+  // Handle track end — play commercial between tracks or advance
   useEffect(() => {
     const a = audioRef.current;
     if (!a) return;
@@ -135,10 +164,32 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
       if (a.loop) {
         a.currentTime = 0;
         a.play();
+        return;
+      }
+
+      if (isPlayingCommercialRef.current) {
+        // Commercial just ended → advance to next spotlight track
+        setIsPlayingCommercial(false);
+        isPlayingCommercialRef.current = false;
+        if (tracksRef.current.length > 0) {
+          const next = (trackIndex + 1) % tracksRef.current.length;
+          loadTrackByIndex(next, true);
+        } else {
+          a.pause();
+          setIsPlaying(false);
+        }
       } else if (tracksRef.current.length > 1) {
-        // Auto-advance to next track
-        const next = (trackIndex + 1) % tracksRef.current.length;
-        loadTrackByIndex(next, true);
+        // Spotlight track ended → try to play a commercial first
+        const nextCommIdx = (commercialIdxRef.current);
+        if (!playCommercial(nextCommIdx)) {
+          // No commercials available, just advance
+          const next = (trackIndex + 1) % tracksRef.current.length;
+          loadTrackByIndex(next, true);
+        } else {
+          // Increment commercial index for next time
+          commercialIdxRef.current = (nextCommIdx + 1) % (commercialsRef.current.length || 1);
+          setCommercialIndex(commercialIdxRef.current);
+        }
       } else {
         a.pause();
         setIsPlaying(false);
@@ -147,7 +198,7 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     a.addEventListener("ended", onEnd);
     return () => a.removeEventListener("ended", onEnd);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [trackIndex]);
+  }, [trackIndex, playCommercial, loadTrackByIndex]);
 
   // Load a specific track by index into the audio element
   const loadTrackByIndex = useCallback((idx: number, autoPlay = false) => {
