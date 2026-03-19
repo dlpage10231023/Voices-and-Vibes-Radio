@@ -145,6 +145,7 @@ const ArtistPlayer = () => {
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
       <Navbar />
+      <RecordBar />
 
       {/* inline styles for animations */}
       <style>{`
