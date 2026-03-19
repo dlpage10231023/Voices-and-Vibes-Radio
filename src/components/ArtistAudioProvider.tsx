@@ -222,6 +222,11 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
       stopPlay();
     } else {
       dayAudio.stopPlay();
+      // Ensure AudioContext is created and resumed before playing
+      // so audio routes through Web Audio API properly
+      if (audioCtxRef.current && audioCtxRef.current.state === "suspended") {
+        await audioCtxRef.current.resume();
+      }
       await a.play().catch(() => {});
       setIsPlaying(true);
     }
