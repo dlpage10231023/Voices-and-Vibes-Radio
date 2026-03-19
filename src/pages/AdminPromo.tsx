@@ -72,6 +72,7 @@ const AdminPromo = () => {
   const [authed, setAuthed] = useState(sessionStorage.getItem("vv_admin") === "1");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageSize, setImageSize] = useState(220);
+  const [imageZoom, setImageZoom] = useState(100);
   const [downloading, setDownloading] = useState(false);
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
