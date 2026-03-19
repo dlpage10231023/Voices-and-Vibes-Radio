@@ -110,6 +110,7 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
     <AudioCtx.Provider value={{
       isPlaying,
       togglePlay,
+      stopPlay: externalStop,
       currentTrack,
       hasTracks: tracks.length > 0,
       setDayOverride,
