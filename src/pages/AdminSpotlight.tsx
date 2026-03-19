@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import AdminCommercials from "@/components/AdminCommercials";
 import { toast } from "sonner";
 
 const ADMIN_PW = import.meta.env.VITE_ADMIN_PASSWORD || "";
