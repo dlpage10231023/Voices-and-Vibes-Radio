@@ -62,7 +62,7 @@ const DEFAULT_LINES = [
   { text: "Tony Williams — now featured on", type: "normal" },
   { text: "Voices and Vibes Radio.", type: "station-name" },
   { text: "", type: "pause" },
-  { text: "voicesandvibesradio.com/artists/tony-williams", type: "url" },
+  { text: "voicesandvibesradio.com", type: "url" },
   { text: "", type: "pause" },
   { text: "And that was...", type: "normal" },
   { text: '"Soon."', type: "station-name" },
@@ -358,9 +358,9 @@ const AdminPromo = () => {
                 </div>
 
                 {/* FLOAT ARTIST IMAGE */}
-                <div style={{ float: "right" as const, margin: "0 0 1rem 1.5rem", width: 160, border: "1px solid rgba(0,155,155,0.2)", background: "linear-gradient(180deg,rgba(0,155,155,0.08),rgba(8,12,12,0.6))", overflow: "hidden", flexShrink: 0 }}>
+                <div style={{ float: "right" as const, margin: "0 0 1rem 1.5rem", width: 220, border: "1px solid rgba(0,155,155,0.2)", background: "linear-gradient(180deg,rgba(0,155,155,0.08),rgba(8,12,12,0.6))", overflow: "hidden", flexShrink: 0 }}>
                   <div style={{ width: "100%", height: 4, background: "linear-gradient(to right,#009B9B,#E8624A,#009B9B)" }} />
-                  <div style={{ width: 160, height: 160, background: "linear-gradient(135deg,#0d1a1a 0%,#1a1000 40%,#0a1a1a 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "4rem", position: "relative" as const, overflow: "hidden", borderBottom: "1px solid rgba(0,155,155,0.15)" }}>
+                  <div style={{ width: 220, height: 220, background: "linear-gradient(135deg,#0d1a1a 0%,#1a1000 40%,#0a1a1a 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "4rem", position: "relative" as const, overflow: "hidden", borderBottom: "1px solid rgba(0,155,155,0.15)" }}>
                     {imagePreview ? (
                       <img src={imagePreview} alt={data.artistName} style={{ width: "100%", height: "100%", objectFit: "cover", position: "relative", zIndex: 1 }} />
                     ) : (
@@ -396,7 +396,9 @@ const AdminPromo = () => {
                           transition: "opacity 0.5s ease, transform 0.5s ease",
                         }}
                       >
-                        {line.text}
+                        {line.type === "url" ? (
+                          <a href="https://voicesandvibesradio.com" target="_blank" rel="noopener noreferrer" style={{ color: "inherit", textDecoration: "underline" }}>{line.text}</a>
+                        ) : line.text}
                       </div>
                     );
                   })}
@@ -466,9 +468,9 @@ const AdminPromo = () => {
 
               {/* FOOTER */}
               <div style={{ padding: "0.75rem 1.5rem", borderTop: "1px solid rgba(0,155,155,0.1)", display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(0,0,0,0.2)", flexWrap: "wrap" as const, gap: "0.5rem" }}>
-                <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 9, color: "#009B9B", letterSpacing: "0.08em" }}>
-                  voicesandvibesradio.com/artists/{data.slug}
-                </span>
+                <a href="https://voicesandvibesradio.com" target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 9, color: "#009B9B", letterSpacing: "0.08em", textDecoration: "none" }}>
+                  voicesandvibesradio.com
+                </a>
                 <div style={{ display: "flex", gap: 6 }}>
                   <button
                     onClick={() => {
