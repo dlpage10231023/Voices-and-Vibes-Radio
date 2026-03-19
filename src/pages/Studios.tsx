@@ -266,16 +266,16 @@ const plans = [
     name: "Creator",
     price: "$0",
     priceColor: "#009B9B",
-    tagline: "Make music, download beats, no account needed",
+    tagline: "Make music, download beats, host 1 track free",
     features: [
       { text: "All 7 studio tools", included: true },
       { text: "All 4 drum kits", included: true },
-      { text: "Voice recording", included: true },
       { text: "Record & download WAV", included: true },
-      { text: "8 ambient mood channels", included: true },
-      { text: "Artist profile page", included: false },
-      { text: "Track hosting", included: false },
-      { text: "Radio spotlight", included: false },
+      { text: "1 track hosted on your profile", included: true },
+      { text: "Voice recording (locked)", included: false },
+      { text: "Save/load project (locked)", included: false },
+      { text: "Piano roll (locked)", included: false },
+      { text: "Radio spotlight (locked)", included: false },
     ],
     btnLabel: "Start Creating Free",
     btnStyle: "ghost" as const,
@@ -284,19 +284,21 @@ const plans = [
   },
   {
     icon: "🎵",
-    name: "Artist",
-    price: "$19",
+    name: "Artist Pro",
+    price: "$9",
     priceColor: "#009B9B",
-    tagline: "Your own profile page and music hosting",
+    tagline: "Your profile page + 20 tracks hosted",
     features: [
       { text: "Everything in Creator", included: true },
+      { text: "Voice recording ✦ Unlocked", included: true },
+      { text: "Save & load project ✦ Unlocked", included: true },
       { text: "Artist profile page", included: true },
-      { text: "Upload 5 tracks", included: true },
+      { text: "Upload up to 20 tracks", included: true },
       { text: "Artist directory listing", included: true },
-      { text: "voicesandvibesradio.com/artists/you", included: true },
       { text: "Bio photo & genre tags", included: true },
-      { text: "Spotlight eligible", included: false },
-      { text: "Radio airplay", included: false },
+      { text: "Piano roll (locked)", included: false },
+      { text: "Spotlight eligible (locked)", included: false },
+      { text: "Radio airplay (locked)", included: false },
     ],
     btnLabel: "Get Started",
     btnStyle: "solid" as const,
@@ -306,43 +308,24 @@ const plans = [
   {
     icon: "🌟",
     name: "Spotlight",
-    price: "$39",
+    price: "$19",
     priceColor: "#8855CC",
-    tagline: "Get featured and heard worldwide",
+    tagline: "Unlimited tracks + radio airplay",
     features: [
-      { text: "Everything in Artist", included: true },
+      { text: "Everything in Artist Pro", included: true },
+      { text: "Piano roll ✦ Unlocked", included: true },
+      { text: "Effects rack ✦ Unlocked", included: true },
+      { text: "Unlimited tracks hosted", included: true },
       { text: "Homepage spotlight eligible", included: true },
-      { text: "10 tracks hosted", included: true },
       { text: "Healing Artist badge", included: true },
+      { text: "Guaranteed radio airplay", included: true },
+      { text: "Gospel Sunday feature eligible", included: true },
       { text: "All premium templates", included: true },
-      { text: "Featured artist card", included: true },
-      { text: "Guaranteed airplay", included: false },
-      { text: "Gospel Sunday feature", included: false },
+      { text: "Priority spotlight slot", included: true },
     ],
     btnLabel: "Go Spotlight",
     btnStyle: "purple" as const,
     borderColor: "rgba(136,85,204,0.35)",
-    featured: false,
-  },
-  {
-    icon: "🎙️",
-    name: "On Air",
-    price: "$59",
-    priceColor: "#E8624A",
-    tagline: "Full radio integration and guaranteed airplay",
-    features: [
-      { text: "Everything in Spotlight", included: true },
-      { text: "Guaranteed radio airplay", included: true },
-      { text: "Gospel Sunday feature", included: true },
-      { text: "All templates unlocked", included: true },
-      { text: "Priority spotlight slot", included: true },
-      { text: "Direct booking button", included: true },
-      { text: "VIP Healing Artist status", included: true },
-      { text: "Weekly feature consideration", included: true },
-    ],
-    btnLabel: "Go On Air",
-    btnStyle: "coral" as const,
-    borderColor: "rgba(232,98,74,0.35)",
     featured: false,
   },
 ];
@@ -1177,24 +1160,18 @@ export default function Studios() {
                         ? "1px solid rgba(0,155,155,0.3)"
                         : p.btnStyle === "purple"
                         ? "1px solid rgba(136,85,204,0.5)"
-                        : p.btnStyle === "coral"
-                        ? "1px solid rgba(232,98,74,0.5)"
                         : "none",
                     background:
                       p.btnStyle === "solid"
                         ? "#009B9B"
                         : p.btnStyle === "purple"
                         ? "rgba(136,85,204,0.15)"
-                        : p.btnStyle === "coral"
-                        ? "rgba(232,98,74,0.15)"
                         : "transparent",
                     color:
                       p.btnStyle === "solid"
                         ? "#000"
                         : p.btnStyle === "purple"
                         ? "#8855CC"
-                        : p.btnStyle === "coral"
-                        ? "#E8624A"
                         : "#009B9B",
                   }}
                 >
