@@ -239,35 +239,31 @@ const AdminPromo = () => {
     setDownloading(false);
   };
 
-  const downloadImage = async () => {
-    if (!cardRef.current) return;
-    setDownloading(true);
-    try {
-      // Convert all images in the card to base64
-      const clone = cardRef.current.cloneNode(true) as HTMLElement;
-      const imgs = clone.querySelectorAll("img");
-      await Promise.all(
-        Array.from(imgs).map(async (img) => {
-          if (img.src && !img.src.startsWith("data:")) {
-            const b64 = await imgToBase64(img.src);
-            img.src = b64;
-          }
-        })
-      );
+  const buildFullHtml = async () => {
+    if (!cardRef.current) return "";
+    const clone = cardRef.current.cloneNode(true) as HTMLElement;
+    const imgs = clone.querySelectorAll("img");
+    await Promise.all(
+      Array.from(imgs).map(async (img) => {
+        if (img.src && !img.src.startsWith("data:")) {
+          const b64 = await imgToBase64(img.src);
+          img.src = b64;
+        }
+      })
+    );
 
-      // Convert audio file directly to base64
-      let audioB64 = "";
-      if (audioFile) {
-        audioB64 = await new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.onerror = () => resolve("");
-          reader.readAsDataURL(audioFile);
-        });
-      }
+    let audioB64 = "";
+    if (audioFile) {
+      audioB64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = () => resolve("");
+        reader.readAsDataURL(audioFile);
+      });
+    }
 
-      const cardHtml = clone.outerHTML;
-      const fullHtml = `<!DOCTYPE html>
+    const cardHtml = clone.outerHTML;
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -305,7 +301,6 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
   function stopEQ(){if(eqInterval)clearInterval(eqInterval);eqInterval=null;eqBars.forEach(function(b){b.style.height='4px';});}
   function startSpin(){if(vinyl)vinyl.style.animation='promoSpin 3s linear infinite';}
   function stopSpin(){if(vinyl)vinyl.style.animation='none';}
-  // Hide all non-pause lines initially
   lines.forEach(function(el){if(el.getAttribute('data-line-type')!=='pause'){el.style.opacity='0';el.style.transform='translateY(8px)';}});
   function startAnnouncement(){
     if(announced)return;announced=true;
@@ -328,6 +323,13 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
 </script>
 </body>
 </html>`;
+  };
+
+  const downloadImage = async () => {
+    if (!cardRef.current) return;
+    setDownloading(true);
+    try {
+      const fullHtml = await buildFullHtml();
       const blob = new Blob([fullHtml], { type: "text/html" });
       const link = document.createElement("a");
       link.download = `${data.slug || "promo"}-card.html`;
@@ -337,6 +339,19 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
       t("✅ HTML downloaded!");
     } catch {
       t("❌ Download failed");
+    }
+    setDownloading(false);
+  };
+
+  const copyHtml = async () => {
+    if (!cardRef.current) return;
+    setDownloading(true);
+    try {
+      const fullHtml = await buildFullHtml();
+      await navigator.clipboard.writeText(fullHtml);
+      t("✅ HTML copied to clipboard!");
+    } catch {
+      t("❌ Copy failed");
     }
     setDownloading(false);
   };
@@ -468,15 +483,25 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
               >
                 {downloading ? "⏳ Generating..." : "📸 Download PNG (for sharing)"}
               </button>
-              {/* Download HTML */}
-              <button
-                onClick={downloadImage}
-                disabled={downloading}
-                className="font-montserrat font-bold text-[9px] tracking-[0.15em] uppercase cursor-pointer disabled:opacity-40"
-                style={{ background: "rgba(0,155,155,0.1)", border: "1px solid rgba(0,155,155,0.3)", color: "#009B9B", padding: "10px", width: "100%" }}
-              >
-                {downloading ? "⏳ Generating..." : "📥 Download HTML (with audio)"}
-              </button>
+              {/* Download HTML + Copy HTML */}
+              <div className="flex gap-2">
+                <button
+                  onClick={downloadImage}
+                  disabled={downloading}
+                  className="font-montserrat font-bold text-[9px] tracking-[0.15em] uppercase cursor-pointer disabled:opacity-40 flex-1"
+                  style={{ background: "rgba(0,155,155,0.1)", border: "1px solid rgba(0,155,155,0.3)", color: "#009B9B", padding: "10px" }}
+                >
+                  {downloading ? "⏳..." : "📥 Download HTML"}
+                </button>
+                <button
+                  onClick={copyHtml}
+                  disabled={downloading}
+                  className="font-montserrat font-bold text-[9px] tracking-[0.15em] uppercase cursor-pointer disabled:opacity-40 flex-1"
+                  style={{ background: "rgba(232,98,74,0.1)", border: "1px solid rgba(232,98,74,0.3)", color: "#E8624A", padding: "10px" }}
+                >
+                  {downloading ? "⏳..." : "📋 Copy HTML"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
