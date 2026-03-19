@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import vinylRecordImg from "@/assets/vinyl-record-new.jpg";
 
 const SCENE_DURATIONS = [4000, 5500, 5500, 5000, 6500, 5500, 5500, 7000];
 const TOTAL_SCENES = 8;
