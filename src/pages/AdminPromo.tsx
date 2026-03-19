@@ -75,6 +75,7 @@ const AdminPromo = () => {
   const [imageZoom, setImageZoom] = useState(50);
   const [downloading, setDownloading] = useState(false);
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
+  const [audioFile, setAudioFile] = useState<File | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState("0:00");
@@ -110,6 +111,7 @@ const AdminPromo = () => {
   const handleAudio = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setAudioFile(file);
     setAudioSrc(URL.createObjectURL(file));
   };
 
@@ -233,10 +235,15 @@ const AdminPromo = () => {
         })
       );
 
-      // Convert audio to base64 for embedding
+      // Convert audio file directly to base64
       let audioB64 = "";
-      if (audioSrc) {
-        audioB64 = await blobUrlToBase64(audioSrc);
+      if (audioFile) {
+        audioB64 = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = () => resolve("");
+          reader.readAsDataURL(audioFile);
+        });
       }
 
       const cardHtml = clone.outerHTML;
