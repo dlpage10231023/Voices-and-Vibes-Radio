@@ -3,7 +3,16 @@ import { get, set } from "idb-keyval";
 import { supabase } from "@/integrations/supabase/client";
 import { useAudioPlayer } from "./AudioProvider";
 
-const SPOTLIGHT_ID = "a0000000-0000-0000-0000-000000000001";
+interface SpotlightTrack {
+  id: string;
+  title: string | null;
+  artist: string | null;
+  album: string | null;
+  year: string | null;
+  audio_url: string | null;
+  image_url: string | null;
+  sort_order: number;
+}
 
 export interface ArtistAudioState {
   isPlaying: boolean;
@@ -20,6 +29,8 @@ export interface ArtistAudioState {
   metaYear: string;
   artSrc: string | null;
   hasSource: boolean;
+  trackIndex: number;
+  trackCount: number;
 }
 
 export interface ArtistAudioActions {
@@ -32,6 +43,8 @@ export interface ArtistAudioActions {
   toggleShuffle: () => void;
   toggleMute: () => void;
   setVolume: (v: number) => void;
+  nextTrack: () => void;
+  prevTrack: () => void;
   loadAudioFile: (file: File) => void;
   loadImageFile: (file: File) => void;
   setArtSrc: (src: string | null) => void;
@@ -39,9 +52,7 @@ export interface ArtistAudioActions {
   setMetaArtist: (v: string) => void;
   setMetaAlbum: (v: string) => void;
   setMetaYear: (v: string) => void;
-  /** Expose the audio element so the page can hook up a visualiser */
   audioElement: HTMLAudioElement | null;
-  /** Shared analyser node for visualizer — persists across route changes */
   getAnalyser: () => AnalyserNode | null;
 }
 
@@ -78,7 +89,12 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
   const [artSrc, setArtSrc] = useState<string | null>(null);
   const [hasSource, setHasSource] = useState(false);
 
-  // Create audio element once and keep it alive
+  // Multi-track state
+  const [tracks, setTracks] = useState<SpotlightTrack[]>([]);
+  const [trackIndex, setTrackIndex] = useState(0);
+  const tracksRef = useRef<SpotlightTrack[]>([]);
+
+  // Create audio element once
   useEffect(() => {
     const a = new Audio();
     a.volume = 0.8;
@@ -90,50 +106,92 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
       setProgress((a.currentTime / a.duration) * 100);
     };
     const onMeta = () => setDuration(a.duration);
+    a.addEventListener("timeupdate", onTime);
+    a.addEventListener("loadedmetadata", onMeta);
+
+    return () => {
+      a.removeEventListener("timeupdate", onTime);
+      a.removeEventListener("loadedmetadata", onMeta);
+      a.pause();
+    };
+  }, []);
+
+  // Handle track end — auto-advance to next track
+  useEffect(() => {
+    const a = audioRef.current;
+    if (!a) return;
+
     const onEnd = () => {
       if (a.loop) {
         a.currentTime = 0;
         a.play();
+      } else if (tracksRef.current.length > 1) {
+        // Auto-advance to next track
+        const next = (trackIndex + 1) % tracksRef.current.length;
+        loadTrackByIndex(next, true);
       } else {
         a.pause();
         setIsPlaying(false);
       }
     };
-    a.addEventListener("timeupdate", onTime);
-    a.addEventListener("loadedmetadata", onMeta);
     a.addEventListener("ended", onEnd);
+    return () => a.removeEventListener("ended", onEnd);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trackIndex]);
 
-    return () => {
-      a.removeEventListener("timeupdate", onTime);
-      a.removeEventListener("loadedmetadata", onMeta);
-      a.removeEventListener("ended", onEnd);
-      a.pause();
-    };
+  // Load a specific track by index into the audio element
+  const loadTrackByIndex = useCallback((idx: number, autoPlay = false) => {
+    const t = tracksRef.current;
+    if (!t.length) return;
+    const i = idx % t.length;
+    const track = t[i];
+    setTrackIndex(i);
+
+    if (track.title) setMetaTitle(track.title);
+    if (track.artist) setMetaArtist(track.artist);
+    setMetaAlbum(track.album || "");
+    setMetaYear(track.year || "");
+    setArtSrc(track.image_url || null);
+
+    const a = audioRef.current;
+    if (a && track.audio_url) {
+      a.src = track.audio_url;
+      a.load();
+      setHasSource(true);
+      if (autoPlay) {
+        a.play().catch(() => {});
+        setIsPlaying(true);
+      }
+    } else {
+      setHasSource(!!track.audio_url);
+    }
   }, []);
 
-  // ── Cloud-first restore, fall back to IndexedDB ──
+  // Fetch all live tracks from cloud
   useEffect(() => {
     const restore = async () => {
-      // Try cloud first
       const { data } = await supabase
         .from("artist_spotlight")
         .select("*")
         .eq("status", "live")
-        .maybeSingle();
+        .order("sort_order", { ascending: true });
 
-      if (data?.audio_url) {
-        const a = audioRef.current;
-        if (a) {
-          a.src = data.audio_url;
-          a.load();
-          setHasSource(true);
-        }
-        if (data.image_url) setArtSrc(data.image_url);
-        if (data.title) setMetaTitle(data.title);
-        if (data.artist) setMetaArtist(data.artist);
-        if (data.album) setMetaAlbum(data.album);
-        if (data.year) setMetaYear(data.year);
-        return; // cloud record found, skip IndexedDB
+      if (data && data.length > 0) {
+        const mapped: SpotlightTrack[] = data.map((d) => ({
+          id: d.id,
+          title: d.title,
+          artist: d.artist,
+          album: d.album,
+          year: d.year,
+          audio_url: d.audio_url,
+          image_url: d.image_url,
+          sort_order: (d as any).sort_order ?? 0,
+        }));
+        setTracks(mapped);
+        tracksRef.current = mapped;
+        // Load first track (don't auto-play)
+        loadTrackByIndex(0, false);
+        return;
       }
 
       // Fall back to IndexedDB
@@ -153,7 +211,6 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     setIsPlaying(false);
   }, []);
 
-  // Register artist stop with day audio so day audio can pause artist when it starts
   useEffect(() => {
     dayAudio.registerOtherStop(stopPlay);
   }, [dayAudio, stopPlay]);
@@ -164,12 +221,23 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     if (isPlaying) {
       stopPlay();
     } else {
-      // Stop day/radio audio before starting artist audio
       dayAudio.stopPlay();
       await a.play().catch(() => {});
       setIsPlaying(true);
     }
   }, [isPlaying, stopPlay, dayAudio]);
+
+  const nextTrack = useCallback(() => {
+    if (tracksRef.current.length <= 1) return;
+    const next = (trackIndex + 1) % tracksRef.current.length;
+    loadTrackByIndex(next, isPlaying);
+  }, [trackIndex, isPlaying, loadTrackByIndex]);
+
+  const prevTrack = useCallback(() => {
+    if (tracksRef.current.length <= 1) return;
+    const prev = (trackIndex - 1 + tracksRef.current.length) % tracksRef.current.length;
+    loadTrackByIndex(prev, isPlaying);
+  }, [trackIndex, isPlaying, loadTrackByIndex]);
 
   const skipBack = useCallback(() => {
     const a = audioRef.current;
@@ -207,32 +275,22 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     if (audioRef.current) audioRef.current.volume = val / 100;
   }, []);
 
-  /* ── Load audio for local playback only (no cloud write) ── */
   const loadAudioFile = useCallback((file: File) => {
     const url = URL.createObjectURL(file);
     const a = audioRef.current;
-    if (a) {
-      a.src = url;
-      a.load();
-      setHasSource(true);
-    }
+    if (a) { a.src = url; a.load(); setHasSource(true); }
     set("vv_last_audio", file).catch(() => {});
   }, []);
 
-  /* ── Load image for local display only (no cloud write) ── */
   const loadImageFile = useCallback((file: File) => {
     const localUrl = URL.createObjectURL(file);
     setArtSrc(localUrl);
     set("vv_last_image", file).catch(() => {});
   }, []);
 
-  /* ── Metadata setters — local state only, no DB sync ── */
-
-  /* ── Shared Web Audio API analyser (persists across route changes) ── */
   const getAnalyser = useCallback((): AnalyserNode | null => {
     const a = audioRef.current;
     if (!a) return null;
-    // Only create once per audio element lifetime
     if (!audioCtxRef.current) {
       const actx = new AudioContext();
       const an = actx.createAnalyser();
@@ -254,13 +312,12 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
   const value: Ctx = {
     isPlaying, elapsed, duration, progress, volume, isMuted, isLooping, isShuffled,
     metaTitle, metaArtist, metaAlbum, metaYear, artSrc, hasSource,
+    trackIndex, trackCount: tracks.length,
     togglePlay, stopPlay, skipBack, skipFwd, seekTo,
+    nextTrack, prevTrack,
     toggleLoop, toggleShuffle, toggleMute, setVolume,
     loadAudioFile, loadImageFile, setArtSrc,
-    setMetaTitle,
-    setMetaArtist,
-    setMetaAlbum,
-    setMetaYear,
+    setMetaTitle, setMetaArtist, setMetaAlbum, setMetaYear,
     audioElement: audioRef.current,
     getAnalyser,
   };

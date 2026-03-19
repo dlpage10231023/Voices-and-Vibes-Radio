@@ -23,6 +23,7 @@ export type Database = {
           featured_week: string | null
           id: string
           image_url: string | null
+          sort_order: number
           status: string | null
           title: string | null
           updated_at: string | null
@@ -36,6 +37,7 @@ export type Database = {
           featured_week?: string | null
           id?: string
           image_url?: string | null
+          sort_order?: number
           status?: string | null
           title?: string | null
           updated_at?: string | null
@@ -49,6 +51,7 @@ export type Database = {
           featured_week?: string | null
           id?: string
           image_url?: string | null
+          sort_order?: number
           status?: string | null
           title?: string | null
           updated_at?: string | null
