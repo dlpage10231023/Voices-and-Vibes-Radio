@@ -180,7 +180,7 @@ const ArtistPlayer = () => {
       </div>
 
       {/* ── Two Column Grid ── */}
-      <div className="artist-grid grid grid-cols-1 lg:grid-cols-[480px_1fr] gap-8 px-[5vw] pb-[80px] items-start">
+      <div className="artist-grid grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 px-[5vw] pb-[80px] items-start">
         {/* ===== LEFT COLUMN — Player Card ===== */}
         <div className="flex-col h-full my-0 mx-0 gap-[10px] flex items-center justify-center">
           <div
