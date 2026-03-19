@@ -1,8 +1,21 @@
 import { useRef, useState, useEffect } from "react";
 import vinylImg from "@/assets/vinyl-record-new.jpg";
 
+const CHANNELS = [
+  { id: "01", label: "Jazz", name: "Healing Jazz", desc: "Therapy-inspired · Midtempo", bpm: 88 },
+  { id: "02", label: "Gospel", name: "Gospel Groove", desc: "Faith & Healing · Uplifting", bpm: 96 },
+  { id: "03", label: "Signature", name: "Afrobeats Jazz", desc: "Rhythm & Restoration", bpm: 92 },
+  { id: "04", label: "Soul", name: "Soul Saturday", desc: "Self-Care Soundscape · Slow", bpm: 76 },
+  { id: "05", label: "New", name: "Gospel Sunday", desc: "Faith · Worship · Healing", bpm: 84 },
+  { id: "06", label: "New", name: "Healing Meditation", desc: "Therapeutic · Breathwork · Calm", bpm: 60 },
+  { id: "07", label: "New", name: "Soul Saturday Deep", desc: "R&B Soul · Night Healing", bpm: 70 },
+  { id: "08", label: "New", name: "Trap Jazz Fusion", desc: "Urban · Jazz · Powerful", bpm: 108 },
+];
+
 const RecordBar = () => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [activeChannel, setActiveChannel] = useState(2);
+  const [showChannels, setShowChannels] = useState(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const masterGainRef = useRef<GainNode | null>(null);
   const noiseBufferRef = useRef<AudioBuffer | null>(null);
@@ -11,6 +24,8 @@ const RecordBar = () => {
   const chordIdxRef = useRef(0);
   const eqIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const eqBarsRef = useRef<HTMLDivElement[]>([]);
+
+  const currentChannel = CHANNELS[activeChannel];
 
   const CHORDS = [
     [146.83, 174.61, 220, 261.63, 329.63],
