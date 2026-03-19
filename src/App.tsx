@@ -12,6 +12,7 @@ import DayPage from "./pages/DayPage.tsx";
 import ArtistPlayer from "./pages/ArtistPlayer.tsx";
 import AudioAdmin from "./pages/AudioAdmin.tsx";
 import AdminSpotlight from "./pages/AdminSpotlight.tsx";
+import AdminPromo from "./pages/AdminPromo.tsx";
 import Studios from "./pages/Studios.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -35,6 +36,7 @@ const App = () => (
               <Route path="/home" element={<Index />} />
               <Route path="/admin/audio" element={<AudioAdmin />} />
               <Route path="/admin/spotlight" element={<AdminSpotlight />} />
+              <Route path="/admin/promo" element={<AdminPromo />} />
               <Route path="/artist-player" element={<ArtistPlayer />} />
               <Route path="/studios" element={<Studios />} />
               <Route path="/:day" element={<DayPage />} />
