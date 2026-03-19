@@ -200,6 +200,21 @@ const AdminPromo = () => {
     });
   };
 
+  const blobUrlToBase64 = (url: string): Promise<string> => {
+    return fetch(url)
+      .then((r) => r.blob())
+      .then(
+        (blob) =>
+          new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = () => resolve("");
+            reader.readAsDataURL(blob);
+          })
+      )
+      .catch(() => "");
+  };
+
   const downloadImage = async () => {
     if (!cardRef.current) return;
     setDownloading(true);
