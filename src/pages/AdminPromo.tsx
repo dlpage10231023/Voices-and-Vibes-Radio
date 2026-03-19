@@ -111,6 +111,7 @@ const AdminPromo = () => {
   const handleAudio = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setAudioFile(file);
     setAudioSrc(URL.createObjectURL(file));
   };
 
