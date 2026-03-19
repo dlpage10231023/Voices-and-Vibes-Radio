@@ -392,6 +392,38 @@ const AdminPromo = () => {
                 </div>
               </div>
 
+              {/* Audio player */}
+              {audioSrc && <audio ref={audioRef} src={audioSrc} preload="auto" />}
+              <div style={{ padding: "0 1.5rem 0.5rem" }}>
+                <div style={{ height: 2, background: "rgba(0,155,155,0.1)", position: "relative" as const, overflow: "hidden", marginBottom: "0.35rem", cursor: "pointer" }}
+                  onClick={(e) => {
+                    if (!audioRef.current) return;
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const pct = (e.clientX - rect.left) / rect.width;
+                    audioRef.current.currentTime = pct * audioRef.current.duration;
+                  }}
+                >
+                  <div style={{ height: "100%", background: "linear-gradient(to right,#009B9B,#E8624A)", width: `${progress}%`, transition: "width 0.2s linear" }} />
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontFamily: "'Share Tech Mono', monospace", fontSize: 9, color: "#5a9090" }}>
+                  <span>{currentTime}</span>
+                  <span>{duration}</span>
+                </div>
+              </div>
+
+              {/* Controls */}
+              <div style={{ padding: "1rem 1.5rem 1.25rem", borderTop: "1px solid rgba(0,155,155,0.12)", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                <button onClick={togglePlay} style={{ width: 48, height: 48, borderRadius: "50%", background: isPlaying ? "#E8624A" : "#009B9B", border: "none", cursor: audioSrc ? "pointer" : "default", fontSize: "1.1rem", color: "#080c0c", boxShadow: isPlaying ? "0 0 20px rgba(232,98,74,0.4)" : "0 0 20px rgba(0,155,155,0.4)", transition: "all 0.2s", flexShrink: 0, opacity: audioSrc ? 1 : 0.4 }}>
+                  {isPlaying ? "⏸" : "▶"}
+                </button>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" as const, color: "#5a9090", marginBottom: 2 }}>
+                    {isPlaying ? "● Now Playing" : audioSrc ? "Ready to play" : "No audio loaded"}
+                  </div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#e8f5f5" }}>{data.trackTitle} — {data.artistName}</div>
+                </div>
+              </div>
+
               {/* Footer */}
               <div style={{ padding: "0.75rem 1.5rem", borderTop: "1px solid rgba(0,155,155,0.1)", display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(0,0,0,0.2)", flexWrap: "wrap" as const, gap: "0.5rem" }}>
                 <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 9, color: "#009B9B", letterSpacing: "0.08em" }}>
