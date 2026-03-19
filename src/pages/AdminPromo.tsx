@@ -396,7 +396,9 @@ const AdminPromo = () => {
                           transition: "opacity 0.5s ease, transform 0.5s ease",
                         }}
                       >
-                        {line.text}
+                        {line.type === "url" ? (
+                          <a href="https://voicesandvibesradio.com" target="_blank" rel="noopener noreferrer" style={{ color: "inherit", textDecoration: "underline" }}>{line.text}</a>
+                        ) : line.text}
                       </div>
                     );
                   })}
