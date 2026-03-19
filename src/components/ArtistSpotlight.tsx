@@ -83,23 +83,6 @@ const ArtistSpotlight = () => {
               {displayDesc}
             </p>
 
-            <div className="flex gap-3 mt-2 flex-wrap">
-              <button
-                onClick={async () => {
-                  if (hasSource && !isPlaying) await togglePlay();
-                  navigate("/artist-player");
-                }}
-                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 text-[12px] font-montserrat font-bold tracking-[0.1em] uppercase hover:brightness-110 transition-all no-underline border-none cursor-pointer"
-              >
-                {isPlaying ? "🎵 Now Playing →" : "▶ Listen Now →"}
-              </button>
-              <Link
-                to="/artist-player"
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-[12px] font-montserrat font-bold tracking-[0.1em] uppercase text-primary border border-primary hover:bg-primary/10 transition-all no-underline"
-              >
-                View All Artists
-              </Link>
-            </div>
           </div>
         </div>
       </div>
