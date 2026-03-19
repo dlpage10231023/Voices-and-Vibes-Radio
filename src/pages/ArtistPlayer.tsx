@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
+import RecordBar from "@/components/RecordBar";
 import { useArtistAudio } from "@/components/ArtistAudioProvider";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -144,6 +145,7 @@ const ArtistPlayer = () => {
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
       <Navbar />
+      <RecordBar />
 
       {/* inline styles for animations */}
       <style>{`
@@ -159,7 +161,7 @@ const ArtistPlayer = () => {
       `}</style>
 
       {/* ── Page Header ── */}
-      <div className="text-center pt-[100px] px-[5vw] mb-8">
+      <div className="text-center pt-[80px] px-[5vw] mb-8">
         <span
           className="font-dancing text-[2rem] font-bold block mb-1"
           style={{

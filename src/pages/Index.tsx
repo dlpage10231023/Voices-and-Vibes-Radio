@@ -1,6 +1,5 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import RecordBar from "@/components/RecordBar";
 import Ticker from "@/components/Ticker";
 import About from "@/components/About";
 import ListenNow from "@/components/ListenNow";
@@ -17,7 +16,6 @@ const Index = () => {
     <div className="min-h-screen bg-background pb-[76px] overflow-x-hidden">
       <Navbar />
       <Hero />
-      <RecordBar />
       <Ticker />
       <About />
       <ListenNow />
