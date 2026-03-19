@@ -357,21 +357,19 @@ const AdminPromo = () => {
                   <span style={{ flex: 1, height: 1, background: "rgba(0,155,155,0.15)" }} />
                 </div>
 
-                {/* ARTIST IMAGE — full width side to side */}
-                <div style={{ width: "100%", border: "1px solid rgba(0,155,155,0.2)", background: "linear-gradient(180deg,rgba(0,155,155,0.08),rgba(8,12,12,0.6))", overflow: "hidden", marginBottom: "1.25rem" }}>
+                {/* FLOAT ARTIST IMAGE */}
+                <div style={{ float: "right" as const, margin: "0 0 1rem 1.5rem", width: 160, border: "1px solid rgba(0,155,155,0.2)", background: "linear-gradient(180deg,rgba(0,155,155,0.08),rgba(8,12,12,0.6))", overflow: "hidden", flexShrink: 0 }}>
                   <div style={{ width: "100%", height: 4, background: "linear-gradient(to right,#009B9B,#E8624A,#009B9B)" }} />
-                  <div style={{ width: "100%", height: 360, background: "linear-gradient(135deg,#0d1a1a 0%,#1a1000 40%,#0a1a1a 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "4rem", position: "relative" as const, overflow: "hidden", borderBottom: "1px solid rgba(0,155,155,0.15)" }}>
+                  <div style={{ width: 160, height: 160, background: "linear-gradient(135deg,#0d1a1a 0%,#1a1000 40%,#0a1a1a 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "4rem", position: "relative" as const, overflow: "hidden", borderBottom: "1px solid rgba(0,155,155,0.15)" }}>
                     {imagePreview ? (
                       <img src={imagePreview} alt={data.artistName} style={{ width: "100%", height: "100%", objectFit: "cover", position: "relative", zIndex: 1 }} />
                     ) : (
                       <img src={voicesLogo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     )}
                   </div>
-                  <div style={{ padding: "0.6rem 0.75rem", background: "rgba(0,0,0,0.3)", borderTop: "1px solid rgba(0,155,155,0.15)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <div>
-                      <div style={{ fontFamily: "'Dancing Script', cursive", fontSize: "1.2rem", fontWeight: 700, color: "#E8624A", lineHeight: 1.1, marginBottom: 1 }}>{data.artistName}</div>
-                      <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 9, color: "#009B9B", letterSpacing: "0.1em" }}>"{data.trackTitle}"</div>
-                    </div>
+                  <div style={{ padding: "0.6rem 0.75rem", background: "rgba(0,0,0,0.3)", borderTop: "1px solid rgba(0,155,155,0.15)" }}>
+                    <div style={{ fontFamily: "'Dancing Script', cursive", fontSize: "1rem", fontWeight: 700, color: "#E8624A", lineHeight: 1.1, marginBottom: 1 }}>{data.artistName}</div>
+                    <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 8, color: "#009B9B", letterSpacing: "0.1em", marginBottom: 5 }}>"{data.trackTitle}"</div>
                     <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 7, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "#5a9090" }}>
                       <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#009B9B", boxShadow: "0 0 5px #009B9B", animation: "promoBlink 1.2s infinite", display: "inline-block" }} />
                       Now on Platform
