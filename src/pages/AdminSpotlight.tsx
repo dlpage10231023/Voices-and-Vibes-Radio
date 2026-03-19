@@ -283,6 +283,9 @@ const AdminSpotlight = () => {
             )}
           </div>
 
+          {/* ══════════ COMMERCIALS SECTION ══════════ */}
+          <AdminCommercials />
+
           {/* Preview link */}
           <a href="/artist-player" target="_blank" rel="noopener noreferrer" className="font-montserrat font-bold text-[10px] tracking-[0.1em] uppercase no-underline text-center" style={{ background: "transparent", border: "1px solid rgba(0,155,155,0.3)", color: "#009B9B", padding: "10px" }}>
             👁 Preview Player
