@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import AdminCommercials from "@/components/AdminCommercials";
 import { toast } from "sonner";
 
 const ADMIN_PW = import.meta.env.VITE_ADMIN_PASSWORD || "";
@@ -281,6 +282,9 @@ const AdminSpotlight = () => {
               </div>
             )}
           </div>
+
+          {/* ══════════ COMMERCIALS SECTION ══════════ */}
+          <AdminCommercials />
 
           {/* Preview link */}
           <a href="/artist-player" target="_blank" rel="noopener noreferrer" className="font-montserrat font-bold text-[10px] tracking-[0.1em] uppercase no-underline text-center" style={{ background: "transparent", border: "1px solid rgba(0,155,155,0.3)", color: "#009B9B", padding: "10px" }}>

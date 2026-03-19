@@ -59,6 +59,36 @@ export type Database = {
         }
         Relationships: []
       }
+      commercials: {
+        Row: {
+          audio_url: string | null
+          created_at: string
+          id: string
+          sort_order: number
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audio_url?: string | null
+          created_at?: string
+          id?: string
+          sort_order?: number
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          audio_url?: string | null
+          created_at?: string
+          id?: string
+          sort_order?: number
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       day_audio: {
         Row: {
           album_art_url: string | null
