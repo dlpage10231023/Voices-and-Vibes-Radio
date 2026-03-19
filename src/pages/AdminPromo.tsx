@@ -342,6 +342,7 @@ ${cardHtml}
         </div>
 
         {/* ══════════ RIGHT: LIVE CARD (exact replica) ══════════ */}
+          {audioSrc && <audio ref={audioRef} src={audioSrc} preload="auto" />}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
           <div
             ref={cardRef}
