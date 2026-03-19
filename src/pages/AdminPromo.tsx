@@ -77,7 +77,7 @@ const AdminPromo = () => {
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState("0:00");
   const [duration, setDuration] = useState("0:00");
-  const [visibleLines, setVisibleLines] = useState<Set<number>>(new Set());
+  const [visibleLines, setVisibleLines] = useState<Set<number>>(new Set(DEFAULT_LINES.map((_, i) => i)));
   const [announceDone, setAnnounceDone] = useState(false);
   const [eqHeights, setEqHeights] = useState<number[]>([4, 4, 4, 4, 4, 4, 4, 4]);
   const cardRef = useRef<HTMLDivElement>(null);
