@@ -186,7 +186,7 @@ const ArtistPlayer = () => {
           <div
             className="w-full relative overflow-hidden"
             style={{
-              maxWidth: 520,
+              maxWidth: 860,
               background: "#1a1a1a",
               border: "1px solid rgba(0,155,155,0.2)",
               transition: "border-color .2s, box-shadow .2s"
