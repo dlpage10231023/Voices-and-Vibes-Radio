@@ -72,6 +72,7 @@ const AdminPromo = () => {
   const [authed, setAuthed] = useState(sessionStorage.getItem("vv_admin") === "1");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageSize, setImageSize] = useState(220);
+  const [imageZoom, setImageZoom] = useState(100);
   const [downloading, setDownloading] = useState(false);
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -400,6 +401,25 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                 </div>
               </div>
 
+              {/* Image zoom adjuster */}
+              <div>
+                <label className={`block ${label}`} style={{ color: "#009B9B" }}>Image Zoom — {imageZoom}%</label>
+                <div className="flex items-center gap-2">
+                  <span className="font-montserrat text-[9px]" style={{ color: "#5a9090" }}>100</span>
+                  <input
+                    type="range"
+                    min={100}
+                    max={250}
+                    step={5}
+                    value={imageZoom}
+                    onChange={(e) => setImageZoom(Number(e.target.value))}
+                    className="w-full"
+                    style={{ accentColor: "#E8624A" }}
+                  />
+                  <span className="font-montserrat text-[9px]" style={{ color: "#5a9090" }}>250</span>
+                </div>
+              </div>
+
               {/* Audio upload */}
               <div>
                 <label className={`block ${label}`} style={{ color: "#009B9B" }}>Audio Track</label>
@@ -490,7 +510,7 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                   <div style={{ width: "100%", height: 4, background: "linear-gradient(to right,#009B9B,#E8624A,#009B9B)" }} />
                   <div style={{ width: imageSize, height: imageSize, background: "linear-gradient(135deg,#0d1a1a 0%,#1a1000 40%,#0a1a1a 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "4rem", position: "relative" as const, overflow: "hidden", borderBottom: "1px solid rgba(0,155,155,0.15)" }}>
                     {imagePreview ? (
-                      <img src={imagePreview} alt={data.artistName} style={{ width: "100%", height: "100%", objectFit: "cover", position: "relative", zIndex: 1 }} />
+                      <img src={imagePreview} alt={data.artistName} style={{ width: "100%", height: "100%", objectFit: "cover", position: "relative", zIndex: 1, transform: `scale(${imageZoom / 100})` }} />
                     ) : (
                       <img src={voicesLogo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     )}
