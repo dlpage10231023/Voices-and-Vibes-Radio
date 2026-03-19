@@ -466,9 +466,9 @@ const AdminPromo = () => {
 
               {/* FOOTER */}
               <div style={{ padding: "0.75rem 1.5rem", borderTop: "1px solid rgba(0,155,155,0.1)", display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(0,0,0,0.2)", flexWrap: "wrap" as const, gap: "0.5rem" }}>
-                <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 9, color: "#009B9B", letterSpacing: "0.08em" }}>
-                  voicesandvibesradio.com/artists/{data.slug}
-                </span>
+                <a href="https://voicesandvibesradio.com" target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 9, color: "#009B9B", letterSpacing: "0.08em", textDecoration: "none" }}>
+                  voicesandvibesradio.com
+                </a>
                 <div style={{ display: "flex", gap: 6 }}>
                   <button
                     onClick={() => {
