@@ -43,6 +43,7 @@ const ArtistPlayer = () => {
     isPlaying, elapsed, duration, progress, volume, isMuted, isLooping, isShuffled,
     metaTitle, metaArtist, metaAlbum, metaYear, artSrc,
     togglePlay, skipBack, skipFwd, seekTo,
+    nextTrack, prevTrack, trackIndex, trackCount,
     toggleLoop, toggleShuffle, toggleMute, setVolume,
     loadAudioFile, loadImageFile, setArtSrc,
     setMetaTitle, setMetaArtist, setMetaAlbum, setMetaYear,
