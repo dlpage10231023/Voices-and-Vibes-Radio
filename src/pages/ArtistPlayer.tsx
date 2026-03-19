@@ -509,13 +509,6 @@ const ArtistPlayer = () => {
       </div>
 
       {/* Hidden inputs */}
-      <input
-        ref={audioInputRef}
-        id="audioInput"
-        type="file"
-        accept="audio/*"
-        className="hidden"
-        onChange={(e) => e.target.files?.[0] && loadAudioFile(e.target.files[0])} />
       
       <input
         ref={imgInputRef}
