@@ -538,7 +538,7 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
               </div>
 
               {/* CONTROLS */}
-              <div style={{ padding: "1rem 1.5rem 1.25rem", borderTop: "1px solid rgba(0,155,155,0.12)", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <div className="flex flex-wrap items-center gap-3 p-4 sm:px-6 sm:py-4" style={{ borderTop: "1px solid rgba(0,155,155,0.12)" }}>
                 <button
                   data-promo-play=""
                   onClick={togglePlay}
