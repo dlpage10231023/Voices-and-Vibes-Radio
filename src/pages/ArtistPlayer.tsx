@@ -431,30 +431,21 @@ const ArtistPlayer = () => {
           </div>
 
 
-          {/* ── Metadata Fields ── */}
+          {/* ── Track Details (read-only) ── */}
           <div className="font-montserrat font-bold text-[9px] tracking-[0.22em] uppercase" style={{ color: "#009B9B" }}>Track details</div>
           <div style={{ background: "#1a1a1a", border: "1px solid rgba(0,155,155,0.2)", padding: "0.85rem 1rem" }}>
             <div className="grid grid-cols-2 gap-3">
               {[
-              { label: "Track Title", value: metaTitle, set: setMetaTitle, ph: "Song name" },
-              { label: "Artist", value: metaArtist, set: setMetaArtist, ph: "Artist name" },
-              { label: "Album", value: metaAlbum, set: setMetaAlbum, ph: "Album title" },
-              { label: "Year", value: metaYear, set: setMetaYear, ph: "2024" }].
-              map((f) =>
-              <div key={f.label}>
-                  <label className="block font-montserrat font-bold text-[8px] tracking-[0.18em] uppercase mb-[0.3rem]" style={{ color: "#009B9B" }}>{f.label}</label>
-                  <input
-                  type="text"
-                  value={f.value}
-                  onChange={(e) => f.set(e.target.value)}
-                  placeholder={f.ph}
-                  className="w-full font-montserrat text-[11px] text-white outline-none"
-                  style={{ background: "rgba(0,155,155,0.05)", border: "1px solid rgba(0,155,155,0.2)", padding: "7px 9px", transition: "border-color .2s" }}
-                  onFocus={(e) => e.currentTarget.style.borderColor = "#009B9B"}
-                  onBlur={(e) => e.currentTarget.style.borderColor = "rgba(0,155,155,0.2)"} />
-                
+                { label: "Track Title", value: metaTitle || "—" },
+                { label: "Artist", value: metaArtist || "—" },
+                { label: "Album", value: metaAlbum || "—" },
+                { label: "Year", value: metaYear || "—" },
+              ].map((f) => (
+                <div key={f.label}>
+                  <div className="font-montserrat font-bold text-[8px] tracking-[0.18em] uppercase mb-[0.3rem]" style={{ color: "#009B9B" }}>{f.label}</div>
+                  <div className="font-montserrat text-[11px] text-white" style={{ padding: "7px 0" }}>{f.value}</div>
                 </div>
-              )}
+              ))}
             </div>
           </div>
 
