@@ -347,10 +347,10 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
       </div>
       <div style={{ position: "fixed", inset: 0, zIndex: 1, pointerEvents: "none", background: "radial-gradient(ellipse 80% 80% at 50% 50%, rgba(8,12,12,0.6) 0%, rgba(8,12,12,0.85) 60%, rgba(8,12,12,0.97) 100%)" }} />
 
-      <div style={{ position: "relative", zIndex: 10, display: "flex", gap: "2rem", padding: "2rem 5vw", minHeight: "100vh" }}>
+      <div className="relative z-10 flex flex-col lg:flex-row gap-6 lg:gap-8 p-4 sm:p-6 lg:px-[5vw] lg:py-8 min-h-screen">
         {/* ══════════ LEFT: FORM ══════════ */}
-        <div style={{ width: 340, flexShrink: 0 }}>
-          <div style={{ background: "#131e1e", border: "1px solid rgba(0,155,155,0.3)", padding: "1.5rem", position: "sticky", top: "2rem" }}>
+        <div className="w-full lg:w-[340px] lg:flex-shrink-0">
+          <div style={{ background: "#131e1e", border: "1px solid rgba(0,155,155,0.3)", padding: "1.5rem" }} className="lg:sticky lg:top-8">
             <div className="font-montserrat font-bold text-[11px] tracking-[0.2em] uppercase mb-4" style={{ color: "#009B9B" }}>⚙️ Promo Editor</div>
 
             <div className="flex flex-col gap-3">
@@ -466,9 +466,9 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                 </div>
 
                 {/* FLOAT ARTIST IMAGE */}
-                <div style={{ float: "right" as const, margin: "0 0 1rem 1.5rem", width: 220, border: "1px solid rgba(0,155,155,0.2)", background: "linear-gradient(180deg,rgba(0,155,155,0.08),rgba(8,12,12,0.6))", overflow: "hidden", flexShrink: 0 }}>
+                <div className="float-right mb-4 ml-4 w-[140px] sm:w-[220px]" style={{ border: "1px solid rgba(0,155,155,0.2)", background: "linear-gradient(180deg,rgba(0,155,155,0.08),rgba(8,12,12,0.6))", overflow: "hidden", flexShrink: 0 }}>
                   <div style={{ width: "100%", height: 4, background: "linear-gradient(to right,#009B9B,#E8624A,#009B9B)" }} />
-                  <div style={{ width: 220, height: 220, background: "linear-gradient(135deg,#0d1a1a 0%,#1a1000 40%,#0a1a1a 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "4rem", position: "relative" as const, overflow: "hidden", borderBottom: "1px solid rgba(0,155,155,0.15)" }}>
+                  <div className="w-[140px] h-[140px] sm:w-[220px] sm:h-[220px]" style={{ background: "linear-gradient(135deg,#0d1a1a 0%,#1a1000 40%,#0a1a1a 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "4rem", position: "relative" as const, overflow: "hidden", borderBottom: "1px solid rgba(0,155,155,0.15)" }}>
                     {imagePreview ? (
                       <img src={imagePreview} alt={data.artistName} style={{ width: "100%", height: "100%", objectFit: "cover", position: "relative", zIndex: 1 }} />
                     ) : (
@@ -538,7 +538,7 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
               </div>
 
               {/* CONTROLS */}
-              <div style={{ padding: "1rem 1.5rem 1.25rem", borderTop: "1px solid rgba(0,155,155,0.12)", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <div className="flex flex-wrap items-center gap-3 p-4 sm:px-6 sm:py-4" style={{ borderTop: "1px solid rgba(0,155,155,0.12)" }}>
                 <button
                   data-promo-play=""
                   onClick={togglePlay}
@@ -567,7 +567,7 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                   ))}
                 </div>
                 {/* Volume */}
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <div className="hidden sm:flex items-center gap-[6px]">
                   <span style={{ fontSize: 10, color: "#5a9090" }}>🔈</span>
                   <input
                     type="range"
