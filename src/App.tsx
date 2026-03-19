@@ -12,6 +12,7 @@ import DayPage from "./pages/DayPage.tsx";
 import ArtistPlayer from "./pages/ArtistPlayer.tsx";
 import AudioAdmin from "./pages/AudioAdmin.tsx";
 import AdminSpotlight from "./pages/AdminSpotlight.tsx";
+import Studios from "./pages/Studios.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const SplashGate = () => {
@@ -35,6 +36,7 @@ const App = () => (
               <Route path="/admin/audio" element={<AudioAdmin />} />
               <Route path="/admin/spotlight" element={<AdminSpotlight />} />
               <Route path="/artist-player" element={<ArtistPlayer />} />
+              <Route path="/studios" element={<Studios />} />
               <Route path="/:day" element={<DayPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
