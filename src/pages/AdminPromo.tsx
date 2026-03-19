@@ -473,11 +473,13 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                 </div>
                 <div style={{ display: "flex", flexDirection: "column" as const, gap: 0 }}>
                   {DEFAULT_LINES.map((line, i) => {
-                    if (line.type === "pause") return <div key={i} style={{ height: "0.5rem", border: "none" }} />;
+                    if (line.type === "pause") return <div key={i} data-promo-line={i} data-line-type="pause" style={{ height: "0.5rem", border: "none" }} />;
                     const visible = visibleLines.has(i);
                     return (
                       <div
                         key={i}
+                        data-promo-line={i}
+                        data-line-type={line.type}
                         style={{
                           fontSize: line.type === "station-name" ? "1.1rem" : line.type === "url" ? 11 : 13,
                           lineHeight: 1.9,
