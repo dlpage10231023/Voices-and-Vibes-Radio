@@ -128,12 +128,9 @@ const ArtistPlayer = () => {
     }
   };
 
-  /* ── load past spotlight into player ── */
-  const loadSpotlight = (spot: ArchivedSpot) => {
-    setMetaArtist(spot.artist || "");
-    setMetaTitle(spot.title || "");
-    setMetaAlbum("");
-    setMetaYear("");
+  /* ── load past spotlight info (does NOT interrupt current playback) ── */
+  const loadSpotlight = (_spot: ArchivedSpot) => {
+    // Archived spots are display-only; don't change current playback
   };
 
   const handleSeekClick = (e: React.MouseEvent<HTMLDivElement>) => {
