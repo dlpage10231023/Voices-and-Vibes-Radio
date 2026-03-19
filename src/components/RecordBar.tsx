@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import vinylImg from "@/assets/vinyl-record.png";
+import vinylImg from "@/assets/vinyl-record-new.jpg";
 
 const RecordBar = () => {
   const [isPlaying, setIsPlaying] = useState(false);
