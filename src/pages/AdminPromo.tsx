@@ -350,7 +350,7 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
       <div className="relative z-10 flex flex-col lg:flex-row gap-6 lg:gap-8 p-4 sm:p-6 lg:px-[5vw] lg:py-8 min-h-screen">
         {/* ══════════ LEFT: FORM ══════════ */}
         <div className="w-full lg:w-[340px] lg:flex-shrink-0">
-          <div style={{ background: "#131e1e", border: "1px solid rgba(0,155,155,0.3)", padding: "1.5rem", position: "sticky", top: "2rem" }}>
+          <div style={{ background: "#131e1e", border: "1px solid rgba(0,155,155,0.3)", padding: "1.5rem" }} className="lg:sticky lg:top-8">
             <div className="font-montserrat font-bold text-[11px] tracking-[0.2em] uppercase mb-4" style={{ color: "#009B9B" }}>⚙️ Promo Editor</div>
 
             <div className="flex flex-col gap-3">
