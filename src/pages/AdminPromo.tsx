@@ -239,6 +239,19 @@ const AdminPromo = () => {
               <input ref={imgInputRef} type="file" accept="image/*" className="hidden" onChange={handleImage} />
             </div>
 
+            {/* Audio upload */}
+            <div className="mb-3">
+              <label className={`block ${label}`} style={{ color: "#009B9B" }}>Artist Track (Audio)</label>
+              <button onClick={() => audioInputRef.current?.click()} className="flex items-center gap-2 cursor-pointer" style={{ background: "rgba(0,155,155,0.05)", border: `1px dashed ${audioSrc ? "#22c55e" : "rgba(0,155,155,0.25)"}`, padding: "0.75rem 1rem", width: "100%" }}>
+                <span className="text-[1.2rem]">🎵</span>
+                <span className="font-montserrat font-bold text-[10px] tracking-[0.15em] uppercase" style={{ color: audioSrc ? "#22c55e" : "#009B9B" }}>
+                  {audioSrc ? "✓ Track Ready" : "Upload Audio Track"}
+                </span>
+                <span className="text-[10px] ml-auto" style={{ color: "#5a9090" }}>MP3, WAV, OGG</span>
+              </button>
+              <input ref={audioInputRef} type="file" accept="audio/*" className="hidden" onChange={handleAudio} />
+            </div>
+
             {/* Announcement text */}
             <div>
               <label className={`block ${label}`} style={{ color: "#009B9B" }}>Announcement Script</label>
