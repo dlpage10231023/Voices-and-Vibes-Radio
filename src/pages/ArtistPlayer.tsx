@@ -46,7 +46,8 @@ const ArtistPlayer = () => {
     nextTrack, prevTrack, trackIndex, trackCount,
     toggleLoop, toggleShuffle, toggleMute, setVolume,
     loadAudioFile, loadImageFile, setArtSrc,
-    audioElement, getAnalyser
+    audioElement, getAnalyser,
+    isPlayingCommercial,
   } = ctx;
 
   const imgInputRef = useRef<HTMLInputElement | null>(null);
