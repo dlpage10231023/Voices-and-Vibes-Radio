@@ -430,38 +430,6 @@ const ArtistPlayer = () => {
             </div>
           </div>
 
-          {/* ── Past Artist Spotlights ── */}
-          <div className="font-montserrat font-bold text-[9px] tracking-[0.22em] uppercase" style={{ color: "#009B9B" }}>Previous spotlights</div>
-          <div style={{ background: "#1a1a1a", border: "1px solid rgba(0,155,155,0.2)", padding: "0.85rem 1rem" }}>
-            <div className="grid grid-cols-2 gap-2">
-              {archivedSpots.slice(0, 3).map((spot) =>
-              <button
-                key={spot.id}
-                className="text-left cursor-pointer transition-all overflow-hidden"
-                style={{ background: "#0f1a1a", border: "1px solid rgba(0,155,155,0.15)", padding: 0 }}
-                onClick={() => loadSpotlight(spot)}>
-                
-                  {spot.image_url ? (
-                    <img src={spot.image_url} alt="" style={{ width: "100%", height: 48, objectFit: "cover", objectPosition: "top" }} />
-                  ) : (
-                    <div className="flex items-center justify-center" style={{ height: 48, background: "linear-gradient(135deg,#007A7A,#0d1818)" }}>
-                      <span className="text-[1.1rem] opacity-50">🎵</span>
-                    </div>
-                  )}
-                  <div style={{ padding: "5px 8px" }}>
-                    <div className="font-montserrat font-bold text-[10px] text-white truncate">{spot.artist}</div>
-                    <div className="font-montserrat text-[9px] truncate" style={{ color: "#5a9090" }}>{spot.title}</div>
-                  </div>
-                </button>
-              )}
-              <div className="flex items-center justify-center cursor-pointer transition-all" style={{ border: "1px dashed rgba(0,155,155,0.2)", background: "transparent", minHeight: 82 }}>
-                <div className="text-center">
-                  <div className="font-montserrat font-bold text-[11px]" style={{ color: "#009B9B" }}>+ Submit</div>
-                  <div className="font-montserrat text-[9px]" style={{ color: "#5a9090" }}>Your Artist</div>
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* ── Metadata Fields ── */}
           <div className="font-montserrat font-bold text-[9px] tracking-[0.22em] uppercase" style={{ color: "#009B9B" }}>Track details</div>
