@@ -567,7 +567,7 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                   ))}
                 </div>
                 {/* Volume */}
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <div className="hidden sm:flex items-center gap-[6px]">
                   <span style={{ fontSize: 10, color: "#5a9090" }}>🔈</span>
                   <input
                     type="range"
