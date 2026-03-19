@@ -401,6 +401,25 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                 </div>
               </div>
 
+              {/* Image zoom adjuster */}
+              <div>
+                <label className={`block ${label}`} style={{ color: "#009B9B" }}>Image Zoom — {imageZoom}%</label>
+                <div className="flex items-center gap-2">
+                  <span className="font-montserrat text-[9px]" style={{ color: "#5a9090" }}>100</span>
+                  <input
+                    type="range"
+                    min={100}
+                    max={250}
+                    step={5}
+                    value={imageZoom}
+                    onChange={(e) => setImageZoom(Number(e.target.value))}
+                    className="w-full"
+                    style={{ accentColor: "#E8624A" }}
+                  />
+                  <span className="font-montserrat text-[9px]" style={{ color: "#5a9090" }}>250</span>
+                </div>
+              </div>
+
               {/* Audio upload */}
               <div>
                 <label className={`block ${label}`} style={{ color: "#009B9B" }}>Audio Track</label>
