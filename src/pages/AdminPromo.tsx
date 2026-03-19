@@ -347,9 +347,9 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
       </div>
       <div style={{ position: "fixed", inset: 0, zIndex: 1, pointerEvents: "none", background: "radial-gradient(ellipse 80% 80% at 50% 50%, rgba(8,12,12,0.6) 0%, rgba(8,12,12,0.85) 60%, rgba(8,12,12,0.97) 100%)" }} />
 
-      <div style={{ position: "relative", zIndex: 10, display: "flex", gap: "2rem", padding: "2rem 5vw", minHeight: "100vh" }}>
+      <div className="relative z-10 flex flex-col lg:flex-row gap-6 lg:gap-8 p-4 sm:p-6 lg:px-[5vw] lg:py-8 min-h-screen">
         {/* ══════════ LEFT: FORM ══════════ */}
-        <div style={{ width: 340, flexShrink: 0 }}>
+        <div className="w-full lg:w-[340px] lg:flex-shrink-0">
           <div style={{ background: "#131e1e", border: "1px solid rgba(0,155,155,0.3)", padding: "1.5rem", position: "sticky", top: "2rem" }}>
             <div className="font-montserrat font-bold text-[11px] tracking-[0.2em] uppercase mb-4" style={{ color: "#009B9B" }}>⚙️ Promo Editor</div>
 
