@@ -1,199 +1,180 @@
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import vinylImg from "@/assets/vinyl-record.png";
 
-/* ── Chord / drum data (Afrobeats Jazz 92 BPM) ── */
-const CHORDS = [
-  [146.83, 174.61, 220, 261.63, 329.63],
-  [196, 233.08, 293.66, 349.23, 440],
-  [233.08, 293.66, 349.23, 440, 523.25],
-  [220, 261.63, 329.63, 392, 493.88],
-];
-const BASS = [146.83, 196, 233.08, 220];
-const KICK_PAT  = [1,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0];
-const SNARE_PAT = [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0];
-const HAT_PAT   = [1,0,1,0,1,1,0,1,1,0,1,0,1,1,0,1];
-const BPM = 92;
-const STEP_DUR = 60 / BPM / 4;
-const NOTE_VOLS = [0.06, 0.048, 0.042, 0.036, 0.03];
-
 const RecordBar = () => {
-  const [playing, setPlaying] = useState(false);
-  const actxRef = useRef<AudioContext | null>(null);
-  const masterRef = useRef<GainNode | null>(null);
-  const schedRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const stepRef = useRef(0);
-  const nextStepTimeRef = useRef(0);
-  const noiseRef = useRef<AudioBuffer | null>(null);
-  const eqBarsRef = useRef<HTMLDivElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const masterGainRef = useRef<GainNode | null>(null);
+  const noiseBufferRef = useRef<AudioBuffer | null>(null);
+  const schedIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const nextTimeRef = useRef(0);
+  const chordIdxRef = useRef(0);
   const eqIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const eqBarsRef = useRef<HTMLDivElement[]>([]);
 
-  /* ── Noise buffer ── */
-  const getNoise = useCallback((ctx: AudioContext) => {
-    if (noiseRef.current) return noiseRef.current;
-    const buf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+  const CHORDS = [
+    [146.83, 174.61, 220, 261.63, 329.63],
+    [196, 233.08, 293.66, 349.23, 440],
+    [233.08, 293.66, 349.23, 440, 523.25],
+    [220, 261.63, 329.63, 392, 493.88],
+  ];
+  const BASS = [146.83, 196, 233.08, 220];
+  const KICK  = [1,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0];
+  const SNARE = [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0];
+  const HAT   = [1,0,1,0,1,1,0,1,1,0,1,0,1,1,0,1];
+
+  function initAudio() {
+    if (audioCtxRef.current) return;
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const gain = ctx.createGain();
+    gain.gain.value = 0;
+    gain.connect(ctx.destination);
+    audioCtxRef.current = ctx;
+    masterGainRef.current = gain;
+    const buf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
     const d = buf.getChannelData(0);
     for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-    noiseRef.current = buf;
-    return buf;
-  }, []);
+    noiseBufferRef.current = buf;
+  }
 
-  /* ── Synth helpers ── */
-  const playChord = useCallback((ctx: AudioContext, master: GainNode, chordIdx: number, time: number) => {
-    const freqs = CHORDS[chordIdx % 4];
-    freqs.forEach((f, i) => {
-      const osc = ctx.createOscillator();
-      osc.type = "sine";
-      osc.frequency.value = f;
-      const g = ctx.createGain();
-      const t = time + i * 0.06;
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(NOTE_VOLS[i] ?? 0.03, t + 0.18);
-      g.gain.linearRampToValueAtTime(0, t + 0.18 + 0.6);
-      osc.connect(g).connect(master);
-      osc.start(t);
-      osc.stop(t + 0.18 + 0.6 + 0.05);
-    });
-    // bass
-    const bassOsc = ctx.createOscillator();
-    bassOsc.type = "sine";
-    bassOsc.frequency.value = BASS[chordIdx % 4];
-    const bg = ctx.createGain();
-    bg.gain.setValueAtTime(0, time);
-    bg.gain.linearRampToValueAtTime(0.13, time + 0.12);
-    bg.gain.linearRampToValueAtTime(0, time + 0.12 + 0.6);
-    bassOsc.connect(bg).connect(master);
-    bassOsc.start(time);
-    bassOsc.stop(time + 0.12 + 0.6 + 0.05);
-  }, []);
-
-  const playKick = useCallback((ctx: AudioContext, master: GainNode, time: number) => {
-    const osc = ctx.createOscillator();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(148, time);
-    osc.frequency.exponentialRampToValueAtTime(74, time + 0.52);
+  function playNote(freq: number, t: number, dur: number, vol: number, atk: number, rel: number) {
+    const ctx = audioCtxRef.current!;
+    const gain = masterGainRef.current!;
+    const o = ctx.createOscillator();
     const g = ctx.createGain();
-    g.gain.setValueAtTime(0.7, time);
-    g.gain.exponentialRampToValueAtTime(0.001, time + 0.52);
-    osc.connect(g).connect(master);
-    osc.start(time);
-    osc.stop(time + 0.55);
-  }, []);
+    o.type = "sine";
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + atk);
+    g.gain.linearRampToValueAtTime(vol * 0.7, t + dur * 0.5);
+    g.gain.linearRampToValueAtTime(0, t + dur + rel);
+    o.connect(g);
+    g.connect(gain);
+    o.start(t);
+    o.stop(t + dur + rel + 0.2);
+  }
 
-  const playSnare = useCallback((ctx: AudioContext, master: GainNode, time: number) => {
-    const src = ctx.createBufferSource();
-    src.buffer = getNoise(ctx);
-    const bp = ctx.createBiquadFilter();
-    bp.type = "bandpass";
-    bp.frequency.value = 280;
-    bp.Q.value = 1.5;
+  function playKick(t: number) {
+    const ctx = audioCtxRef.current!;
+    const gain = masterGainRef.current!;
+    const o = ctx.createOscillator();
     const g = ctx.createGain();
-    g.gain.setValueAtTime(0.16, time);
-    g.gain.exponentialRampToValueAtTime(0.001, time + 0.18);
-    src.connect(bp).connect(g).connect(master);
-    src.start(time);
-    src.stop(time + 0.2);
-  }, [getNoise]);
+    o.frequency.setValueAtTime(148, t);
+    o.frequency.exponentialRampToValueAtTime(74, t + 0.52);
+    g.gain.setValueAtTime(0.7, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.52);
+    o.connect(g);
+    g.connect(gain);
+    o.start(t);
+    o.stop(t + 0.6);
+  }
 
-  const playHat = useCallback((ctx: AudioContext, master: GainNode, time: number) => {
-    const src = ctx.createBufferSource();
-    src.buffer = getNoise(ctx);
-    const hp = ctx.createBiquadFilter();
-    hp.type = "highpass";
-    hp.frequency.value = 7800;
+  function playSnare(t: number) {
+    const ctx = audioCtxRef.current!;
+    const gain = masterGainRef.current!;
+    const n = ctx.createBufferSource();
+    n.buffer = noiseBufferRef.current;
+    const f = ctx.createBiquadFilter();
+    f.type = "bandpass";
+    f.frequency.value = 280;
+    f.Q.value = 1.5;
     const g = ctx.createGain();
-    g.gain.setValueAtTime(0.06, time);
-    g.gain.exponentialRampToValueAtTime(0.001, time + 0.045);
-    src.connect(hp).connect(g).connect(master);
-    src.start(time);
-    src.stop(time + 0.06);
-  }, [getNoise]);
+    g.gain.setValueAtTime(0.16, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    n.connect(f);
+    f.connect(g);
+    g.connect(gain);
+    n.start(t);
+    n.stop(t + 0.22);
+  }
 
-  /* ── Scheduler ── */
-  const scheduleStep = useCallback((ctx: AudioContext, master: GainNode, step: number, time: number) => {
-    const s = step % 16;
-    if (s === 0) playChord(ctx, master, Math.floor(step / 16) % 4, time);
-    if (KICK_PAT[s]) playKick(ctx, master, time);
-    if (SNARE_PAT[s]) playSnare(ctx, master, time);
-    if (HAT_PAT[s]) playHat(ctx, master, time);
-  }, [playChord, playKick, playSnare, playHat]);
+  function playHat(t: number) {
+    const ctx = audioCtxRef.current!;
+    const gain = masterGainRef.current!;
+    const n = ctx.createBufferSource();
+    n.buffer = noiseBufferRef.current;
+    const f = ctx.createBiquadFilter();
+    f.type = "highpass";
+    f.frequency.value = 7800;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.06, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
+    n.connect(f);
+    f.connect(g);
+    g.connect(gain);
+    n.start(t);
+    n.stop(t + 0.07);
+  }
 
-  const startScheduler = useCallback((ctx: AudioContext, master: GainNode) => {
-    stepRef.current = 0;
-    nextStepTimeRef.current = ctx.currentTime + 0.1;
-    schedRef.current = setInterval(() => {
-      while (nextStepTimeRef.current < ctx.currentTime + 0.15) {
-        scheduleStep(ctx, master, stepRef.current, nextStepTimeRef.current);
-        nextStepTimeRef.current += STEP_DUR;
-        stepRef.current++;
+  function scheduleBar(t: number, barDur: number) {
+    const ci = chordIdxRef.current;
+    playNote(BASS[ci], t, barDur * 1.1, 0.13, 0.12, 0.8);
+    const vols = [0.06, 0.048, 0.042, 0.036, 0.03];
+    CHORDS[ci].forEach((freq, i) =>
+      playNote(freq, t + i * 0.06, barDur * 0.92, vols[i] || 0.025, 0.18 + i * 0.04, 0.6)
+    );
+    const stepDur = barDur / 16;
+    for (let s = 0; s < 16; s++) {
+      const st = t + s * stepDur;
+      if (KICK[s]) playKick(st);
+      if (SNARE[s]) playSnare(st);
+      if (HAT[s]) playHat(st);
+    }
+    chordIdxRef.current = (ci + 1) % 4;
+  }
+
+  function startScheduler() {
+    const barDur = (60 / 92) * 4;
+    nextTimeRef.current = audioCtxRef.current!.currentTime + 0.1;
+    chordIdxRef.current = 0;
+    schedIntervalRef.current = setInterval(() => {
+      const ctx = audioCtxRef.current;
+      if (!ctx) return;
+      while (nextTimeRef.current < ctx.currentTime + 0.15) {
+        scheduleBar(nextTimeRef.current, barDur);
+        nextTimeRef.current += barDur;
       }
     }, 100);
-  }, [scheduleStep]);
+  }
 
-  /* ── EQ bars animation ── */
-  const startEqAnim = useCallback(() => {
+  function startEQ() {
     eqIntervalRef.current = setInterval(() => {
-      const el = eqBarsRef.current;
-      if (!el) return;
-      const bars = el.children;
-      for (let i = 0; i < bars.length; i++) {
-        (bars[i] as HTMLElement).style.height = `${4 + Math.random() * 18}px`;
-      }
+      eqBarsRef.current.forEach((bar) => {
+        if (bar) bar.style.height = (4 + Math.random() * 20) + "px";
+      });
     }, 90);
-  }, []);
+  }
 
-  const stopEqAnim = useCallback(() => {
+  function stopEQ() {
     if (eqIntervalRef.current) clearInterval(eqIntervalRef.current);
-    eqIntervalRef.current = null;
-    const el = eqBarsRef.current;
-    if (el) {
-      for (let i = 0; i < el.children.length; i++) {
-        (el[i] as unknown as HTMLElement)?.style && ((el.children[i] as HTMLElement).style.height = "4px");
-      }
-    }
-  }, []);
+    eqBarsRef.current.forEach((bar) => {
+      if (bar) bar.style.height = "4px";
+    });
+  }
 
-  /* ── Play / Pause ── */
-  const handleToggle = useCallback(async () => {
-    if (playing) {
-      // stop
-      const m = masterRef.current;
-      const ctx = actxRef.current;
-      if (m && ctx) {
-        m.gain.cancelScheduledValues(ctx.currentTime);
-        m.gain.setValueAtTime(m.gain.value, ctx.currentTime);
-        m.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.2);
-      }
-      if (schedRef.current) clearInterval(schedRef.current);
-      schedRef.current = null;
-      stopEqAnim();
-      setPlaying(false);
-      return;
+  function togglePlay() {
+    initAudio();
+    const ctx = audioCtxRef.current!;
+    const gain = masterGainRef.current!;
+    if (ctx.state === "suspended") ctx.resume();
+    if (!isPlaying) {
+      gain.gain.cancelScheduledValues(ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 3);
+      startScheduler();
+      startEQ();
+      setIsPlaying(true);
+    } else {
+      gain.gain.cancelScheduledValues(ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.2);
+      if (schedIntervalRef.current) clearInterval(schedIntervalRef.current);
+      stopEQ();
+      setIsPlaying(false);
     }
+  }
 
-    // start
-    let ctx = actxRef.current;
-    if (!ctx) {
-      ctx = new AudioContext();
-      const master = ctx.createGain();
-      master.gain.value = 0;
-      master.connect(ctx.destination);
-      actxRef.current = ctx;
-      masterRef.current = master;
-    }
-    if (ctx.state === "suspended") await ctx.resume();
-    const master = masterRef.current!;
-    master.gain.cancelScheduledValues(ctx.currentTime);
-    master.gain.setValueAtTime(0, ctx.currentTime);
-    master.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 3);
-    startScheduler(ctx, master);
-    startEqAnim();
-    setPlaying(true);
-  }, [playing, startScheduler, startEqAnim, stopEqAnim]);
-
-  /* cleanup on unmount */
   useEffect(() => {
     return () => {
-      if (schedRef.current) clearInterval(schedRef.current);
+      if (schedIntervalRef.current) clearInterval(schedIntervalRef.current);
       if (eqIntervalRef.current) clearInterval(eqIntervalRef.current);
     };
   }, []);
@@ -227,8 +208,8 @@ const RecordBar = () => {
             width: 88,
             height: 88,
             animation: "vinylSpin 10s linear infinite",
-            animationPlayState: playing ? "running" : "paused",
-            filter: playing ? "brightness(1)" : "brightness(0.8)",
+            animationPlayState: isPlaying ? "running" : "paused",
+            filter: isPlaying ? "brightness(1)" : "brightness(0.8)",
           }}
         />
         {/* Center dot */}
@@ -282,7 +263,6 @@ const RecordBar = () => {
           Restorative Conversations meet Jazz · Houston, TX
         </div>
         <div className="flex items-center gap-2 mt-1 flex-wrap">
-          {/* Live badge */}
           <span className="flex items-center gap-1" style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "#E8624A" }}>
             <span className="rounded-full animate-blink" style={{ width: 5, height: 5, background: "#E8624A", display: "inline-block" }} />
             Live Now
@@ -291,7 +271,7 @@ const RecordBar = () => {
           <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 8, color: "rgba(138,184,184,0.45)", letterSpacing: "0.08em" }}>Est. Jan 2026</span>
           <span style={{ color: "rgba(138,184,184,0.3)", fontSize: 8 }}>·</span>
           <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 8, color: "rgba(138,184,184,0.45)" }}>
-            {playing ? "33 RPM · Spinning" : "33 RPM · Idle"}
+            {isPlaying ? "33 RPM · Spinning" : "33 RPM · Idle"}
           </span>
           <span style={{ color: "rgba(138,184,184,0.3)", fontSize: 8 }}>·</span>
           <span
@@ -310,10 +290,11 @@ const RecordBar = () => {
       </div>
 
       {/* CENTER-RIGHT — EQ Bars */}
-      <div ref={eqBarsRef} className="flex items-end gap-0.5 mr-4 flex-shrink-0" style={{ height: 28 }}>
+      <div className="flex items-end gap-0.5 mr-4 flex-shrink-0" style={{ height: 28 }}>
         {Array.from({ length: 10 }).map((_, i) => (
           <div
             key={i}
+            ref={(el) => { if (el) eqBarsRef.current[i] = el; }}
             style={{
               width: 3,
               height: 4,
@@ -331,31 +312,31 @@ const RecordBar = () => {
           style={{
             fontFamily: "'Share Tech Mono', monospace",
             fontSize: 8,
-            color: playing ? "#009B9B" : "#8ab8b8",
+            color: isPlaying ? "#009B9B" : "#8ab8b8",
             background: "rgba(0,155,155,0.06)",
             border: "1px solid rgba(0,155,155,0.15)",
             padding: "3px 8px",
           }}
         >
-          {playing ? "● 33 RPM" : "33 RPM"}
+          {isPlaying ? "● 33 RPM" : "33 RPM"}
         </span>
 
         <button
-          onClick={handleToggle}
+          onClick={togglePlay}
           className="flex items-center justify-center border-none cursor-pointer"
           style={{
             width: 44,
             height: 44,
             borderRadius: "50%",
-            background: playing ? "#E8624A" : "#009B9B",
+            background: isPlaying ? "#E8624A" : "#009B9B",
             color: "#0a0a0a",
             fontSize: "1rem",
-            boxShadow: playing
+            boxShadow: isPlaying
               ? "0 0 16px rgba(232,98,74,0.35)"
               : "0 0 16px rgba(0,155,155,0.35)",
           }}
         >
-          {playing ? "⏸" : "▶"}
+          {isPlaying ? "⏸" : "▶"}
         </button>
 
         <a
