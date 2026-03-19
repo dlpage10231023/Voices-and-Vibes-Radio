@@ -126,6 +126,36 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
+  // Load a specific track by index into the audio element
+  const loadTrackByIndex = useCallback((idx: number, autoPlay = false) => {
+    const t = tracksRef.current;
+    if (!t.length) return;
+    const i = idx % t.length;
+    const track = t[i];
+    setTrackIndex(i);
+    setIsPlayingCommercial(false);
+    isPlayingCommercialRef.current = false;
+
+    if (track.title) setMetaTitle(track.title);
+    if (track.artist) setMetaArtist(track.artist);
+    setMetaAlbum(track.album || "");
+    setMetaYear(track.year || "");
+    setArtSrc(track.image_url || null);
+
+    const a = audioRef.current;
+    if (a && track.audio_url) {
+      a.src = track.audio_url;
+      a.load();
+      setHasSource(true);
+      if (autoPlay) {
+        a.play().catch(() => {});
+        setIsPlaying(true);
+      }
+    } else {
+      setHasSource(!!track.audio_url);
+    }
+  }, []);
+
   // Helper to play a commercial by index
   const playCommercial = useCallback((idx: number) => {
     const c = commercialsRef.current;
@@ -169,24 +199,22 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
 
       if (isPlayingCommercialRef.current) {
         // Commercial just ended → advance to next spotlight track
-        setIsPlayingCommercial(false);
-        isPlayingCommercialRef.current = false;
         if (tracksRef.current.length > 0) {
           const next = (trackIndex + 1) % tracksRef.current.length;
           loadTrackByIndex(next, true);
         } else {
+          setIsPlayingCommercial(false);
+          isPlayingCommercialRef.current = false;
           a.pause();
           setIsPlaying(false);
         }
       } else if (tracksRef.current.length > 1) {
         // Spotlight track ended → try to play a commercial first
-        const nextCommIdx = (commercialIdxRef.current);
+        const nextCommIdx = commercialIdxRef.current;
         if (!playCommercial(nextCommIdx)) {
-          // No commercials available, just advance
           const next = (trackIndex + 1) % tracksRef.current.length;
           loadTrackByIndex(next, true);
         } else {
-          // Increment commercial index for next time
           commercialIdxRef.current = (nextCommIdx + 1) % (commercialsRef.current.length || 1);
           setCommercialIndex(commercialIdxRef.current);
         }
@@ -199,34 +227,6 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     return () => a.removeEventListener("ended", onEnd);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trackIndex, playCommercial, loadTrackByIndex]);
-
-  // Load a specific track by index into the audio element
-  const loadTrackByIndex = useCallback((idx: number, autoPlay = false) => {
-    const t = tracksRef.current;
-    if (!t.length) return;
-    const i = idx % t.length;
-    const track = t[i];
-    setTrackIndex(i);
-
-    if (track.title) setMetaTitle(track.title);
-    if (track.artist) setMetaArtist(track.artist);
-    setMetaAlbum(track.album || "");
-    setMetaYear(track.year || "");
-    setArtSrc(track.image_url || null);
-
-    const a = audioRef.current;
-    if (a && track.audio_url) {
-      a.src = track.audio_url;
-      a.load();
-      setHasSource(true);
-      if (autoPlay) {
-        a.play().catch(() => {});
-        setIsPlaying(true);
-      }
-    } else {
-      setHasSource(!!track.audio_url);
-    }
-  }, []);
 
   // Fetch all live tracks from cloud
   useEffect(() => {
