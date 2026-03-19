@@ -184,11 +184,39 @@ const AdminPromo = () => {
     };
   }, []);
 
+  const imgToBase64 = (url: string): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        canvas.getContext("2d")!.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL("image/png"));
+      };
+      img.onerror = () => resolve(url);
+      img.src = url;
+    });
+  };
+
   const downloadImage = async () => {
     if (!cardRef.current) return;
     setDownloading(true);
     try {
-      const cardHtml = cardRef.current.outerHTML;
+      // Convert all images in the card to base64
+      const clone = cardRef.current.cloneNode(true) as HTMLElement;
+      const imgs = clone.querySelectorAll("img");
+      await Promise.all(
+        Array.from(imgs).map(async (img) => {
+          if (img.src && !img.src.startsWith("data:")) {
+            const b64 = await imgToBase64(img.src);
+            img.src = b64;
+          }
+        })
+      );
+
+      const cardHtml = clone.outerHTML;
       const fullHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
