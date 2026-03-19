@@ -1,30 +1,75 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 
-/* ═══ MOOD DATA ═══ */
-const moods = [
-  { name: "Healing Jazz · Smooth & Restorative", meta: "Therapy-inspired · Midtempo", bpm: 88, chordSet: 0 },
-  { name: "Gospel Groove · Sunday Soul Vibes", meta: "Faith & Healing · Uplifting", bpm: 96, chordSet: 1 },
-  { name: "Afrobeats Jazz · Rhythm & Restoration", meta: "Voices & Vibes Signature", bpm: 92, chordSet: 2 },
-  { name: "Soul Saturday · Deep Rest & Peace", meta: "Self-Care Soundscape · Slow", bpm: 76, chordSet: 3 },
+/* ═══ 8 HEALING MOODS ═══ */
+const MOODS = [
+  {
+    id: 0, name: "Healing Jazz", sub: "Smooth & Restorative · 88 BPM", badge: "Jazz", bpm: 88,
+    desc: "Therapy-inspired · Midtempo", accent: "#009B9B",
+    chords: [[146.83,174.61,220,261.63,329.63],[196,233.08,293.66,349.23,440],[233.08,293.66,349.23,440,523.25],[220,261.63,329.63,392,493.88]],
+    bass: [146.83,196,233.08,220],
+    kick:[1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],
+    hat:[1,0,1,1,0,1,1,0,1,0,1,1,0,1,1,0], clave:[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0],
+  },
+  {
+    id: 1, name: "Gospel Groove", sub: "Sunday Soul Vibes · 96 BPM", badge: "Gospel", bpm: 96,
+    desc: "Faith & Healing · Uplifting", accent: "#009B9B",
+    chords: [[174.61,220,261.63,329.63,415.3],[196,233.08,293.66,349.23,440],[220,261.63,329.63,392,493.88],[233.08,293.66,349.23,440,523.25]],
+    bass: [174.61,196,220,233.08],
+    kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hat:[1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1], clave:[1,0,1,0,0,1,0,0,1,0,1,0,0,1,0,0],
+  },
+  {
+    id: 2, name: "Afrobeats Jazz", sub: "Voices & Vibes Signature · 92 BPM", badge: "Signature", bpm: 92,
+    desc: "Rhythm & Restoration", accent: "#009B9B",
+    chords: [[146.83,174.61,220,261.63,329.63],[196,233.08,293.66,349.23,440],[233.08,293.66,349.23,440,523.25],[220,261.63,329.63,392,493.88]],
+    bass: [146.83,196,233.08,220],
+    kick:[1,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hat:[1,0,1,0,1,1,0,1,1,0,1,0,1,1,0,1], clave:[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1],
+  },
+  {
+    id: 3, name: "Soul Saturday", sub: "Deep Rest & Peace · 76 BPM", badge: "Soul", bpm: 76,
+    desc: "Self-Care Soundscape · Slow", accent: "#009B9B",
+    chords: [[261.63,329.63,392,493.88,587.33],[164.81,220,261.63,329.63,415.3],[220,261.63,329.63,415.3,493.88],[174.61,220,261.63,329.63,440]],
+    bass: [130.81,164.81,220,174.61],
+    kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hat:[1,0,1,0,0,0,1,0,1,0,1,0,0,0,1,0], clave:[1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0],
+  },
+  {
+    id: 4, name: "Gospel Sunday", sub: "Church & Praise Vibes · 84 BPM", badge: "New", bpm: 84,
+    desc: "Faith · Worship · Healing", accent: "#8855CC",
+    chords: [[196,246.94,293.66,369.99,493.88],[261.63,329.63,392,493.88,523.25],[164.81,220,261.63,329.63,415.3],[146.83,220,293.66,370,440]],
+    bass: [98,130.81,82.41,73.42],
+    kick:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0], snare:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,1,0],
+    hat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], clave:[1,0,0,1,0,1,0,0,1,0,0,1,0,0,1,0],
+  },
+  {
+    id: 5, name: "Healing Meditation", sub: "Stillness & Restoration · 60 BPM", badge: "New", bpm: 60,
+    desc: "Therapeutic · Breathwork · Calm", accent: "#8855CC",
+    chords: [[220,277.18,329.63,415.3,554.37],[185,220,277.18,329.63,440],[146.83,185,220,277.18,370],[164.81,220,293.66,369.99,440]],
+    bass: [55,46.25,36.71,41.20],
+    kick:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], snare:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
+    hat:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], clave:[0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0],
+  },
+  {
+    id: 6, name: "Soul Saturday Deep", sub: "Late Night Rest · 70 BPM", badge: "New", bpm: 70,
+    desc: "R&B Soul · Night Healing", accent: "#009B9B",
+    chords: [[155.56,196,233.08,311.13,392],[130.81,155.56,196,233.08,311.13],[174.61,207.65,261.63,311.13,415.3],[116.54,155.56,185,233.08,311.13]],
+    bass: [77.78,65.41,87.31,58.27],
+    kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hat:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0], clave:[1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0],
+  },
+  {
+    id: 7, name: "Trap Jazz Fusion", sub: "Healing Energy · 108 BPM", badge: "New", bpm: 108,
+    desc: "Urban · Jazz · Powerful", accent: "#E8624A",
+    chords: [[146.83,196,220,293.66,370,440],[196,246.94,293.66,370,466.16,587.33],[261.63,329.63,392,493.88,587.33,659.26],[174.61,220,277.18,329.63,415.3,554.37]],
+    bass: [73.42,98,65.41,87.31],
+    kick:[1,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],
+    hat:[1,1,0,1,1,0,1,1,1,0,1,1,0,1,1,0], clave:[1,0,1,0,0,0,1,0,0,1,0,0,1,0,0,0],
+  },
 ];
-
-const CHORD_SETS = [
-  [[293.66,349.23,440,523.25,659.25],[392,466.16,587.33,698.46,880],[466.16,587.33,698.46,932.33,1046.5],[440,523.25,659.25,783.99,987.77]],
-  [[349.23,440,523.25,659.25,783.99],[392,466.16,587.33,698.46,880],[440,523.25,659.25,783.99,987.77],[466.16,587.33,698.46,932.33,1046.5]],
-  [[293.66,349.23,440,523.25,659.25],[392,466.16,587.33,698.46,880],[466.16,587.33,698.46,932.33,1046.5],[440,523.25,659.25,783.99,987.77]],
-  [[261.63,329.63,392,493.88,587.33],[329.63,392,493.88,587.33,783.99],[440,523.25,659.25,783.99,987.77],[349.23,440,523.25,659.25,783.99]],
-];
-const BASS_SETS = [
-  [146.83,196,233.08,220],[174.61,196,220,233.08],[146.83,196,233.08,220],[130.81,164.81,220,174.61],
-];
-const KICKS  = [[1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0],[1,0,0,0,0,0,0,1,1,0,0,0,0,0,1,0],[1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0],[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0]];
-const SNARES = [[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0]];
-const HIHATS = [[1,0,1,1,0,1,1,0,1,0,1,1,0,1,1,0],[1,1,0,1,1,0,1,1,0,1,1,0,1,1,0,1],[1,0,1,1,0,1,1,0,1,0,1,1,0,1,1,0],[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0]];
-const CLAVES = [[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0],[0,0,1,0,0,1,0,0,1,0,0,1,0,0,0,0],[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]];
 
 const NUM_BARS = 30;
-const LOOKAHEAD = 0.12;
-const SCHEDULE_AHEAD = 0.28;
+const SCHEDULE_AHEAD = 0.15;
 
 const AudioPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -36,128 +81,228 @@ const AudioPlayer = () => {
   const ctxRef = useRef<AudioContext | null>(null);
   const masterRef = useRef<GainNode | null>(null);
   const reverbRef = useRef<ConvolverNode | null>(null);
+  const compRef = useRef<DynamicsCompressorNode | null>(null);
   const beatLoopRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const elapsedRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const vizRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const currentBarRef = useRef(0);
-  const nextBarTimeRef = useRef(0);
+  const currentStepRef = useRef(0);
+  const nextStepTimeRef = useRef(0);
   const playingRef = useRef(false);
   const moodIdxRef = useRef(2);
   const changingMood = useRef(false);
 
-  /* keep ref in sync */
   useEffect(() => { moodIdxRef.current = moodIdx; }, [moodIdx]);
 
   const initCtx = useCallback(() => {
     if (ctxRef.current) return;
     const ctx = new AudioContext();
     ctxRef.current = ctx;
+
+    // Compressor
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -18;
+    comp.knee.value = 12;
+    comp.ratio.value = 4;
+    comp.attack.value = 0.003;
+    comp.release.value = 0.25;
+    compRef.current = comp;
+
+    // Master gain
     const master = ctx.createGain();
     master.gain.value = 0.001;
-    master.connect(ctx.destination);
     masterRef.current = master;
 
+    // EQ
+    const eqLow = ctx.createBiquadFilter();
+    eqLow.type = "lowshelf"; eqLow.frequency.value = 200; eqLow.gain.value = 2;
+    const eqHigh = ctx.createBiquadFilter();
+    eqHigh.type = "highshelf"; eqHigh.frequency.value = 4000; eqHigh.gain.value = -2;
+
+    // Reverb (3.5s impulse)
     const conv = ctx.createConvolver();
-    const len = ctx.sampleRate * 2.2;
-    const ir = ctx.createBuffer(2, len, ctx.sampleRate);
+    const irLen = ctx.sampleRate * 3.5;
+    const ir = ctx.createBuffer(2, irLen, ctx.sampleRate);
     for (let c = 0; c < 2; c++) {
       const d = ir.getChannelData(c);
-      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.4);
+      for (let i = 0; i < irLen; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / irLen, 2.8);
     }
     conv.buffer = ir;
-    const rg = ctx.createGain();
-    rg.gain.value = 0.22;
-    conv.connect(rg);
-    rg.connect(master);
+    const reverbGain = ctx.createGain();
+    reverbGain.gain.value = 0.35;
+    conv.connect(reverbGain);
+    reverbGain.connect(master);
     reverbRef.current = conv;
+
+    // Signal chain: comp → eqLow → eqHigh → master → destination
+    comp.connect(eqLow);
+    eqLow.connect(eqHigh);
+    // Direct signal
+    const directGain = ctx.createGain();
+    directGain.gain.value = 0.4;
+    eqHigh.connect(directGain);
+    directGain.connect(master);
+    // Reverb send
+    eqHigh.connect(conv);
+
+    master.connect(ctx.destination);
   }, []);
 
-  const osc = useCallback((freq: number, type: OscillatorType, t: number, dur: number, vol: number, det = 0) => {
+  /* ═══ SYNTH: Chord tones (sine only, rolled) ═══ */
+  const playChord = useCallback((freqs: number[], t: number, dur: number, vol: number) => {
+    const ctx = ctxRef.current!;
+    freqs.forEach((freq, i) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = "sine";
+      o.frequency.value = freq;
+      o.connect(g);
+      g.connect(compRef.current!);
+      const start = t + i * 0.06; // rolled stagger
+      g.gain.setValueAtTime(0.0001, start);
+      g.gain.linearRampToValueAtTime(vol, start + 0.18); // soft attack
+      g.gain.setValueAtTime(vol, start + dur * 0.5);
+      g.gain.exponentialRampToValueAtTime(0.0001, start + dur + 0.55); // long release
+      o.start(start);
+      o.stop(start + dur + 0.6);
+    });
+  }, []);
+
+  /* ═══ SYNTH: Bass note ═══ */
+  const playBass = useCallback((freq: number, t: number, dur: number, vol: number) => {
     const ctx = ctxRef.current!;
     const o = ctx.createOscillator();
     const g = ctx.createGain();
-    const rs = ctx.createGain();
-    rs.gain.value = 0.25;
-    o.type = type; o.frequency.value = freq; o.detune.value = det;
-    o.connect(g); g.connect(masterRef.current!);
-    o.connect(rs); rs.connect(reverbRef.current!);
+    o.type = "sine";
+    o.frequency.value = freq;
+    o.connect(g);
+    g.connect(compRef.current!);
     g.gain.setValueAtTime(0.0001, t);
-    g.gain.linearRampToValueAtTime(vol, t + 0.03);
-    g.gain.exponentialRampToValueAtTime(vol * 0.55, t + dur * 0.55);
+    g.gain.linearRampToValueAtTime(vol, t + 0.12); // bass attack
+    g.gain.setValueAtTime(vol, t + dur * 0.6);
     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    o.start(t); o.stop(t + dur + 0.05);
+    o.start(t);
+    o.stop(t + dur + 0.05);
   }, []);
 
-  const noise = useCallback((t: number, dur: number, vol: number, cf: number) => {
+  /* ═══ DRUMS ═══ */
+  const playKick = useCallback((t: number, freq = 55) => {
     const ctx = ctxRef.current!;
-    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.09, ctx.sampleRate);
+    // Oscillator layer
+    const o = ctx.createOscillator();
+    const og = ctx.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(freq * 2, t);
+    o.frequency.exponentialRampToValueAtTime(freq, t + 0.12);
+    o.connect(og);
+    og.gain.setValueAtTime(0.9, t);
+    og.gain.exponentialRampToValueAtTime(0.0001, t + 0.52);
+    og.connect(compRef.current!);
+    o.start(t);
+    o.stop(t + 0.55);
+    // Noise layer
+    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.06, ctx.sampleRate);
     const d = buf.getChannelData(0);
     for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     const src = ctx.createBufferSource();
     src.buffer = buf;
-    const f = ctx.createBiquadFilter();
-    f.type = "bandpass"; f.frequency.value = cf; f.Q.value = 2.2;
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(vol, t);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    src.connect(f); f.connect(g); g.connect(masterRef.current!);
-    src.start(t); src.stop(t + dur + 0.04);
+    const lp = ctx.createBiquadFilter();
+    lp.type = "lowpass"; lp.frequency.value = 180;
+    const ng = ctx.createGain();
+    ng.gain.setValueAtTime(0.5, t);
+    ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+    src.connect(lp); lp.connect(ng); ng.connect(compRef.current!);
+    src.start(t); src.stop(t + 0.25);
   }, []);
 
-  const scheduleBar = useCallback((barStart: number, barNum: number) => {
+  const playSnare = useCallback((t: number, tone = 200) => {
+    const ctx = ctxRef.current!;
+    // Noise layer
+    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.08, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    const bp = ctx.createBiquadFilter();
+    bp.type = "bandpass"; bp.frequency.value = tone; bp.Q.value = 1.5;
+    const ng = ctx.createGain();
+    ng.gain.setValueAtTime(0.35, t);
+    ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+    src.connect(bp); bp.connect(ng); ng.connect(compRef.current!);
+    src.start(t); src.stop(t + 0.2);
+    // Triangle tone
+    const o = ctx.createOscillator();
+    const og = ctx.createGain();
+    o.type = "triangle"; o.frequency.value = tone;
+    o.connect(og);
+    og.gain.setValueAtTime(0.2, t);
+    og.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+    og.connect(compRef.current!);
+    o.start(t); o.stop(t + 0.2);
+  }, []);
+
+  const playHat = useCallback((t: number, hp = 7000) => {
+    const ctx = ctxRef.current!;
+    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.03, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    const hpf = ctx.createBiquadFilter();
+    hpf.type = "highpass"; hpf.frequency.value = hp;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.1, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.045);
+    src.connect(hpf); hpf.connect(g); g.connect(compRef.current!);
+    src.start(t); src.stop(t + 0.06);
+  }, []);
+
+  const playClave = useCallback((t: number, freq = 800) => {
+    const ctx = ctxRef.current!;
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = "triangle"; o.frequency.value = freq;
+    o.connect(g);
+    g.gain.setValueAtTime(0.24, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.06);
+    g.connect(compRef.current!);
+    o.start(t); o.stop(t + 0.08);
+  }, []);
+
+  /* ═══ SCHEDULER ═══ */
+  const scheduleStep = useCallback((stepTime: number, step: number) => {
     const mi = moodIdxRef.current;
-    const mood = moods[mi];
+    const mood = MOODS[mi];
     const beat = 60 / mood.bpm;
-    const sixteenth = beat / 4;
-    const ci = barNum % 4;
-    const chords = CHORD_SETS[mood.chordSet];
-    const bass = BASS_SETS[mood.chordSet];
+    const s = step % 16;
+    const ci = Math.floor(step / 16) % 4;
 
-    chords[ci].forEach((fr, i) => {
-      const s = i * 0.02;
-      osc(fr, "sine", barStart + s, beat * 3.8, 0.042);
-      osc(fr, "triangle", barStart + s, beat * 3.8, 0.016, -4);
-    });
-    osc(chords[ci][0] / 2, "sine", barStart, beat * 4, 0.055);
-
-    osc(bass[ci], "sine", barStart, beat * 0.65, 0.32);
-    osc(bass[ci], "sine", barStart + beat * 1.5, beat * 0.38, 0.22);
-    osc(bass[ci] * 1.125, "sine", barStart + beat * 2.5, beat * 0.45, 0.26);
-    osc(bass[ci], "sine", barStart + beat * 3.0, beat * 0.55, 0.20);
-
-    for (let s = 0; s < 16; s++) {
-      const t = barStart + s * sixteenth;
-      if (KICKS[mi][s]) noise(t, 0.18, 0.50, 80);
-      if (SNARES[mi][s]) noise(t, 0.11, 0.28, 280);
-      if (HIHATS[mi][s]) noise(t, 0.04, 0.08, 5800);
-      if (CLAVES[mi][s]) noise(t, 0.06, 0.16, 1100);
+    // Play chord on beat 0 of each bar
+    if (s === 0) {
+      playChord(mood.chords[ci], stepTime, beat * 3.8, 0.035);
+      playBass(mood.bass[ci], stepTime, beat * 0.65, 0.28);
     }
+    // Extra bass hits
+    if (s === 6) playBass(mood.bass[ci], stepTime, beat * 0.38, 0.18);
+    if (s === 10) playBass(mood.bass[ci] * 1.125, stepTime, beat * 0.45, 0.22);
 
-    if (barNum % 2 === 0) {
-      const root = chords[ci];
-      const mel = [root[0], root[1], root[2], root[4], root[2], root[1]];
-      mel.forEach((fr, i) => {
-        osc(fr, "sine", barStart + beat * 0.25 + i * beat * 0.55, beat * 0.42, 0.025);
-      });
-    }
-
-    if (mi === 1 && barNum % 2 === 1) {
-      [1, 1.5, 2, 3].forEach((bOff, i) => {
-        osc(chords[ci][i % chords[ci].length], "square", barStart + beat * bOff, beat * 0.25, 0.018);
-      });
-    }
-  }, [osc, noise]);
+    // Drums
+    if (mood.kick[s]) playKick(stepTime);
+    if (mood.snare[s]) playSnare(stepTime);
+    if (mood.hat[s]) playHat(stepTime);
+    if (mood.clave[s]) playClave(stepTime);
+  }, [playChord, playBass, playKick, playSnare, playHat, playClave]);
 
   const scheduler = useCallback(() => {
     if (!playingRef.current) return;
     const ctx = ctxRef.current!;
-    const beat = 60 / moods[moodIdxRef.current].bpm;
-    while (nextBarTimeRef.current < ctx.currentTime + SCHEDULE_AHEAD) {
-      scheduleBar(nextBarTimeRef.current, currentBarRef.current);
-      nextBarTimeRef.current += beat * 4;
-      currentBarRef.current++;
+    const mood = MOODS[moodIdxRef.current];
+    const stepDur = 60 / mood.bpm / 4;
+    while (nextStepTimeRef.current < ctx.currentTime + SCHEDULE_AHEAD) {
+      scheduleStep(nextStepTimeRef.current, currentStepRef.current);
+      nextStepTimeRef.current += stepDur;
+      currentStepRef.current++;
     }
-  }, [scheduleBar]);
+  }, [scheduleStep]);
 
   const animViz = useCallback(() => {
     if (!playingRef.current) return;
@@ -171,14 +316,14 @@ const AudioPlayer = () => {
     if (ctx.state === "suspended") ctx.resume();
     playingRef.current = true;
     setIsPlaying(true);
-    currentBarRef.current = 0;
-    nextBarTimeRef.current = ctx.currentTime + 0.1;
+    currentStepRef.current = 0;
+    nextStepTimeRef.current = ctx.currentTime + 0.1;
     const vol = (volume / 100) * 0.72;
     const m = masterRef.current!;
     m.gain.cancelScheduledValues(ctx.currentTime);
     m.gain.setValueAtTime(0.001, ctx.currentTime);
-    m.gain.linearRampToValueAtTime(vol, ctx.currentTime + 2.2);
-    beatLoopRef.current = setInterval(scheduler, LOOKAHEAD * 1000);
+    m.gain.linearRampToValueAtTime(vol, ctx.currentTime + 3.5);
+    beatLoopRef.current = setInterval(scheduler, 100);
     animViz();
     setElapsed(0);
     elapsedRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
@@ -196,7 +341,7 @@ const AudioPlayer = () => {
       const m = masterRef.current;
       m.gain.cancelScheduledValues(ctx.currentTime);
       m.gain.setValueAtTime(m.gain.value, ctx.currentTime);
-      m.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+      m.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 0.4);
     }
   }, []);
 
@@ -207,7 +352,7 @@ const AudioPlayer = () => {
   const changeMood = useCallback((dir: 1 | -1) => {
     if (changingMood.current) return;
     setMoodIdx(prev => {
-      const next = (prev + dir + moods.length) % moods.length;
+      const next = (prev + dir + MOODS.length) % MOODS.length;
       moodIdxRef.current = next;
       if (playingRef.current) {
         changingMood.current = true;
@@ -221,6 +366,20 @@ const AudioPlayer = () => {
     });
   }, [stopAudio, startAudio]);
 
+  const selectMood = useCallback((idx: number) => {
+    if (changingMood.current || idx === moodIdxRef.current) return;
+    setMoodIdx(idx);
+    moodIdxRef.current = idx;
+    if (playingRef.current) {
+      changingMood.current = true;
+      stopAudio();
+      setTimeout(() => {
+        startAudio();
+        changingMood.current = false;
+      }, 400);
+    }
+  }, [stopAudio, startAudio]);
+
   const handleVolume = useCallback((val: number) => {
     setVolume(val);
     if (ctxRef.current && masterRef.current && playingRef.current) {
@@ -231,7 +390,6 @@ const AudioPlayer = () => {
     }
   }, []);
 
-  /* cleanup on unmount */
   useEffect(() => {
     return () => {
       playingRef.current = false;
@@ -242,7 +400,7 @@ const AudioPlayer = () => {
     };
   }, []);
 
-  const mood = moods[moodIdx];
+  const mood = MOODS[moodIdx];
   const mins = Math.floor(elapsed / 60);
   const secs = elapsed % 60;
   const progressPct = ((elapsed % 480) / 480) * 100;
@@ -302,12 +460,12 @@ const AudioPlayer = () => {
           marginTop: "2px",
         }}
       >
-        Healing Conversations &amp; Restorative Jazz
+        8 Healing Moods · 24/7 Worldwide
       </div>
 
       {/* Visualizer */}
       <div
-        className="flex items-end justify-center gap-1 mb-7"
+        className="flex items-end justify-center gap-1 mb-2"
         style={{
           height: "46px",
           background: "rgba(0,155,155,0.04)",
@@ -325,9 +483,28 @@ const AudioPlayer = () => {
               transition: "height 0.12s ease",
               background:
                 i % 2 === 0
-                  ? "linear-gradient(to top, #007A7A, #00C4C4)"
+                  ? `linear-gradient(to top, ${mood.accent}99, ${mood.accent})`
                   : "linear-gradient(to top, #c04030, #E8624A)",
             }}
+          />
+        ))}
+      </div>
+
+      {/* Mood indicator dots */}
+      <div className="flex items-center justify-center gap-2 mb-6">
+        {MOODS.map((m, i) => (
+          <button
+            key={i}
+            onClick={() => selectMood(i)}
+            className="border-none cursor-pointer p-0 transition-all"
+            style={{
+              width: i === moodIdx ? "10px" : "6px",
+              height: i === moodIdx ? "10px" : "6px",
+              borderRadius: "50%",
+              background: i === moodIdx ? m.accent : "rgba(138,184,184,0.3)",
+              boxShadow: i === moodIdx ? `0 0 10px ${m.accent}88` : "none",
+            }}
+            title={m.name}
           />
         ))}
       </div>
@@ -354,24 +531,24 @@ const AudioPlayer = () => {
           className="inline-block"
           style={{ animation: "ap-scroll-text 12s linear infinite" }}
         >
-          {mood.name}
+          {mood.name} · {mood.sub}
         </span>
       </div>
       <div
         className="font-montserrat"
-        style={{ fontSize: "12px", color: "#8ab8b8", marginBottom: "1.5rem", fontWeight: 300 }}
+        style={{ fontSize: "12px", color: "#8ab8b8", marginBottom: "1.2rem", fontWeight: 300 }}
       >
-        {mood.meta}
+        {mood.desc}
       </div>
 
       {/* Progress bar */}
-      <div className="mb-6">
+      <div className="mb-5">
         <div className="w-full relative" style={{ height: "3px", background: "rgba(255,255,255,0.08)" }}>
           <div
             style={{
               height: "100%",
               width: `${progressPct}%`,
-              background: "linear-gradient(to right, #009B9B, #E8624A)",
+              background: `linear-gradient(to right, ${mood.accent}, #E8624A)`,
               transition: "width 0.5s linear",
             }}
           />
@@ -385,7 +562,7 @@ const AudioPlayer = () => {
       </div>
 
       {/* Controls */}
-      <div className="flex items-center justify-center gap-4 mb-7">
+      <div className="flex items-center justify-center gap-4 mb-5">
         <button
           onClick={() => changeMood(-1)}
           className="border-none cursor-pointer text-[1.1rem] p-1.5 transition-all"
@@ -433,7 +610,7 @@ const AudioPlayer = () => {
       </div>
 
       {/* Volume */}
-      <div className="flex items-center gap-3 mb-7">
+      <div className="flex items-center gap-3 mb-5">
         <span style={{ fontSize: "14px", color: "#8ab8b8" }}>🔈</span>
         <input
           type="range"
@@ -456,6 +633,56 @@ const AudioPlayer = () => {
         >
           {volume}%
         </span>
+      </div>
+
+      {/* Mood Grid — 2 columns */}
+      <div
+        className="grid gap-2 mb-5"
+        style={{ gridTemplateColumns: "1fr 1fr" }}
+      >
+        {MOODS.map((m, i) => {
+          const active = i === moodIdx;
+          return (
+            <button
+              key={m.id}
+              onClick={() => selectMood(i)}
+              className="border-none cursor-pointer text-left p-3 transition-all font-montserrat"
+              style={{
+                background: active ? `${m.accent}15` : "rgba(255,255,255,0.03)",
+                border: active ? `1px solid ${m.accent}` : "1px solid rgba(255,255,255,0.06)",
+                boxShadow: active ? `0 0 16px ${m.accent}30` : "none",
+              }}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span style={{ fontSize: "9px", color: "#8ab8b8", letterSpacing: "0.1em" }}>
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span
+                  style={{
+                    fontSize: "8px",
+                    fontWeight: 700,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    color: m.badge === "New" ? m.accent : "#8ab8b8",
+                    background: m.badge === "New" ? `${m.accent}20` : "rgba(138,184,184,0.1)",
+                    padding: "2px 6px",
+                  }}
+                >
+                  {m.badge}
+                </span>
+              </div>
+              <div style={{ fontSize: "12px", fontWeight: 600, color: active ? "#fff" : "#ccc", marginBottom: "2px" }}>
+                {m.name}
+              </div>
+              <div className="flex items-center justify-between">
+                <span style={{ fontSize: "9px", color: "#8ab8b8", fontWeight: 300 }}>{m.desc}</span>
+                <span style={{ fontSize: "9px", color: active ? m.accent : "rgba(138,184,184,0.5)", fontWeight: 600 }}>
+                  {m.bpm}
+                </span>
+              </div>
+            </button>
+          );
+        })}
       </div>
 
       {/* Links */}
