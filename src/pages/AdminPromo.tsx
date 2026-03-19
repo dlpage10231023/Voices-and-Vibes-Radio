@@ -381,6 +381,25 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                 <input ref={imgInputRef} type="file" accept="image/*" className="hidden" onChange={handleImage} />
               </div>
 
+              {/* Image size adjuster */}
+              <div>
+                <label className={`block ${label}`} style={{ color: "#009B9B" }}>Image Size — {imageSize}px</label>
+                <div className="flex items-center gap-2">
+                  <span className="font-montserrat text-[9px]" style={{ color: "#5a9090" }}>120</span>
+                  <input
+                    type="range"
+                    min={120}
+                    max={360}
+                    step={10}
+                    value={imageSize}
+                    onChange={(e) => setImageSize(Number(e.target.value))}
+                    className="w-full"
+                    style={{ accentColor: "#009B9B" }}
+                  />
+                  <span className="font-montserrat text-[9px]" style={{ color: "#5a9090" }}>360</span>
+                </div>
+              </div>
+
               {/* Audio upload */}
               <div>
                 <label className={`block ${label}`} style={{ color: "#009B9B" }}>Audio Track</label>
