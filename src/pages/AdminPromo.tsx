@@ -75,6 +75,7 @@ const AdminPromo = () => {
   const [imageZoom, setImageZoom] = useState(50);
   const [downloading, setDownloading] = useState(false);
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
+  const [audioFile, setAudioFile] = useState<File | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState("0:00");
