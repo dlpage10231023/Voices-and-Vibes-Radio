@@ -161,7 +161,7 @@ const ArtistPlayer = () => {
       `}</style>
 
       {/* ── Page Header ── */}
-      <div className="text-center pt-[100px] px-[5vw] mb-8">
+      <div className="text-center pt-[80px] px-[5vw] mb-8">
         <span
           className="font-dancing text-[2rem] font-bold block mb-1"
           style={{
