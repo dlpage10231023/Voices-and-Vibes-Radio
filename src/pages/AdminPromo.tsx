@@ -484,7 +484,7 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                     </div>
                   </div>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column" as const, gap: 0 }}>
+                <div style={{ display: "block" }}>
                   {DEFAULT_LINES.map((line, i) => {
                     if (line.type === "pause") return <div key={i} data-promo-line={i} data-line-type="pause" style={{ height: "0.5rem", border: "none" }} />;
                     const visible = visibleLines.has(i);
