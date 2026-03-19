@@ -1,8 +1,21 @@
 import { useRef, useState, useEffect } from "react";
 import vinylImg from "@/assets/vinyl-record-new.jpg";
 
+const CHANNELS = [
+  { id: "01", label: "Jazz", name: "Healing Jazz", desc: "Therapy-inspired · Midtempo", bpm: 88 },
+  { id: "02", label: "Gospel", name: "Gospel Groove", desc: "Faith & Healing · Uplifting", bpm: 96 },
+  { id: "03", label: "Signature", name: "Afrobeats Jazz", desc: "Rhythm & Restoration", bpm: 92 },
+  { id: "04", label: "Soul", name: "Soul Saturday", desc: "Self-Care Soundscape · Slow", bpm: 76 },
+  { id: "05", label: "New", name: "Gospel Sunday", desc: "Faith · Worship · Healing", bpm: 84 },
+  { id: "06", label: "New", name: "Healing Meditation", desc: "Therapeutic · Breathwork · Calm", bpm: 60 },
+  { id: "07", label: "New", name: "Soul Saturday Deep", desc: "R&B Soul · Night Healing", bpm: 70 },
+  { id: "08", label: "New", name: "Trap Jazz Fusion", desc: "Urban · Jazz · Powerful", bpm: 108 },
+];
+
 const RecordBar = () => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [activeChannel, setActiveChannel] = useState(2);
+  const [showChannels, setShowChannels] = useState(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const masterGainRef = useRef<GainNode | null>(null);
   const noiseBufferRef = useRef<AudioBuffer | null>(null);
@@ -11,6 +24,8 @@ const RecordBar = () => {
   const chordIdxRef = useRef(0);
   const eqIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const eqBarsRef = useRef<HTMLDivElement[]>([]);
+
+  const currentChannel = CHANNELS[activeChannel];
 
   const CHORDS = [
     [146.83, 174.61, 220, 261.63, 329.63],
@@ -274,19 +289,77 @@ const RecordBar = () => {
             {isPlaying ? "33 RPM · Spinning" : "33 RPM · Idle"}
           </span>
           <span style={{ color: "rgba(138,184,184,0.3)", fontSize: 8 }}>·</span>
+          {/* BPM Badge — always visible */}
           <span
+            id="rbBpmDisplay"
+            style={{
+              fontFamily: "'Share Tech Mono', monospace",
+              fontSize: 9,
+              fontWeight: 700,
+              color: "#009B9B",
+              background: "rgba(0,155,155,0.12)",
+              border: "1px solid rgba(0,155,155,0.3)",
+              padding: "3px 10px",
+              letterSpacing: "0.1em",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+            }}
+          >
+            {currentChannel.bpm} BPM · {currentChannel.name}
+          </span>
+          <span style={{ color: "rgba(138,184,184,0.3)", fontSize: 8 }}>·</span>
+          {/* Channel selector button */}
+          <button
+            onClick={() => setShowChannels(!showChannels)}
             style={{
               fontFamily: "'Share Tech Mono', monospace",
               fontSize: 8,
-              color: "#009B9B",
-              background: "rgba(0,155,155,0.08)",
-              border: "1px solid rgba(0,155,155,0.2)",
-              padding: "2px 7px",
+              fontWeight: 700,
+              color: "#E8624A",
+              background: "rgba(232,98,74,0.1)",
+              border: "1px solid rgba(232,98,74,0.3)",
+              padding: "2px 8px",
+              letterSpacing: "0.1em",
+              cursor: "pointer",
+              whiteSpace: "nowrap",
             }}
           >
-            92 BPM · Afrobeats Jazz
-          </span>
+            ♫ CH {currentChannel.id} ▾
+          </button>
         </div>
+        {/* Channel dropdown */}
+        {showChannels && (
+          <div
+            className="absolute left-6 z-[300] flex flex-col gap-0.5"
+            style={{
+              top: 90,
+              background: "#0d1a1a",
+              border: "1px solid rgba(0,155,155,0.3)",
+              padding: 6,
+              maxHeight: 220,
+              overflowY: "auto",
+              minWidth: 260,
+            }}
+          >
+            {CHANNELS.map((ch, idx) => (
+              <button
+                key={ch.id}
+                onClick={() => { setActiveChannel(idx); setShowChannels(false); }}
+                className="flex items-center gap-2 text-left cursor-pointer border-none"
+                style={{
+                  padding: "4px 8px",
+                  background: idx === activeChannel ? "rgba(0,155,155,0.15)" : "transparent",
+                  borderLeft: idx === activeChannel ? "2px solid #009B9B" : "2px solid transparent",
+                }}
+              >
+                <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 8, color: "rgba(138,184,184,0.5)" }}>{ch.id}</span>
+                <span style={{ fontSize: 9, fontWeight: 700, color: ch.label === "New" ? "#E8624A" : "#009B9B", minWidth: 50 }}>{ch.label}</span>
+                <span style={{ fontSize: 9, color: "#f5efe8", fontWeight: 600 }}>{ch.name}</span>
+                <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 8, color: "rgba(138,184,184,0.45)", marginLeft: "auto" }}>{ch.bpm} BPM</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* CENTER-RIGHT — EQ Bars */}
