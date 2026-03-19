@@ -754,6 +754,7 @@ const splashCSS = `
 .splash-bar-t { background: linear-gradient(to top, #007A7A, #00C4C4); }
 .splash-bar-c { background: linear-gradient(to top, #c04030, #F07A62); }
 @keyframes splashBarAnim { 0% { height: 8px } 100% { height: 55px } }
+@keyframes vinylSpin { from { transform: translate(-50%, -50%) rotate(0deg) } to { transform: translate(-50%, -50%) rotate(360deg) } }
 
 /* Text animations */
 @keyframes splashFadeUp { from { opacity: 0; transform: translateY(30px) } to { opacity: 1; transform: translateY(0) } }
