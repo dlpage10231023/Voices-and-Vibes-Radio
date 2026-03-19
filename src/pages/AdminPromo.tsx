@@ -522,6 +522,7 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
               {/* CONTROLS */}
               <div style={{ padding: "1rem 1.5rem 1.25rem", borderTop: "1px solid rgba(0,155,155,0.12)", display: "flex", alignItems: "center", gap: "0.75rem" }}>
                 <button
+                  data-promo-play=""
                   onClick={togglePlay}
                   style={{
                     width: 48, height: 48, borderRadius: "50%",
@@ -536,7 +537,7 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                   {isPlaying ? "⏸" : "▶"}
                 </button>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" as const, color: "#5a9090", marginBottom: 2 }}>
+                  <div data-promo-status="" style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" as const, color: "#5a9090", marginBottom: 2 }}>
                     {isPlaying ? "● Now Playing" : audioSrc ? "Ready to play" : "No audio loaded"}
                   </div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: "#e8f5f5" }}>{data.trackTitle} — {data.artistName}</div>
@@ -544,7 +545,7 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                 {/* EQ Bars */}
                 <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 24, marginLeft: "0.5rem" }}>
                   {eqHeights.map((h, i) => (
-                    <div key={i} style={{ width: 3, borderRadius: 1, background: i % 2 === 0 ? "#009B9B" : "#E8624A", height: h, transition: "height 0.08s" }} />
+                    <div data-promo-eq="" key={i} style={{ width: 3, borderRadius: 1, background: i % 2 === 0 ? "#009B9B" : "#E8624A", height: h, transition: "height 0.08s" }} />
                   ))}
                 </div>
                 {/* Volume */}
