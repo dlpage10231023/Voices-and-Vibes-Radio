@@ -95,6 +95,15 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
   const [trackIndex, setTrackIndex] = useState(0);
   const tracksRef = useRef<SpotlightTrack[]>([]);
 
+  // Commercial state
+  interface Commercial { id: string; title: string; audio_url: string | null; sort_order: number; }
+  const [commercials, setCommercials] = useState<Commercial[]>([]);
+  const commercialsRef = useRef<Commercial[]>([]);
+  const [commercialIndex, setCommercialIndex] = useState(0);
+  const commercialIdxRef = useRef(0);
+  const [isPlayingCommercial, setIsPlayingCommercial] = useState(false);
+  const isPlayingCommercialRef = useRef(false);
+
   // Create audio element once
   useEffect(() => {
     const a = new Audio();
