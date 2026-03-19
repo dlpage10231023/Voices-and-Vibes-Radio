@@ -31,6 +31,7 @@ export interface ArtistAudioState {
   hasSource: boolean;
   trackIndex: number;
   trackCount: number;
+  isPlayingCommercial: boolean;
 }
 
 export interface ArtistAudioActions {
