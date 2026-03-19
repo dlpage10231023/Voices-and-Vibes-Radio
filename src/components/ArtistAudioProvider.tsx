@@ -57,6 +57,7 @@ export const useArtistAudio = () => {
 
 
 export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
+  const dayAudio = useAudioPlayer();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
