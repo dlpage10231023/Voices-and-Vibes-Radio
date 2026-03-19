@@ -235,10 +235,15 @@ const AdminPromo = () => {
         })
       );
 
-      // Convert audio to base64 for embedding
+      // Convert audio file directly to base64
       let audioB64 = "";
-      if (audioSrc) {
-        audioB64 = await blobUrlToBase64(audioSrc);
+      if (audioFile) {
+        audioB64 = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = () => resolve("");
+          reader.readAsDataURL(audioFile);
+        });
       }
 
       const cardHtml = clone.outerHTML;
