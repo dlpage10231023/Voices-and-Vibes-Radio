@@ -678,6 +678,13 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                   </button>
                 </div>
               </div>
+
+              {/* Site link banner for PNG export */}
+              <div style={{ padding: "0.75rem 1.5rem", background: "linear-gradient(135deg, rgba(0,155,155,0.15), rgba(232,98,74,0.1))", borderTop: "1px solid rgba(0,155,155,0.15)", textAlign: "center" }}>
+                <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", background: "linear-gradient(135deg, #009B9B, #E8624A)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                  🎧 Listen at voicesandvibesradio.com
+                </div>
+              </div>
             </div>
           </div>
         </div>
