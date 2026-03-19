@@ -11,6 +11,7 @@ function getTodaySlug() {
 interface AudioContextType {
   isPlaying: boolean;
   togglePlay: () => void;
+  stopPlay: () => void;
   currentTrack: DayAudio | null;
   hasTracks: boolean;
   /** Day pages call this to override the active day slug */
