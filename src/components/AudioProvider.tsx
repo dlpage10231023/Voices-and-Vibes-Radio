@@ -26,6 +26,7 @@ const AudioCtx = createContext<AudioContextType>({
   currentTrack: null,
   hasTracks: false,
   setDayOverride: () => {},
+  registerOtherStop: () => {},
 });
 
 export const useAudioPlayer = () => useContext(AudioCtx);
