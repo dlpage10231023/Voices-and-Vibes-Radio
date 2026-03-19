@@ -159,10 +159,12 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     if (isPlaying) {
       stopPlay();
     } else {
+      // Stop day/radio audio before starting artist audio
+      dayAudio.stopPlay();
       await a.play().catch(() => {});
       setIsPlaying(true);
     }
-  }, [isPlaying, stopPlay]);
+  }, [isPlaying, stopPlay, dayAudio]);
 
   const skipBack = useCallback(() => {
     const a = audioRef.current;
