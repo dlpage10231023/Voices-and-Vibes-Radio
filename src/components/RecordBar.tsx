@@ -307,59 +307,32 @@ const RecordBar = () => {
           >
             {currentChannel.bpm} BPM · {currentChannel.name}
           </span>
-          <span style={{ color: "rgba(138,184,184,0.3)", fontSize: 8 }}>·</span>
-          {/* Channel selector button */}
-          <button
-            onClick={() => setShowChannels(!showChannels)}
-            style={{
-              fontFamily: "'Share Tech Mono', monospace",
-              fontSize: 8,
-              fontWeight: 700,
-              color: "#E8624A",
-              background: "rgba(232,98,74,0.1)",
-              border: "1px solid rgba(232,98,74,0.3)",
-              padding: "2px 8px",
-              letterSpacing: "0.1em",
-              cursor: "pointer",
-              whiteSpace: "nowrap",
-            }}
-          >
-            ♫ CH {currentChannel.id} ▾
-          </button>
         </div>
-        {/* Channel dropdown */}
-        {showChannels && (
-          <div
-            className="absolute left-6 z-[300] flex flex-col gap-0.5"
-            style={{
-              top: 90,
-              background: "#0d1a1a",
-              border: "1px solid rgba(0,155,155,0.3)",
-              padding: 6,
-              maxHeight: 220,
-              overflowY: "auto",
-              minWidth: 260,
-            }}
-          >
-            {CHANNELS.map((ch, idx) => (
-              <button
-                key={ch.id}
-                onClick={() => { setActiveChannel(idx); setShowChannels(false); }}
-                className="flex items-center gap-2 text-left cursor-pointer border-none"
-                style={{
-                  padding: "4px 8px",
-                  background: idx === activeChannel ? "rgba(0,155,155,0.15)" : "transparent",
-                  borderLeft: idx === activeChannel ? "2px solid #009B9B" : "2px solid transparent",
-                }}
-              >
-                <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 8, color: "rgba(138,184,184,0.5)" }}>{ch.id}</span>
-                <span style={{ fontSize: 9, fontWeight: 700, color: ch.label === "New" ? "#E8624A" : "#009B9B", minWidth: 50 }}>{ch.label}</span>
-                <span style={{ fontSize: 9, color: "#f5efe8", fontWeight: 600 }}>{ch.name}</span>
-                <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 8, color: "rgba(138,184,184,0.45)", marginLeft: "auto" }}>{ch.bpm} BPM</span>
-              </button>
-            ))}
-          </div>
-        )}
+        {/* Horizontal channel strip */}
+        <div className="flex items-center gap-1 mt-1 overflow-x-auto" style={{ maxWidth: "100%" }}>
+          {CHANNELS.map((ch, idx) => (
+            <button
+              key={ch.id}
+              onClick={() => setActiveChannel(idx)}
+              className="flex items-center gap-1 border-none cursor-pointer flex-shrink-0"
+              style={{
+                fontFamily: "'Share Tech Mono', monospace",
+                fontSize: 7,
+                padding: "2px 6px",
+                background: idx === activeChannel ? "rgba(0,155,155,0.15)" : "rgba(0,155,155,0.04)",
+                border: idx === activeChannel ? "1px solid #009B9B" : "1px solid rgba(0,155,155,0.15)",
+                color: idx === activeChannel ? "#009B9B" : "rgba(138,184,184,0.6)",
+                letterSpacing: "0.06em",
+                whiteSpace: "nowrap",
+              }}
+            >
+              <span style={{ color: "rgba(138,184,184,0.4)" }}>{ch.id}</span>
+              <span style={{ fontWeight: 700, color: ch.label === "New" ? "#E8624A" : (idx === activeChannel ? "#009B9B" : "rgba(138,184,184,0.6)") }}>{ch.label}</span>
+              <span style={{ color: idx === activeChannel ? "#f5efe8" : "rgba(138,184,184,0.5)" }}>{ch.name}</span>
+              <span style={{ color: "rgba(138,184,184,0.35)" }}>{ch.bpm}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* CENTER-RIGHT — EQ Bars */}
