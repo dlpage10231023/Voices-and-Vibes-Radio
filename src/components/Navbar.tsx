@@ -1,9 +1,10 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const LISTEN_LIVE_URL = "https://hello.citrus3.com:2020/public/voicesandvibes";
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isHome = location.pathname === "/";
 
   const navLinks = [
@@ -40,12 +41,15 @@ const Navbar = () => {
           ))
         ) : (
           <li>
-            <Link
-              to="/"
-              className="text-[11px] tracking-[0.14em] uppercase text-muted font-medium no-underline hover:text-primary transition-colors"
+            <button
+              onClick={() => {
+                localStorage.removeItem("vv_intro_seen");
+                navigate("/");
+              }}
+              className="text-[11px] tracking-[0.14em] uppercase text-muted font-medium bg-transparent border-none cursor-pointer hover:text-primary transition-colors"
             >
               ← Back to Promo
-            </Link>
+            </button>
           </li>
         )}
       </ul>
