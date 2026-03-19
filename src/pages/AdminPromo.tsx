@@ -200,6 +200,21 @@ const AdminPromo = () => {
     });
   };
 
+  const blobUrlToBase64 = (url: string): Promise<string> => {
+    return fetch(url)
+      .then((r) => r.blob())
+      .then(
+        (blob): Promise<string> =>
+          new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = () => resolve("");
+            reader.readAsDataURL(blob);
+          })
+      )
+      .catch(() => "");
+  };
+
   const downloadImage = async () => {
     if (!cardRef.current) return;
     setDownloading(true);
@@ -215,6 +230,12 @@ const AdminPromo = () => {
           }
         })
       );
+
+      // Convert audio to base64 for embedding
+      let audioB64 = "";
+      if (audioSrc) {
+        audioB64 = await blobUrlToBase64(audioSrc);
+      }
 
       const cardHtml = clone.outerHTML;
       const fullHtml = `<!DOCTYPE html>
@@ -233,6 +254,33 @@ html,body{width:100%;min-height:100vh;background:#080c0c;color:#e8f5f5;font-fami
 </head>
 <body>
 ${cardHtml}
+${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>` : ""}
+<script>
+(function(){
+  var audio = document.getElementById('promo-audio');
+  if (!audio) return;
+  var playBtn = document.querySelector('[data-promo-play]');
+  var progressBar = document.querySelector('[data-promo-progress]');
+  var progressTrack = document.querySelector('[data-promo-progress-track]');
+  var elapsedEl = document.querySelector('[data-promo-elapsed]');
+  var durationEl = document.querySelector('[data-promo-duration]');
+  var statusEl = document.querySelector('[data-promo-status]');
+  var eqBars = document.querySelectorAll('[data-promo-eq]');
+  var playing = false;
+  var eqInterval = null;
+  function fmt(s){var m=Math.floor(s/60);var sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
+  function startEQ(){if(eqInterval)clearInterval(eqInterval);eqInterval=setInterval(function(){eqBars.forEach(function(b){b.style.height=(3+Math.random()*18)+'px';});},80);}
+  function stopEQ(){if(eqInterval)clearInterval(eqInterval);eqInterval=null;eqBars.forEach(function(b){b.style.height='4px';});}
+  audio.addEventListener('loadedmetadata',function(){if(durationEl)durationEl.textContent=fmt(audio.duration);});
+  audio.addEventListener('timeupdate',function(){if(!audio.duration)return;var pct=(audio.currentTime/audio.duration)*100;if(progressBar)progressBar.style.width=pct+'%';if(elapsedEl)elapsedEl.textContent=fmt(audio.currentTime);});
+  audio.addEventListener('ended',function(){playing=false;if(playBtn){playBtn.textContent='▶';playBtn.style.background='#009B9B';playBtn.style.boxShadow='0 0 20px rgba(0,155,155,0.4)';}if(statusEl)statusEl.textContent='Ready to play';stopEQ();});
+  if(playBtn)playBtn.addEventListener('click',function(){
+    if(playing){audio.pause();playing=false;playBtn.textContent='▶';playBtn.style.background='#009B9B';playBtn.style.boxShadow='0 0 20px rgba(0,155,155,0.4)';if(statusEl)statusEl.textContent='Ready to play';stopEQ();}
+    else{audio.play();playing=true;playBtn.textContent='⏸';playBtn.style.background='#E8624A';playBtn.style.boxShadow='0 0 20px rgba(232,98,74,0.4)';if(statusEl)statusEl.textContent='● Now Playing';startEQ();}
+  });
+  if(progressTrack)progressTrack.addEventListener('click',function(e){if(!audio.duration)return;var rect=progressTrack.getBoundingClientRect();audio.currentTime=(e.clientX-rect.left)/rect.width*audio.duration;});
+})();
+</script>
 </body>
 </html>`;
       const blob = new Blob([fullHtml], { type: "text/html" });
@@ -454,6 +502,7 @@ ${cardHtml}
               {/* audio moved outside card */}
               <div style={{ padding: "0 1.5rem 0.5rem" }}>
                 <div
+                  data-promo-progress-track=""
                   style={{ height: 2, background: "rgba(0,155,155,0.1)", position: "relative" as const, overflow: "hidden", marginBottom: "0.35rem", cursor: "pointer" }}
                   onClick={(e) => {
                     if (!audioRef.current || !audioRef.current.duration) return;
@@ -462,17 +511,18 @@ ${cardHtml}
                     audioRef.current.currentTime = pct * audioRef.current.duration;
                   }}
                 >
-                  <div style={{ height: "100%", background: "linear-gradient(to right,#009B9B,#E8624A)", width: `${progress}%`, transition: "width 0.2s linear" }} />
+                  <div data-promo-progress="" style={{ height: "100%", background: "linear-gradient(to right,#009B9B,#E8624A)", width: `${progress}%`, transition: "width 0.2s linear" }} />
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", fontFamily: "'Share Tech Mono', monospace", fontSize: 9, color: "#5a9090" }}>
-                  <span>{currentTime}</span>
-                  <span>{duration}</span>
+                  <span data-promo-elapsed="">{currentTime}</span>
+                  <span data-promo-duration="">{duration}</span>
                 </div>
               </div>
 
               {/* CONTROLS */}
               <div style={{ padding: "1rem 1.5rem 1.25rem", borderTop: "1px solid rgba(0,155,155,0.12)", display: "flex", alignItems: "center", gap: "0.75rem" }}>
                 <button
+                  data-promo-play=""
                   onClick={togglePlay}
                   style={{
                     width: 48, height: 48, borderRadius: "50%",
@@ -487,7 +537,7 @@ ${cardHtml}
                   {isPlaying ? "⏸" : "▶"}
                 </button>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" as const, color: "#5a9090", marginBottom: 2 }}>
+                  <div data-promo-status="" style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" as const, color: "#5a9090", marginBottom: 2 }}>
                     {isPlaying ? "● Now Playing" : audioSrc ? "Ready to play" : "No audio loaded"}
                   </div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: "#e8f5f5" }}>{data.trackTitle} — {data.artistName}</div>
@@ -495,7 +545,7 @@ ${cardHtml}
                 {/* EQ Bars */}
                 <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 24, marginLeft: "0.5rem" }}>
                   {eqHeights.map((h, i) => (
-                    <div key={i} style={{ width: 3, borderRadius: 1, background: i % 2 === 0 ? "#009B9B" : "#E8624A", height: h, transition: "height 0.08s" }} />
+                    <div data-promo-eq="" key={i} style={{ width: 3, borderRadius: 1, background: i % 2 === 0 ? "#009B9B" : "#E8624A", height: h, transition: "height 0.08s" }} />
                   ))}
                 </div>
                 {/* Volume */}
