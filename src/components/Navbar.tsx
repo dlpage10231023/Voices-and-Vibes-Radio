@@ -41,12 +41,15 @@ const Navbar = () => {
           ))
         ) : (
           <li>
-            <Link
-              to="/"
-              className="text-[11px] tracking-[0.14em] uppercase text-muted font-medium no-underline hover:text-primary transition-colors"
+            <button
+              onClick={() => {
+                localStorage.removeItem("vv_intro_seen");
+                navigate("/");
+              }}
+              className="text-[11px] tracking-[0.14em] uppercase text-muted font-medium bg-transparent border-none cursor-pointer hover:text-primary transition-colors"
             >
               ← Back to Promo
-            </Link>
+            </button>
           </li>
         )}
       </ul>
