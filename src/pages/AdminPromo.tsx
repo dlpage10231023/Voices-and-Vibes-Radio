@@ -98,6 +98,49 @@ const AdminPromo = () => {
     setImagePreview(URL.createObjectURL(file));
   };
 
+  const handleAudio = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAudioSrc(URL.createObjectURL(file));
+    if (!data.trackTitle || data.trackTitle === "Soon") {
+      update("trackTitle", file.name.replace(/\.[^/.]+$/, ""));
+    }
+  };
+
+  const fmt = (s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return m + ":" + (sec < 10 ? "0" : "") + sec;
+  };
+
+  const togglePlay = useCallback(() => {
+    if (!audioRef.current || !audioSrc) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  }, [isPlaying, audioSrc]);
+
+  useEffect(() => {
+    const a = audioRef.current;
+    if (!a) return;
+    const onTime = () => {
+      if (a.duration) {
+        setProgress((a.currentTime / a.duration) * 100);
+        setCurrentTime(fmt(a.currentTime));
+      }
+    };
+    const onMeta = () => setDuration(fmt(a.duration));
+    const onEnd = () => { setIsPlaying(false); setProgress(0); setCurrentTime("0:00"); };
+    a.addEventListener("timeupdate", onTime);
+    a.addEventListener("loadedmetadata", onMeta);
+    a.addEventListener("ended", onEnd);
+    return () => { a.removeEventListener("timeupdate", onTime); a.removeEventListener("loadedmetadata", onMeta); a.removeEventListener("ended", onEnd); };
+  }, [audioSrc]);
+
   const processedLines = data.announcementLines
     .split("\n")
     .map((line) =>
