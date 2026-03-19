@@ -46,7 +46,8 @@ const ArtistPlayer = () => {
     nextTrack, prevTrack, trackIndex, trackCount,
     toggleLoop, toggleShuffle, toggleMute, setVolume,
     loadAudioFile, loadImageFile, setArtSrc,
-    audioElement, getAnalyser
+    audioElement, getAnalyser,
+    isPlayingCommercial,
   } = ctx;
 
   const imgInputRef = useRef<HTMLInputElement | null>(null);
@@ -292,24 +293,40 @@ const ArtistPlayer = () => {
 
             {/* ── Track Info ── */}
             <div className="relative text-center" style={{ padding: "1.5rem 1.75rem 1.25rem", borderBottom: "1px solid rgba(0,155,155,0.08)" }}>
-              <div className="font-montserrat font-bold text-[11px] tracking-[0.2em] uppercase mb-[0.5rem]" style={{ color: "#009B9B" }}>
-                🎙️ Voices &amp; Vibes Radio · Artist Spotlight
-              </div>
-              <div className="text-[1.4rem] font-montserrat font-bold mb-[0.25rem] whitespace-nowrap overflow-hidden" style={{ color: hasTitle ? "#ffffff" : "#8ab8b8" }}>
-                <span className="inline-block" style={{ animation: scrollTitle ? "tscroll 14s linear infinite" : "none" }}>
-                  {dispTitle}
-                </span>
-              </div>
-              <div className="font-montserrat text-[15px] mb-[0.15rem]" style={{ color: hasArtist ? "#8ab8b8" : "rgba(138,184,184,0.6)" }}>
-                {dispArtist}
-              </div>
-              <div className="font-montserrat font-light text-[12px] italic" style={{ color: hasAlbumInfo ? "rgba(138,184,184,0.5)" : "#8ab8b8" }}>
-                {dispAlbum}
-              </div>
-              {featuredWeek && (
-                <div className="font-montserrat text-[9px] mt-[2px]" style={{ color: "#8ab8b8" }}>
-                  Featured Week: {featuredWeek}
-                </div>
+              {isPlayingCommercial ? (
+                <>
+                  <div className="font-montserrat font-bold text-[11px] tracking-[0.2em] uppercase mb-[0.5rem]" style={{ color: "#E8624A" }}>
+                    🔊 Commercial Break
+                  </div>
+                  <div className="text-[1.4rem] font-montserrat font-bold mb-[0.25rem]" style={{ color: "#ffffff" }}>
+                    {metaTitle.replace("🔊 ", "")}
+                  </div>
+                  <div className="font-montserrat text-[12px] italic" style={{ color: "rgba(138,184,184,0.5)" }}>
+                    Up next: Track {(trackIndex + 1) % trackCount + 1}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="font-montserrat font-bold text-[11px] tracking-[0.2em] uppercase mb-[0.5rem]" style={{ color: "#009B9B" }}>
+                    🎙️ Voices &amp; Vibes Radio · Artist Spotlight
+                  </div>
+                  <div className="text-[1.4rem] font-montserrat font-bold mb-[0.25rem] whitespace-nowrap overflow-hidden" style={{ color: hasTitle ? "#ffffff" : "#8ab8b8" }}>
+                    <span className="inline-block" style={{ animation: scrollTitle ? "tscroll 14s linear infinite" : "none" }}>
+                      {dispTitle}
+                    </span>
+                  </div>
+                  <div className="font-montserrat text-[15px] mb-[0.15rem]" style={{ color: hasArtist ? "#8ab8b8" : "rgba(138,184,184,0.6)" }}>
+                    {dispArtist}
+                  </div>
+                  <div className="font-montserrat font-light text-[12px] italic" style={{ color: hasAlbumInfo ? "rgba(138,184,184,0.5)" : "#8ab8b8" }}>
+                    {dispAlbum}
+                  </div>
+                  {featuredWeek && (
+                    <div className="font-montserrat text-[9px] mt-[2px]" style={{ color: "#8ab8b8" }}>
+                      Featured Week: {featuredWeek}
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
@@ -337,8 +354,8 @@ const ArtistPlayer = () => {
 
             {/* ── Controls ── */}
             <div className="flex items-center justify-center" style={{ padding: "0.75rem 1.75rem 1rem", gap: "1.25rem" }}>
-              <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: isShuffled ? "#009B9B" : "#8ab8b8" }} onClick={toggleShuffle} title="Shuffle">🔀</button>
-              <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: trackCount > 1 ? "#8ab8b8" : "#8ab8b840" }} onClick={prevTrack} title="Previous track">⏮</button>
+              <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: isShuffled ? "#009B9B" : "#8ab8b8", opacity: isPlayingCommercial ? 0.3 : 1, pointerEvents: isPlayingCommercial ? "none" : "auto" }} onClick={toggleShuffle} title="Shuffle">🔀</button>
+              <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: trackCount > 1 && !isPlayingCommercial ? "#8ab8b8" : "#8ab8b840", pointerEvents: isPlayingCommercial ? "none" : "auto" }} onClick={prevTrack} title="Previous track">⏮</button>
               <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: "#8ab8b8" }} onClick={skipBack} title="Back 10s">⏪</button>
               <button
                 className="border-none cursor-pointer flex items-center justify-center text-[1.5rem] transition-all"
@@ -353,8 +370,8 @@ const ArtistPlayer = () => {
                 {isPlaying ? "⏸" : "▶"}
               </button>
               <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: "#8ab8b8" }} onClick={skipFwd} title="Forward 10s">⏩</button>
-              <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: trackCount > 1 ? "#8ab8b8" : "#8ab8b840" }} onClick={nextTrack} title="Next track">⏭</button>
-              <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: isLooping ? "#009B9B" : "#8ab8b8" }} onClick={toggleLoop} title="Loop">🔁</button>
+              <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: trackCount > 1 && !isPlayingCommercial ? "#8ab8b8" : "#8ab8b840", pointerEvents: isPlayingCommercial ? "none" : "auto" }} onClick={nextTrack} title="Next track">⏭</button>
+              <button className="bg-transparent border-none cursor-pointer text-[1.1rem] p-[6px] transition-all hover:text-white hover:scale-[1.15]" style={{ color: isLooping ? "#009B9B" : "#8ab8b8", opacity: isPlayingCommercial ? 0.3 : 1, pointerEvents: isPlayingCommercial ? "none" : "auto" }} onClick={toggleLoop} title="Loop">🔁</button>
             </div>
             {/* Track counter */}
             {trackCount > 1 && (
