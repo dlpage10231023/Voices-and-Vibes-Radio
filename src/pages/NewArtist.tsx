@@ -139,12 +139,15 @@ const NewArtist = () => {
       setIsPlaying(false);
       stopEQ();
     } else {
+      // Stop all other audio players first
+      dayAudio.stopPlay();
+      artistAudio.stopPlay();
       audioRef.current.play();
       setIsPlaying(true);
       startEQ();
       if (!announceDone) startAnnouncement();
     }
-  }, [isPlaying, artistData, startEQ, stopEQ, announceDone, startAnnouncement]);
+  }, [isPlaying, artistData, startEQ, stopEQ, announceDone, startAnnouncement, dayAudio, artistAudio]);
 
   useEffect(() => {
     const a = audioRef.current;
