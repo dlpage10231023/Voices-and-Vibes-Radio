@@ -30,7 +30,7 @@ const ArtistPlayer = () => {
 
   useEffect(() => {
     // Fetch featured week from live row
-    supabase.from("artist_spotlight").select("featured_week").eq("status", "live").maybeSingle().then(({ data }) => {
+    supabase.from("artist_spotlight").select("featured_week").eq("status", "live").limit(1).maybeSingle().then(({ data }) => {
       if (data?.featured_week) setFeaturedWeek(data.featured_week);
     });
     // Fetch archived spotlights
@@ -212,7 +212,7 @@ const ArtistPlayer = () => {
             
 
             {/* ── Album Art Zone ── */}
-            <div className="wave-border">
+            <div className="wave-border w-full">
             <div
               className="w-full relative overflow-hidden flex items-center justify-center wave-border-inner"
               style={{ aspectRatio: "16/9", maxHeight: 520 }}>
