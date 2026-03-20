@@ -15,6 +15,7 @@ import AdminSpotlight from "./pages/AdminSpotlight.tsx";
 import AdminPromo from "./pages/AdminPromo.tsx";
 import NewArtist from "./pages/NewArtist.tsx";
 import AdminNewArtist from "./pages/AdminNewArtist.tsx";
+import AdminNewArtistCard from "./pages/admin/NewArtist";
 import Studios from "./pages/Studios.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -41,7 +42,7 @@ const App = () => (
               <Route path="/admin/promo" element={<AdminPromo />} />
               <Route path="/artist-player" element={<ArtistPlayer />} />
               <Route path="/new-artist" element={<NewArtist />} />
-              <Route path="/admin/new-artist" element={<AdminNewArtist />} />
+              <Route path="/admin/new-artist" element={<AdminNewArtistCard />} />
               <Route path="/studios" element={<Studios />} />
               <Route path="/:day" element={<DayPage />} />
               <Route path="*" element={<NotFound />} />
