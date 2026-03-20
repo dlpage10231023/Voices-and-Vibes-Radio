@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAudioPlayer } from "@/components/AudioProvider";
 import { useArtistAudio } from "@/components/ArtistAudioProvider";
