@@ -39,6 +39,7 @@ const App = () => (
               <Route path="/admin/spotlight" element={<AdminSpotlight />} />
               <Route path="/admin/promo" element={<AdminPromo />} />
               <Route path="/artist-player" element={<ArtistPlayer />} />
+              <Route path="/new-artist" element={<NewArtist />} />
               <Route path="/studios" element={<Studios />} />
               <Route path="/:day" element={<DayPage />} />
               <Route path="*" element={<NotFound />} />

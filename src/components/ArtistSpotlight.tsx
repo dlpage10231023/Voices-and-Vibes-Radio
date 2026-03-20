@@ -82,6 +82,12 @@ const ArtistSpotlight = () => {
             <p className="font-montserrat font-light text-[14px] text-muted leading-relaxed max-w-[480px] line-clamp-2">
               {displayDesc}
             </p>
+            <Link
+              to="/new-artist"
+              className="inline-flex items-center gap-2 font-montserrat font-bold text-[11px] tracking-[0.12em] uppercase mt-2 px-5 py-2.5 border border-primary/40 text-primary bg-transparent hover:bg-primary/10 hover:border-primary transition-all no-underline"
+            >
+              🎙️ Meet Tony Williams →
+            </Link>
 
           </div>
         </div>
