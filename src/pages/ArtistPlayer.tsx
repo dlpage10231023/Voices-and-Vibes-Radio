@@ -294,6 +294,7 @@ const ArtistPlayer = () => {
                 Voices &amp; Vibes Radio
               </div>
             </div>
+            </div>
 
             {/* ── Track Info ── */}
             <div className="relative text-center" style={{ padding: "1.5rem 1.75rem 1.25rem", borderBottom: "1px solid rgba(0,155,155,0.08)" }}>
