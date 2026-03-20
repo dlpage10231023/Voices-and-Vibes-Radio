@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAudioPlayer } from "@/components/AudioProvider";
+import { useArtistAudio } from "@/components/ArtistAudioProvider";
 import voicesLogo from "@/assets/voices-logo.jpg";
 
 const t = (msg: string) =>
@@ -39,6 +41,8 @@ const DEFAULT_LINES_TEMPLATE = (artistName: string, trackTitle: string, genres: 
 ];
 
 const NewArtist = () => {
+  const dayAudio = useAudioPlayer();
+  const artistAudio = useArtistAudio();
   const [loading, setLoading] = useState(true);
   const [artistData, setArtistData] = useState<{
     artistName: string; trackTitle: string; trackSubtitle: string;
@@ -135,12 +139,15 @@ const NewArtist = () => {
       setIsPlaying(false);
       stopEQ();
     } else {
+      // Stop all other audio players first
+      dayAudio.stopPlay();
+      artistAudio.stopPlay();
       audioRef.current.play();
       setIsPlaying(true);
       startEQ();
       if (!announceDone) startAnnouncement();
     }
-  }, [isPlaying, artistData, startEQ, stopEQ, announceDone, startAnnouncement]);
+  }, [isPlaying, artistData, startEQ, stopEQ, announceDone, startAnnouncement, dayAudio, artistAudio]);
 
   useEffect(() => {
     const a = audioRef.current;
