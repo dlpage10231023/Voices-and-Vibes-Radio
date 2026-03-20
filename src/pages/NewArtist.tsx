@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAudioPlayer } from "@/components/AudioProvider";
 import { useArtistAudio } from "@/components/ArtistAudioProvider";
@@ -41,6 +42,7 @@ const DEFAULT_LINES_TEMPLATE = (artistName: string, trackTitle: string, genres: 
 ];
 
 const NewArtist = () => {
+  const navigate = useNavigate();
   const dayAudio = useAudioPlayer();
   const artistAudio = useArtistAudio();
   const [loading, setLoading] = useState(true);
@@ -209,6 +211,9 @@ const NewArtist = () => {
 
       <div className="relative z-10 flex flex-col items-center justify-center p-4 sm:p-6 min-h-screen">
         {artistData.audioUrl && <audio ref={audioRef} src={artistData.audioUrl} preload="auto" />}
+        <button onClick={() => navigate("/home")} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(0,155,155,0.1)", border: "1px solid rgba(0,155,155,0.25)", color: "#009B9B", fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" as const, padding: "6px 14px", cursor: "pointer", fontFamily: "'Montserrat', sans-serif", marginBottom: "1.5rem" }}>
+          ← Back to Home
+        </button>
         <div style={{ width: "100%", maxWidth: 680, fontFamily: "'Montserrat', sans-serif", color: "#e8f5f5", background: "#080c0c", padding: "2rem 0" }}>
           {/* STATION HEADER */}
           <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
