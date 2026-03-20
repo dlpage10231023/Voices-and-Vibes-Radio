@@ -149,7 +149,7 @@ const AdminNewArtist = () => {
       if (imageFile) image_url = await uploadFile("album-art", imageFile, "new-artists");
       if (audioFile) audio_url = await uploadFile("day-audio", audioFile, "new-artists");
 
-      const payload: Record<string, unknown> = { ...form };
+      const payload: Record<string, unknown> = { ...form, image_size: imageSize, image_zoom: imageZoom };
       if (image_url) payload.image_url = image_url;
       if (audio_url) payload.audio_url = audio_url;
 
@@ -180,6 +180,8 @@ const AdminNewArtist = () => {
     setAudioSrc(a.audio_url || null);
     setImageFile(null);
     setAudioFile(null);
+    setImageSize((a as any).image_size ?? 220);
+    setImageZoom((a as any).image_zoom ?? 50);
   };
 
   const toggleActive = async (id: string, current: boolean) => {
