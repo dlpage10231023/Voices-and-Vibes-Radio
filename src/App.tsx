@@ -14,6 +14,7 @@ import AudioAdmin from "./pages/AudioAdmin.tsx";
 import AdminSpotlight from "./pages/AdminSpotlight.tsx";
 import AdminPromo from "./pages/AdminPromo.tsx";
 import NewArtist from "./pages/NewArtist.tsx";
+import AdminNewArtist from "./pages/AdminNewArtist.tsx";
 import Studios from "./pages/Studios.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
