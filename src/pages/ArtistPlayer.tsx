@@ -30,7 +30,7 @@ const ArtistPlayer = () => {
 
   useEffect(() => {
     // Fetch featured week from live row
-    supabase.from("artist_spotlight").select("featured_week").eq("status", "live").maybeSingle().then(({ data }) => {
+    supabase.from("artist_spotlight").select("featured_week").eq("status", "live").limit(1).maybeSingle().then(({ data }) => {
       if (data?.featured_week) setFeaturedWeek(data.featured_week);
     });
     // Fetch archived spotlights
