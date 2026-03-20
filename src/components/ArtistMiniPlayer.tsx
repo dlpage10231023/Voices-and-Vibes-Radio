@@ -14,7 +14,7 @@ const ArtistMiniPlayer = () => {
   const location = useLocation();
 
   // Don't show on the artist-player page itself (full player is there)
-  if (location.pathname === "/artist-player") return null;
+  if (location.pathname === "/artist-player" || location.pathname === "/new-artist") return null;
   // Don't show if nothing has been loaded
   if (!hasSource && !isPlaying) return null;
 
