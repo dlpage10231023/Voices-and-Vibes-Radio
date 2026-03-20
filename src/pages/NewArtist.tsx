@@ -38,14 +38,13 @@ const DEFAULT_LINES_TEMPLATE = (artistName: string, trackTitle: string, genres: 
   { text: `"${trackTitle}."`, type: "station-name" },
 ];
 
-const imageSize = 220;
-
 const NewArtist = () => {
   const [loading, setLoading] = useState(true);
   const [artistData, setArtistData] = useState<{
     artistName: string; trackTitle: string; trackSubtitle: string;
     genres: string; location: string; slug: string;
     imageUrl: string | null; audioUrl: string | null;
+    imageSize: number; imageZoom: number;
   } | null>(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
