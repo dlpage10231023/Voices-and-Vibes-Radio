@@ -1,41 +1,64 @@
 
 
-# Create Public `/new-artist` Page + Homepage Link
+# Admin New Artist Page + Dynamic Public Page
 
-## New file: `src/pages/NewArtist.tsx`
-Copy the card portion from AdminPromo (lines 509–732) into a standalone public page. Specifically:
+## Overview
+Create a `new_artists` database table, a password-protected admin page at `/admin/new-artist` (replicating the AdminPromo editor pattern), and update the public `/new-artist` page to fetch data dynamically from the database.
 
-**Keep:**
-- Background spinning record + radial overlay (lines 379–392)
-- The full announcement card: station header, artist row, announcement body with cascade lines, float image, progress bar, play button, EQ bars, volume slider, footer with Copy Link + Listen Live
-- Audio element, all playback logic (togglePlay, startEQ, stopEQ, startAnnouncement, progress tracking)
-- All animations (promoSpin, promoBlink, responsive media query)
-- Site link banner at bottom
+## 1. Database: Create `new_artists` table
+New migration:
+```sql
+CREATE TABLE public.new_artists (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  artist_name text NOT NULL DEFAULT '',
+  track_title text NOT NULL DEFAULT '',
+  track_subtitle text NOT NULL DEFAULT '',
+  genres text NOT NULL DEFAULT '',
+  location text NOT NULL DEFAULT '',
+  slug text NOT NULL DEFAULT '',
+  image_url text,
+  audio_url text,
+  is_active boolean NOT NULL DEFAULT false,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
 
-**Remove:**
-- `PasswordGate` component and auth check
-- Left panel (form fields, image upload, audio upload, image size/zoom sliders, Download PNG button, Download HTML button, Copy HTML button)
-- `html2canvas` import and all download/copy functions
-- `imgInputRef`, `audioInputRef`, `imageSize`, `imageZoom`, `downloading` state
-- `handleImage`, `handleAudio`, `downloadPNG`, `downloadImage`, `copyHtml`, `buildFullHtml`, `imgToBase64`, `blobUrlToBase64`
+ALTER TABLE public.new_artists ENABLE ROW LEVEL SECURITY;
 
-**Changes:**
-- Hardcode `data` values (Tony Williams / Soon / 808 Session / Jazz,Gospel,808 Soul / Houston, TX)
-- Hardcode artist image as `voicesLogo` (same as current default)
-- Set page title via `useEffect` → `document.title = "Tony Williams — New Artist · Voices & Vibes Radio"`
-- Audio: use the same `audioSrc`/`audioRef` pattern but start with no audio loaded (or optionally a hardcoded URL if one exists). The play button shows "No audio loaded" if none — same as current behavior
-- Copy Link button copies `voicesandvibesradio.com/new-artist`
-- Layout: single centered column (no sidebar), the card takes full width up to 680px
+-- Public read (for the public page)
+CREATE POLICY "Anyone can read new_artists" ON public.new_artists FOR SELECT USING (true);
+CREATE POLICY "Anyone can insert new_artists" ON public.new_artists FOR INSERT WITH CHECK (true);
+CREATE POLICY "Anyone can update new_artists" ON public.new_artists FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Anyone can delete new_artists" ON public.new_artists FOR DELETE USING (true);
 
-## Edit: `src/App.tsx`
-Add route: `<Route path="/new-artist" element={<NewArtist />} />` with import
-
-## Edit: `src/components/ArtistSpotlight.tsx`
-Add a teal ghost button link below the description text (after line 84):
+-- Auto-update updated_at
+CREATE TRIGGER update_new_artists_updated_at
+  BEFORE UPDATE ON public.new_artists
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 ```
-<Link to="/new-artist" className="inline-flex items-center gap-2 ...">
-  🎙️ Meet Tony Williams →
-</Link>
-```
-Styled as: transparent background, teal border, teal text, hover brightens — matching the site's existing button patterns.
+
+## 2. New file: `src/pages/AdminNewArtist.tsx`
+Exact replica of AdminPromo's structure:
+- **PasswordGate** (same component, same `VITE_ADMIN_PASSWORD`)
+- **Left panel**: Editor form with fields for artist name, track title, subtitle, genres, location, slug, image upload (to `album-art` bucket), audio upload (to `day-audio` bucket)
+- **Right panel**: Live card preview (same card UI as current NewArtist.tsx)
+- **Save button**: Upserts to `new_artists` table
+- **Artist list**: Shows all saved artists with "Set Active" toggle (deactivates others when one is activated)
+- **Remove**: Download PNG/HTML/Copy HTML buttons (keep them for admin use)
+
+## 3. Edit: `src/pages/NewArtist.tsx`
+- On mount, fetch active artist: `supabase.from('new_artists').select('*').eq('is_active', true).maybeSingle()`
+- Populate `data`, `imageUrl`, `audioSrc` from the DB row
+- If image_url exists, use it for the float image and vinyl; otherwise fall back to `voicesLogo`
+- If audio_url exists, set it as `audioSrc` so the play button works
+- Show "No artist currently featured" fallback if no active row
+
+## 4. Edit: `src/App.tsx`
+Add route: `/admin/new-artist` → `AdminNewArtist`
+
+## Files changed
+- **New migration**: `new_artists` table
+- **New**: `src/pages/AdminNewArtist.tsx`
+- **Edit**: `src/pages/NewArtist.tsx` — fetch from DB
+- **Edit**: `src/App.tsx` — add admin route
 
