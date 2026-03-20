@@ -212,7 +212,7 @@ const ArtistPlayer = () => {
             
 
             {/* ── Album Art Zone ── */}
-            <div className="wave-border">
+            <div className="wave-border w-full">
             <div
               className="w-full relative overflow-hidden flex items-center justify-center wave-border-inner"
               style={{ aspectRatio: "16/9", maxHeight: 520 }}>
