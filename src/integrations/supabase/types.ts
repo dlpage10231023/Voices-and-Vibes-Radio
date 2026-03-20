@@ -134,6 +134,51 @@ export type Database = {
         }
         Relationships: []
       }
+      new_artists: {
+        Row: {
+          artist_name: string
+          audio_url: string | null
+          created_at: string
+          genres: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          location: string
+          slug: string
+          track_subtitle: string
+          track_title: string
+          updated_at: string
+        }
+        Insert: {
+          artist_name?: string
+          audio_url?: string | null
+          created_at?: string
+          genres?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          location?: string
+          slug?: string
+          track_subtitle?: string
+          track_title?: string
+          updated_at?: string
+        }
+        Update: {
+          artist_name?: string
+          audio_url?: string | null
+          created_at?: string
+          genres?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          location?: string
+          slug?: string
+          track_subtitle?: string
+          track_title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
