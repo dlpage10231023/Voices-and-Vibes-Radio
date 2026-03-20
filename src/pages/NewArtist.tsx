@@ -71,6 +71,8 @@ const NewArtist = () => {
           slug: data.slug,
           imageUrl: data.image_url,
           audioUrl: data.audio_url,
+          imageSize: data.image_size ?? 220,
+          imageZoom: data.image_zoom ?? 50,
         });
         document.title = `${data.artist_name} — New Artist · Voices & Vibes Radio`;
       } else {

@@ -180,6 +180,8 @@ const AdminNewArtist = () => {
     setAudioSrc(a.audio_url || null);
     setImageFile(null);
     setAudioFile(null);
+    setImageSize((a as any).image_size ?? 220);
+    setImageZoom((a as any).image_zoom ?? 50);
   };
 
   const toggleActive = async (id: string, current: boolean) => {
