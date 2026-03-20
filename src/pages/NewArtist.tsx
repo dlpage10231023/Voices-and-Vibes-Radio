@@ -43,6 +43,7 @@ const data = {
   trackSubtitle: "808 Session",
   genres: "Jazz,Gospel,808 Soul",
   location: "Houston, TX",
+  slug: "tony-williams",
 };
 
 const genreTags = data.genres.split(",").map((g) => g.trim()).filter(Boolean);
@@ -52,6 +53,8 @@ const tagStyles = [
   { bg: "rgba(212,168,48,0.1)", border: "rgba(212,168,48,0.25)", color: "#D4A830" },
   { bg: "rgba(0,155,155,0.1)", border: "rgba(0,155,155,0.25)", color: "#009B9B" },
 ];
+
+const imageSize = 220;
 
 const NewArtist = () => {
   const [audioSrc] = useState<string | null>(null);
@@ -217,9 +220,9 @@ const NewArtist = () => {
               </div>
 
               {/* FLOAT ARTIST IMAGE */}
-              <div data-promo-float="" style={{ float: "right" as const, margin: "0 0 1.5rem 2rem", width: 220, border: "1px solid rgba(0,155,155,0.2)", background: "linear-gradient(180deg,rgba(0,155,155,0.08),rgba(8,12,12,0.6))", overflow: "hidden", flexShrink: 0 }}>
+              <div data-promo-float="" style={{ float: "right" as const, margin: "0 0 1.5rem 2rem", width: imageSize, border: "1px solid rgba(0,155,155,0.2)", background: "linear-gradient(180deg,rgba(0,155,155,0.08),rgba(8,12,12,0.6))", overflow: "hidden", flexShrink: 0 }}>
                 <div style={{ width: "100%", height: 4, background: "linear-gradient(to right,#009B9B,#E8624A,#009B9B)" }} />
-                <div style={{ width: 220, background: "linear-gradient(135deg,#0d1a1a 0%,#1a1000 40%,#0a1a1a 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "4rem", position: "relative" as const, overflow: "hidden", borderBottom: "1px solid rgba(0,155,155,0.15)" }}>
+                <div style={{ width: imageSize, background: "linear-gradient(135deg,#0d1a1a 0%,#1a1000 40%,#0a1a1a 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "4rem", position: "relative" as const, overflow: "hidden", borderBottom: "1px solid rgba(0,155,155,0.15)" }}>
                   <img src={voicesLogo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 </div>
                 <div style={{ padding: "0.6rem 0.75rem", background: "rgba(0,0,0,0.3)", borderTop: "1px solid rgba(0,155,155,0.15)" }}>
