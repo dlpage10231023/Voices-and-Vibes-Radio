@@ -155,6 +155,9 @@ const ArtistPlayer = () => {
         input[type=range]{-webkit-appearance:none;appearance:none;background:rgba(255,255,255,.1);height:3px;border-radius:2px;cursor:pointer;outline:none;flex:1}
         input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:#009B9B;cursor:pointer;box-shadow:0 0 6px rgba(0,155,155,.5)}
         input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;border:none;background:#009B9B}
+        @keyframes waveGlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+        .wave-border{background:linear-gradient(270deg,#009B9B,#E8624A,#D4A830,#009B9B);background-size:300% 300%;animation:waveGlow 8s ease infinite;padding:2px}
+        .wave-border-inner{background:#0d0d0d;width:100%;height:100%}
       `}</style>
 
       {/* ── Page Header ── */}
@@ -209,9 +212,10 @@ const ArtistPlayer = () => {
             
 
             {/* ── Album Art Zone ── */}
+            <div className="wave-border">
             <div
-              className="w-full relative overflow-hidden flex items-center justify-center"
-              style={{ aspectRatio: "16/9", maxHeight: 520, background: "#0d0d0d" }}>
+              className="w-full relative overflow-hidden flex items-center justify-center wave-border-inner"
+              style={{ aspectRatio: "16/9", maxHeight: 520 }}>
               
               {artSrc &&
               <img
@@ -289,6 +293,7 @@ const ArtistPlayer = () => {
                 
                 Voices &amp; Vibes Radio
               </div>
+            </div>
             </div>
 
             {/* ── Track Info ── */}
