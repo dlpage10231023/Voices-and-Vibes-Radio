@@ -141,7 +141,9 @@ export type Database = {
           created_at: string
           genres: string
           id: string
+          image_size: number
           image_url: string | null
+          image_zoom: number
           is_active: boolean
           location: string
           slug: string
@@ -155,7 +157,9 @@ export type Database = {
           created_at?: string
           genres?: string
           id?: string
+          image_size?: number
           image_url?: string | null
+          image_zoom?: number
           is_active?: boolean
           location?: string
           slug?: string
@@ -169,7 +173,9 @@ export type Database = {
           created_at?: string
           genres?: string
           id?: string
+          image_size?: number
           image_url?: string | null
+          image_zoom?: number
           is_active?: boolean
           location?: string
           slug?: string
