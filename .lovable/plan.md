@@ -1,63 +1,34 @@
 
 
-# Fix: No Sound on Artist Player
+# Add Slow Wave Animation to Artist Image Frame
 
-## Problem
-The audio element plays (progress bar moves, time advances) but no sound is heard. This is caused by a **Web Audio API routing issue**:
+## What
+Add a subtle, slow-moving wave/pulse border animation around the album art container on the Artist Player page, giving the image frame an organic, flowing feel.
 
-1. When `getAnalyser()` is called (by the visualizer), it creates an `AudioContext` and calls `createMediaElementSource(audio)`, which routes ALL audio output through the Web Audio API graph.
-2. Browser autoplay policy keeps the `AudioContext` in a "suspended" state until a user gesture resumes it.
-3. `togglePlay` only resumes the AudioContext if it already exists, but the timing is wrong — the visualizer creates it *after* play starts.
-4. Result: audio element is playing, but output is routed through a suspended AudioContext → silence.
+## How
 
-## Fix (in `src/components/ArtistAudioProvider.tsx`)
+### Edit: `src/pages/ArtistPlayer.tsx`
 
-### Change 1: Eagerly create and resume AudioContext in `togglePlay`
-Move the AudioContext creation (currently in `getAnalyser`) to happen **before** `a.play()` in `togglePlay`, ensuring the context is created and resumed during the user gesture:
+**1. Add CSS keyframes** (in the existing `<style>` block at ~line 148):
+- Add a `@keyframes wave-border` animation that slowly shifts a gradient border using `background-position` or `border-image` to create a flowing wave effect around the image frame.
+- Use a CSS approach with a pseudo-element wrapper that has an animated gradient border cycling through the brand colors (#009B9B → #E8624A → #D4A830 → #009B9B).
 
-```typescript
-const togglePlay = useCallback(async () => {
-  const a = audioRef.current;
-  if (!a || !a.src) return;
-  if (isPlaying) {
-    stopPlay();
-  } else {
-    dayAudio.stopPlay();
-    // Ensure AudioContext + source are set up and resumed BEFORE playing
-    // This must happen in a user-gesture handler so the browser allows it
-    if (!audioCtxRef.current) {
-      const actx = new AudioContext();
-      const an = actx.createAnalyser();
-      an.fftSize = 128;
-      an.smoothingTimeConstant = 0.82;
-      const src = actx.createMediaElementSource(a);
-      src.connect(an);
-      an.connect(actx.destination);
-      audioCtxRef.current = actx;
-      analyserRef.current = an;
-      sourceRef.current = src;
-    }
-    if (audioCtxRef.current.state === "suspended") {
-      await audioCtxRef.current.resume();
-    }
-    await a.play().catch(() => {});
-    setIsPlaying(true);
-  }
-}, [isPlaying, stopPlay, dayAudio]);
+**2. Wrap the Album Art Zone** (~line 212) with an animated border container:
+- Add an outer `div` with a slowly rotating conic/linear gradient border (8-12s cycle) that creates the "moving waves" effect.
+- The animation runs continuously but is more pronounced when playing.
+
+### Animation approach
+```css
+@keyframes waveGlow {
+  0%   { background-position: 0% 50% }
+  50%  { background-position: 100% 50% }
+  100% { background-position: 0% 50% }
+}
 ```
+- Outer div: `background: linear-gradient(...)` with `background-size: 300% 300%` animated via `waveGlow` over ~8s.
+- Inner div (existing art container): inset by 2px to reveal the animated gradient as a border.
+- Subtle box-shadow glow that pulses in sync.
 
-### Change 2: Simplify `getAnalyser` to just return the existing analyser
-Since the AudioContext is now created in `togglePlay`, `getAnalyser` becomes a simple getter:
-
-```typescript
-const getAnalyser = useCallback((): AnalyserNode | null => {
-  if (audioCtxRef.current?.state === "suspended") {
-    audioCtxRef.current.resume();
-  }
-  return analyserRef.current;
-}, []);
-```
-
-## Files changed
-- **Edit**: `src/components/ArtistAudioProvider.tsx` — move AudioContext creation into `togglePlay`, simplify `getAnalyser`
+### Files changed
+- `src/pages/ArtistPlayer.tsx` — add keyframes + animated wrapper around album art zone
 
