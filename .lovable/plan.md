@@ -1,64 +1,63 @@
 
 
-# Admin New Artist Page + Dynamic Public Page
+# Fix: No Sound on Artist Player
 
-## Overview
-Create a `new_artists` database table, a password-protected admin page at `/admin/new-artist` (replicating the AdminPromo editor pattern), and update the public `/new-artist` page to fetch data dynamically from the database.
+## Problem
+The audio element plays (progress bar moves, time advances) but no sound is heard. This is caused by a **Web Audio API routing issue**:
 
-## 1. Database: Create `new_artists` table
-New migration:
-```sql
-CREATE TABLE public.new_artists (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  artist_name text NOT NULL DEFAULT '',
-  track_title text NOT NULL DEFAULT '',
-  track_subtitle text NOT NULL DEFAULT '',
-  genres text NOT NULL DEFAULT '',
-  location text NOT NULL DEFAULT '',
-  slug text NOT NULL DEFAULT '',
-  image_url text,
-  audio_url text,
-  is_active boolean NOT NULL DEFAULT false,
-  created_at timestamptz NOT NULL DEFAULT now(),
-  updated_at timestamptz NOT NULL DEFAULT now()
-);
+1. When `getAnalyser()` is called (by the visualizer), it creates an `AudioContext` and calls `createMediaElementSource(audio)`, which routes ALL audio output through the Web Audio API graph.
+2. Browser autoplay policy keeps the `AudioContext` in a "suspended" state until a user gesture resumes it.
+3. `togglePlay` only resumes the AudioContext if it already exists, but the timing is wrong — the visualizer creates it *after* play starts.
+4. Result: audio element is playing, but output is routed through a suspended AudioContext → silence.
 
-ALTER TABLE public.new_artists ENABLE ROW LEVEL SECURITY;
+## Fix (in `src/components/ArtistAudioProvider.tsx`)
 
--- Public read (for the public page)
-CREATE POLICY "Anyone can read new_artists" ON public.new_artists FOR SELECT USING (true);
-CREATE POLICY "Anyone can insert new_artists" ON public.new_artists FOR INSERT WITH CHECK (true);
-CREATE POLICY "Anyone can update new_artists" ON public.new_artists FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Anyone can delete new_artists" ON public.new_artists FOR DELETE USING (true);
+### Change 1: Eagerly create and resume AudioContext in `togglePlay`
+Move the AudioContext creation (currently in `getAnalyser`) to happen **before** `a.play()` in `togglePlay`, ensuring the context is created and resumed during the user gesture:
 
--- Auto-update updated_at
-CREATE TRIGGER update_new_artists_updated_at
-  BEFORE UPDATE ON public.new_artists
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+```typescript
+const togglePlay = useCallback(async () => {
+  const a = audioRef.current;
+  if (!a || !a.src) return;
+  if (isPlaying) {
+    stopPlay();
+  } else {
+    dayAudio.stopPlay();
+    // Ensure AudioContext + source are set up and resumed BEFORE playing
+    // This must happen in a user-gesture handler so the browser allows it
+    if (!audioCtxRef.current) {
+      const actx = new AudioContext();
+      const an = actx.createAnalyser();
+      an.fftSize = 128;
+      an.smoothingTimeConstant = 0.82;
+      const src = actx.createMediaElementSource(a);
+      src.connect(an);
+      an.connect(actx.destination);
+      audioCtxRef.current = actx;
+      analyserRef.current = an;
+      sourceRef.current = src;
+    }
+    if (audioCtxRef.current.state === "suspended") {
+      await audioCtxRef.current.resume();
+    }
+    await a.play().catch(() => {});
+    setIsPlaying(true);
+  }
+}, [isPlaying, stopPlay, dayAudio]);
 ```
 
-## 2. New file: `src/pages/AdminNewArtist.tsx`
-Exact replica of AdminPromo's structure:
-- **PasswordGate** (same component, same `VITE_ADMIN_PASSWORD`)
-- **Left panel**: Editor form with fields for artist name, track title, subtitle, genres, location, slug, image upload (to `album-art` bucket), audio upload (to `day-audio` bucket)
-- **Right panel**: Live card preview (same card UI as current NewArtist.tsx)
-- **Save button**: Upserts to `new_artists` table
-- **Artist list**: Shows all saved artists with "Set Active" toggle (deactivates others when one is activated)
-- **Remove**: Download PNG/HTML/Copy HTML buttons (keep them for admin use)
+### Change 2: Simplify `getAnalyser` to just return the existing analyser
+Since the AudioContext is now created in `togglePlay`, `getAnalyser` becomes a simple getter:
 
-## 3. Edit: `src/pages/NewArtist.tsx`
-- On mount, fetch active artist: `supabase.from('new_artists').select('*').eq('is_active', true).maybeSingle()`
-- Populate `data`, `imageUrl`, `audioSrc` from the DB row
-- If image_url exists, use it for the float image and vinyl; otherwise fall back to `voicesLogo`
-- If audio_url exists, set it as `audioSrc` so the play button works
-- Show "No artist currently featured" fallback if no active row
-
-## 4. Edit: `src/App.tsx`
-Add route: `/admin/new-artist` → `AdminNewArtist`
+```typescript
+const getAnalyser = useCallback((): AnalyserNode | null => {
+  if (audioCtxRef.current?.state === "suspended") {
+    audioCtxRef.current.resume();
+  }
+  return analyserRef.current;
+}, []);
+```
 
 ## Files changed
-- **New migration**: `new_artists` table
-- **New**: `src/pages/AdminNewArtist.tsx`
-- **Edit**: `src/pages/NewArtist.tsx` — fetch from DB
-- **Edit**: `src/App.tsx` — add admin route
+- **Edit**: `src/components/ArtistAudioProvider.tsx` — move AudioContext creation into `togglePlay`, simplify `getAnalyser`
 
