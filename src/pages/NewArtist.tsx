@@ -42,6 +42,7 @@ const DEFAULT_LINES_TEMPLATE = (artistName: string, trackTitle: string, genres: 
 ];
 
 const NewArtist = () => {
+  const navigate = useNavigate();
   const dayAudio = useAudioPlayer();
   const artistAudio = useArtistAudio();
   const [loading, setLoading] = useState(true);
