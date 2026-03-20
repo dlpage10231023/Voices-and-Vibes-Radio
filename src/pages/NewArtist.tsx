@@ -263,8 +263,8 @@ const NewArtist = () => {
 
               <div data-promo-float="" style={{ float: "right" as const, margin: "0 0 1.5rem 2rem", width: artistData.imageSize, border: "1px solid rgba(0,155,155,0.2)", background: "linear-gradient(180deg,rgba(0,155,155,0.08),rgba(8,12,12,0.6))", overflow: "hidden", flexShrink: 0 }}>
                 <div style={{ width: "100%", height: 4, background: "linear-gradient(to right,#009B9B,#E8624A,#009B9B)" }} />
-                <div style={{ width: artistData.imageSize, aspectRatio: "1", background: "linear-gradient(135deg,#0d1a1a 0%,#1a1000 40%,#0a1a1a 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "4rem", position: "relative" as const, overflow: "hidden", borderBottom: "1px solid rgba(0,155,155,0.15)" }}>
-                  <img src={imgSrc} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${1 + (artistData.imageZoom - 50) / 50})` }} />
+                <div style={{ width: artistData.imageSize, background: "linear-gradient(135deg,#0d1a1a 0%,#1a1000 40%,#0a1a1a 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "4rem", position: "relative" as const, overflow: "hidden", borderBottom: "1px solid rgba(0,155,155,0.15)" }}>
+                  <img src={imgSrc} alt="" style={{ width: "100%", display: "block", objectFit: "contain", position: "relative", zIndex: 1, transform: `scale(${1 + (100 - artistData.imageZoom) / 50})` }} />
                 </div>
                 <div style={{ padding: "0.6rem 0.75rem", background: "rgba(0,0,0,0.3)", borderTop: "1px solid rgba(0,155,155,0.15)" }}>
                   <div style={{ fontFamily: "'Dancing Script', cursive", fontSize: "1rem", fontWeight: 700, color: "#E8624A", lineHeight: 1.1, marginBottom: 1 }}>{artistData.artistName}</div>
