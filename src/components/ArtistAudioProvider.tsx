@@ -389,21 +389,7 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const getAnalyser = useCallback((): AnalyserNode | null => {
-    const a = audioRef.current;
-    if (!a) return null;
-    if (!audioCtxRef.current) {
-      const actx = new AudioContext();
-      const an = actx.createAnalyser();
-      an.fftSize = 128;
-      an.smoothingTimeConstant = 0.82;
-      const src = actx.createMediaElementSource(a);
-      src.connect(an);
-      an.connect(actx.destination);
-      audioCtxRef.current = actx;
-      analyserRef.current = an;
-      sourceRef.current = src;
-    }
-    if (audioCtxRef.current.state === "suspended") {
+    if (audioCtxRef.current?.state === "suspended") {
       audioCtxRef.current.resume();
     }
     return analyserRef.current;
