@@ -509,31 +509,34 @@ ${audioB64 ? `<audio id="promo-audio" src="${audioB64}" preload="auto"></audio>`
                 <input ref={audRef} type="file" accept="audio/*" className="hidden" onChange={handleAudio} />
               </div>
 
-              {/* Download PNG */}
-              <button onClick={downloadPNG} disabled={downloading} className="font-montserrat font-bold text-[11px] tracking-[0.15em] uppercase cursor-pointer disabled:opacity-40 mt-2" style={{ background: "linear-gradient(135deg,#009B9B,#E8624A)", color: "#080c0c", border: "none", padding: "12px", width: "100%" }}>
-                {downloading ? "⏳ Generating..." : "📸 Download PNG (for sharing)"}
-              </button>
-
-              {/* Download HTML + Copy HTML */}
-              <div className="flex gap-2">
-                <button onClick={downloadHTML} disabled={downloading} className="font-montserrat font-bold text-[9px] tracking-[0.15em] uppercase cursor-pointer disabled:opacity-40 flex-1" style={{ background: "rgba(0,155,155,0.1)", border: "1px solid rgba(0,155,155,0.3)", color: "#009B9B", padding: "10px" }}>
-                  {downloading ? "⏳..." : "📥 Download HTML"}
+              {/* STEP 1: Save to DB */}
+              <div className="mt-3">
+                <div className="font-montserrat font-bold text-[8px] tracking-[0.18em] uppercase mb-1" style={{ color: "#5a9090" }}>Step 1 — Save Artist</div>
+                <button onClick={save} disabled={saving} className="font-montserrat font-bold text-[11px] tracking-[0.15em] uppercase cursor-pointer disabled:opacity-40" style={{ background: "#009B9B", color: "#080c0c", border: "none", padding: "12px", width: "100%" }}>
+                  {saving ? "⏳ Saving..." : editId ? "💾 Update Artist" : "💾 Save Artist"}
                 </button>
-                <button onClick={copyHtml} disabled={downloading} className="font-montserrat font-bold text-[9px] tracking-[0.15em] uppercase cursor-pointer disabled:opacity-40 flex-1" style={{ background: "rgba(232,98,74,0.1)", border: "1px solid rgba(232,98,74,0.3)", color: "#E8624A", padding: "10px" }}>
-                  {downloading ? "⏳..." : "📋 Copy HTML"}
-                </button>
+                {editId && (
+                  <button onClick={() => { setEditId(null); setForm(emptyForm); setImagePreview(null); setAudioSrc(null); }} className="font-montserrat font-bold text-[9px] tracking-[0.15em] uppercase cursor-pointer mt-2" style={{ background: "rgba(0,155,155,0.1)", border: "1px solid rgba(0,155,155,0.3)", color: "#009B9B", padding: "10px", width: "100%" }}>
+                    Cancel Edit
+                  </button>
+                )}
               </div>
 
-              {/* Save to DB */}
-              <button onClick={save} disabled={saving} className="font-montserrat font-bold text-[11px] tracking-[0.15em] uppercase cursor-pointer disabled:opacity-40" style={{ background: "#009B9B", color: "#080c0c", border: "none", padding: "12px", width: "100%" }}>
-                {saving ? "⏳ Saving..." : editId ? "💾 Update Artist" : "💾 Save Artist"}
-              </button>
-
-              {editId && (
-                <button onClick={() => { setEditId(null); setForm(emptyForm); setImagePreview(null); setAudioSrc(null); }} className="font-montserrat font-bold text-[9px] tracking-[0.15em] uppercase cursor-pointer" style={{ background: "rgba(0,155,155,0.1)", border: "1px solid rgba(0,155,155,0.3)", color: "#009B9B", padding: "10px", width: "100%" }}>
-                  Cancel Edit
+              {/* STEP 2: Export / Share */}
+              <div className="mt-2" style={{ borderTop: "1px solid rgba(0,155,155,0.12)", paddingTop: "0.75rem" }}>
+                <div className="font-montserrat font-bold text-[8px] tracking-[0.18em] uppercase mb-1" style={{ color: "#5a9090" }}>Step 2 — Share / Export</div>
+                <button onClick={downloadPNG} disabled={downloading} className="font-montserrat font-bold text-[11px] tracking-[0.15em] uppercase cursor-pointer disabled:opacity-40" style={{ background: "linear-gradient(135deg,#009B9B,#E8624A)", color: "#080c0c", border: "none", padding: "12px", width: "100%" }}>
+                  {downloading ? "⏳ Generating..." : "📸 Download PNG"}
                 </button>
-              )}
+                <div className="flex gap-2 mt-2">
+                  <button onClick={downloadHTML} disabled={downloading} className="font-montserrat font-bold text-[9px] tracking-[0.15em] uppercase cursor-pointer disabled:opacity-40 flex-1" style={{ background: "rgba(0,155,155,0.1)", border: "1px solid rgba(0,155,155,0.3)", color: "#009B9B", padding: "10px" }}>
+                    {downloading ? "⏳..." : "📥 Download HTML"}
+                  </button>
+                  <button onClick={copyHtml} disabled={downloading} className="font-montserrat font-bold text-[9px] tracking-[0.15em] uppercase cursor-pointer disabled:opacity-40 flex-1" style={{ background: "rgba(232,98,74,0.1)", border: "1px solid rgba(232,98,74,0.3)", color: "#E8624A", padding: "10px" }}>
+                    {downloading ? "⏳..." : "📋 Copy HTML"}
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* ARTIST LIST */}
