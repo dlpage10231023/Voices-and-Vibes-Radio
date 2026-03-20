@@ -13,6 +13,7 @@ import ArtistPlayer from "./pages/ArtistPlayer.tsx";
 import AudioAdmin from "./pages/AudioAdmin.tsx";
 import AdminSpotlight from "./pages/AdminSpotlight.tsx";
 import AdminPromo from "./pages/AdminPromo.tsx";
+import NewArtist from "./pages/NewArtist.tsx";
 import Studios from "./pages/Studios.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
