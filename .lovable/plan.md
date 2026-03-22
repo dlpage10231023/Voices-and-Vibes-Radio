@@ -1,12 +1,14 @@
 
 
-## Why the vinyl is invisible
+## Plan: Add sway animation to artist image
 
-Line 208 in `src/pages/NewArtist.tsx` sets the spinning record image to `opacity: 0.06` (6% opacity). On the dark `#080c0c` background, this makes it practically invisible.
+The `sway` keyframe exists in `tailwind.config.ts` but has no corresponding entry in the `animation` map, so `animate-sway` doesn't work.
 
-## Plan
+### Steps
 
-1. **Update line 208 in `src/pages/NewArtist.tsx`** — Change `opacity: 0.06` to a visible value like `opacity: 0.15` or `opacity: 0.2` so the vinyl is clearly visible but still sits behind the content as a background element.
+1. **`tailwind.config.ts`** — Add `sway: "sway 3s ease-in-out infinite"` to the `animation` object (alongside `accordion-down` / `accordion-up`).
 
-One line change, nothing else modified.
+2. **`src/pages/NewArtist.tsx` (line 269)** — Add `animation: "sway 3s ease-in-out infinite"` to the inline style on the artist image container `<div>`.
+
+Two small edits. The image will gently sway side-to-side.
 
