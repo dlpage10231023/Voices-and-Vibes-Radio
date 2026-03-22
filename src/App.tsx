@@ -17,6 +17,7 @@ import NewArtist from "./pages/NewArtist.tsx";
 import AdminNewArtist from "./pages/AdminNewArtist.tsx";
 import AdminNewArtistCard from "./pages/admin/NewArtist";
 import Studios from "./pages/Studios.tsx";
+import Listen from "./pages/Listen.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const SplashGate = () => {
