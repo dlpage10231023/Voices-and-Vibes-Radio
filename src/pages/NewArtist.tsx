@@ -205,9 +205,9 @@ const NewArtist = () => {
     <div className="min-h-screen" style={{ background: "#080c0c" }}>
       {/* SPINNING BG RECORD */}
       <div style={{ position: "fixed", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none", zIndex: 0 }}>
-        <img src={voicesLogo} alt="" style={{ width: "min(100vw,100vh)", height: "min(100vw,100vh)", borderRadius: "50%", opacity: 0.18, animation: isPlaying ? "promoSpin 20s linear infinite" : undefined }} />
+        <img src={voicesLogo} alt="" style={{ width: "min(100vw,100vh)", height: "min(100vw,100vh)", borderRadius: "50%", opacity: 0.45, animation: isPlaying ? "promoSpin 20s linear infinite" : undefined }} />
       </div>
-      <div style={{ position: "fixed", inset: 0, zIndex: 1, pointerEvents: "none", background: "radial-gradient(ellipse 80% 80% at 50% 50%, rgba(8,12,12,0.6) 0%, rgba(8,12,12,0.85) 60%, rgba(8,12,12,0.97) 100%)" }} />
+      <div style={{ position: "fixed", inset: 0, zIndex: 1, pointerEvents: "none", background: "radial-gradient(ellipse 80% 80% at 50% 50%, rgba(8,12,12,0.25) 0%, rgba(8,12,12,0.55) 60%, rgba(8,12,12,0.85) 100%)" }} />
 
       <div className="relative z-10 flex flex-col items-center justify-center p-4 sm:p-6 min-h-screen">
         {artistData.audioUrl && <audio ref={audioRef} src={artistData.audioUrl} preload="auto" />}
