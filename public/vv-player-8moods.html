@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voices & Vibes Radio — Ambient Player</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@300;400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#009B9B;--teal-d:#007A7A;--teal-l:#00C4C4;
+  --coral:#E8624A;--coral-l:#F07A62;
+  --black:#0a0a0a;--dark:#111;--card:#1a1a1a;
+  --muted:#8ab8b8;--cream:#e8f5f5;
+  --accent:var(--teal);
+}
+html,body{background:var(--black);color:var(--cream);font-family:'Montserrat',sans-serif;
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:flex-start;padding:2rem 1rem 3rem}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 40% at 20% 20%,rgba(0,155,155,0.07),transparent 60%),
+  radial-gradient(ellipse 40% 30% at 80% 80%,rgba(232,98,74,0.04),transparent 60%)}
+
+/* HEADER */
+.site-header{text-align:center;margin-bottom:2rem}
+.site-logo{font-family:'Dancing Script',cursive;font-size:2.2rem;font-weight:700;
+  background:linear-gradient(135deg,var(--teal),var(--coral));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;margin-bottom:0.2rem}
+.site-tagline{font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--muted)}
+
+/* PLAYER SHELL */
+.player-shell{width:100%;max-width:520px}
+.player-card{
+  width:100%;background:linear-gradient(180deg,rgba(26,30,30,0.97),rgba(16,18,18,0.98));
+  border:1px solid rgba(0,155,155,0.2);overflow:hidden;position:relative;
+  box-shadow:0 18px 55px rgba(0,155,155,0.12)
+}
+.player-card::before{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(0,196,196,0.06),transparent 35%,transparent 65%,rgba(232,98,74,0.06))}
+
+/* LIVE BADGE */
+.live-badge{
+  display:inline-flex;align-items:center;gap:6px;margin:1.2rem 1.5rem 0;
+  background:rgba(232,98,74,0.12);border:1px solid rgba(232,98,74,0.35);
+  color:var(--coral);font-size:10px;font-weight:700;letter-spacing:0.22em;
+  text-transform:uppercase;padding:5px 12px
+}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--coral);animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.1}}
+
+/* STATION NAME */
+.station-block{padding:1rem 1.5rem 0.8rem}
+.station-name{font-family:'Dancing Script',cursive;font-size:2rem;font-weight:700;
+  background:linear-gradient(135deg,var(--coral),var(--teal));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;margin-bottom:0.2rem}
+.station-sub{font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted)}
+
+/* VISUALIZER */
+.viz-wrap{margin:0 1.5rem;height:52px;background:rgba(0,155,155,0.04);
+  border:1px solid rgba(0,155,155,0.1);display:flex;align-items:center;
+  justify-content:center;gap:2px;padding:6px;overflow:hidden}
+.viz-bar{flex:1;min-width:3px;background:var(--teal);border-radius:1px;
+  transition:height 0.09s ease;height:4px}
+.viz-bar:nth-child(even){background:var(--coral)}
+
+/* NOW PLAYING */
+.now-playing{padding:0.9rem 1.5rem 0.7rem}
+.np-label{font-size:9px;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--teal);font-weight:700;margin-bottom:0.3rem}
+.np-track{font-size:14px;font-weight:700;color:#fff;margin-bottom:0.2rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.np-meta{font-size:10px;color:var(--muted)}
+
+/* MOOD INDICATOR */
+.mood-strip{display:flex;gap:4px;padding:0 1.5rem 0.7rem;flex-wrap:wrap}
+.mood-dot{width:8px;height:8px;border-radius:50%;background:rgba(0,155,155,0.2);
+  border:1px solid rgba(0,155,155,0.3);cursor:pointer;transition:all 0.2s;flex-shrink:0}
+.mood-dot.active{background:var(--teal);border-color:var(--teal);
+  box-shadow:0 0 6px var(--teal)}
+.mood-dot:nth-child(5).active,.mood-dot:nth-child(6).active{background:#9055DD;border-color:#9055DD;box-shadow:0 0 6px #9055DD}
+.mood-dot:nth-child(7).active{background:#4488FF;border-color:#4488FF;box-shadow:0 0 6px #4488FF}
+.mood-dot:nth-child(8).active{background:var(--coral);border-color:var(--coral);box-shadow:0 0 6px var(--coral)}
+
+/* PROGRESS */
+.progress-section{padding:0.8rem 1.5rem 0.5rem}
+.progress-bar{width:100%;height:3px;background:rgba(255,255,255,0.08);
+  cursor:pointer;border-radius:2px;margin-bottom:0.4rem;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(to right,var(--teal),var(--coral));
+  width:0%;transition:width 0.2s linear;border-radius:2px}
+.progress-times{display:flex;justify-content:space-between;
+  font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted)}
+
+/* CONTROLS */
+.controls-section{padding:0.6rem 1.5rem 0.8rem;display:flex;align-items:center;justify-content:center;gap:1.2rem}
+.ctrl-btn{background:none;border:none;cursor:pointer;color:var(--muted);
+  font-size:1.1rem;padding:8px;border-radius:50%;min-width:40px;min-height:40px;
+  transition:all 0.2s}
+.ctrl-btn:hover{color:#fff;background:rgba(255,255,255,0.05)}
+.play-btn{width:56px;height:56px;border-radius:50%;background:var(--teal);border:none;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;color:var(--black);box-shadow:0 0 24px rgba(0,155,155,0.4);
+  transition:all 0.2s}
+.play-btn:hover{background:var(--teal-l);transform:scale(1.06)}
+.play-btn.playing{background:var(--coral);box-shadow:0 0 24px rgba(232,98,74,0.4)}
+
+/* VOLUME */
+.vol-section{padding:0 1.5rem 1rem;display:flex;align-items:center;gap:0.75rem}
+.vol-icon{font-size:13px;color:var(--muted);cursor:pointer;min-width:16px;text-align:center}
+input[type=range]{flex:1;height:3px;-webkit-appearance:none;appearance:none;
+  background:rgba(255,255,255,0.1);border-radius:2px;cursor:pointer;outline:none;accent-color:var(--teal)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;
+  border-radius:50%;background:var(--teal);cursor:pointer;box-shadow:0 0 5px rgba(0,155,155,0.5)}
+.vol-pct{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);min-width:32px;text-align:right}
+
+/* MOOD CHANNELS */
+.moods-section{border-top:1px solid rgba(0,155,155,0.08);padding:1.1rem 1.5rem}
+.moods-label{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--teal);font-weight:700;margin-bottom:0.8rem}
+.moods-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.mood-card{
+  padding:0.7rem 0.8rem;cursor:pointer;border:1px solid rgba(0,155,155,0.15);
+  background:rgba(0,155,155,0.04);transition:all 0.2s;position:relative;overflow:hidden
+}
+.mood-card:hover{background:rgba(0,155,155,0.1);border-color:rgba(0,155,155,0.35)}
+.mood-card.active{border-color:var(--teal);background:rgba(0,155,155,0.12)}
+.mood-card.gospel.active{border-color:#9055DD;background:rgba(144,85,221,0.1)}
+.mood-card.meditation.active{border-color:#4488FF;background:rgba(68,136,255,0.08)}
+.mood-card.trapjazz.active{border-color:var(--coral);background:rgba(232,98,74,0.08)}
+.mood-num{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--muted);margin-bottom:3px}
+.mood-name{font-size:11px;font-weight:700;color:#fff;margin-bottom:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mood-bpm{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--teal)}
+.mood-card.gospel .mood-bpm{color:#9055DD}
+.mood-card.meditation .mood-bpm{color:#4488FF}
+.mood-card.trapjazz .mood-bpm{color:var(--coral)}
+.mood-badge{position:absolute;top:6px;right:6px;font-size:7px;font-weight:700;
+  letter-spacing:0.08em;text-transform:uppercase;padding:2px 5px;
+  background:rgba(0,155,155,0.2);border:1px solid rgba(0,155,155,0.3);color:var(--teal)}
+.mood-card.gospel .mood-badge{background:rgba(144,85,221,0.2);border-color:rgba(144,85,221,0.3);color:#9055DD}
+.mood-card.meditation .mood-badge{background:rgba(68,136,255,0.15);border-color:rgba(68,136,255,0.3);color:#4488FF}
+.mood-card.trapjazz .mood-badge{background:rgba(232,98,74,0.15);border-color:rgba(232,98,74,0.3);color:var(--coral)}
+
+/* MUSIC BUTTON */
+.music-btn{
+  display:flex;align-items:center;justify-content:center;gap:0.5rem;
+  width:100%;padding:10px;border:none;cursor:pointer;
+  background:rgba(0,155,155,0.08);border-top:1px solid rgba(0,155,155,0.12);
+  color:var(--muted);font-family:'Montserrat',sans-serif;font-size:10px;
+  font-weight:700;letter-spacing:0.15em;text-transform:uppercase;transition:all 0.2s
+}
+.music-btn:hover{background:rgba(0,155,155,0.15)}
+.music-btn.on{color:var(--teal);background:rgba(0,155,155,0.12)}
+
+/* LINKS */
+.links-row{display:flex;gap:6px;padding:0 1.5rem 1rem}
+.link-btn{flex:1;padding:9px;text-align:center;font-size:10px;font-weight:700;
+  letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;transition:all 0.2s}
+.link-btn.teal{background:var(--teal);color:var(--black)}
+.link-btn.teal:hover{background:var(--teal-l)}
+.link-btn.ghost{border:1px solid rgba(0,155,155,0.3);color:var(--teal)}
+.link-btn.ghost:hover{background:rgba(0,155,155,0.1)}
+
+/* FOOTER */
+.player-footer{text-align:center;margin-top:1rem;font-size:9px;
+  letter-spacing:0.15em;text-transform:uppercase;color:rgba(138,184,184,0.4)}
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <span class="site-logo">Voices & Vibes Radio</span>
+  <div class="site-tagline">8 Healing Moods · 24/7 Worldwide</div>
+</div>
+
+<div class="player-shell">
+<div class="player-card">
+
+  <div class="live-badge"><span class="live-dot"></span>LIVE · voicesandvibesradio.com</div>
+
+  <div class="station-block">
+    <span class="station-name">Voices & Vibes</span>
+    <div class="station-sub">Healing Conversations & Restorative Jazz</div>
+  </div>
+
+  <!-- VISUALIZER -->
+  <div class="viz-wrap" id="vizWrap"></div>
+
+  <!-- NOW PLAYING -->
+  <div class="now-playing">
+    <div class="np-label">NOW PLAYING</div>
+    <div class="np-track" id="npTrack">Select a mood to begin</div>
+    <div class="np-meta" id="npMeta">Voices & Vibes Radio · Houston, TX</div>
+  </div>
+
+  <!-- MOOD DOTS -->
+  <div class="mood-strip" id="moodDots"></div>
+
+  <!-- PROGRESS -->
+  <div class="progress-section">
+    <div class="progress-bar" id="progBar">
+      <div class="progress-fill" id="progFill"></div>
+    </div>
+    <div class="progress-times">
+      <span id="timeEl">0:00</span>
+      <span style="color:var(--coral);font-weight:700;font-size:9px">● LIVE</span>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls-section">
+    <button class="ctrl-btn" id="prevBtn" onclick="prevMood()" title="Previous mood">⏮</button>
+    <button class="play-btn" id="playBtn" onclick="togglePlay()" title="Play / Pause">▶</button>
+    <button class="ctrl-btn" id="nextBtn" onclick="nextMood()" title="Next mood">⏭</button>
+  </div>
+
+  <!-- VOLUME -->
+  <div class="vol-section">
+    <span class="vol-icon" id="volIcon" onclick="toggleMute()">🔈</span>
+    <input type="range" id="volSlider" min="0" max="100" value="65" oninput="setVol(this.value)">
+    <span class="vol-pct" id="volPct">65%</span>
+  </div>
+
+  <!-- MOOD CHANNELS -->
+  <div class="moods-section">
+    <div class="moods-label">8 Healing Mood Channels</div>
+    <div class="moods-grid" id="moodsGrid"></div>
+  </div>
+
+  <!-- MUSIC TOGGLE -->
+  <button class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵 Music: Off — Click to Start</button>
+
+  <!-- LINKS -->
+  <div class="links-row">
+    <a href="https://hello.citrus3.com:2020/public/voicesandvibes" target="_blank" class="link-btn teal">🎙️ Full Live Stream</a>
+    <a href="voices-vibes.html" class="link-btn ghost">← Back to Site</a>
+  </div>
+
+</div>
+</div>
+
+<div class="player-footer">voicesandvibesradio.com · Est. Jan 2026 · Houston, TX</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// 8 MOOD DEFINITIONS — COMPLETE HEALING CHANNEL SUITE
+// ══════════════════════════════════════════════════════
+const MOODS = [
+  {
+    id: 0,
+    name: 'Healing Jazz',
+    sub: 'Smooth & Restorative · 88 BPM',
+    badge: 'Jazz',
+    cls: '',
+    bpm: 88,
+    desc: 'Therapy-inspired · Midtempo',
+    // Dm9 → Gm9 → Bbmaj7 → Am9
+    chords: [
+      [146.83, 174.61, 220, 261.63, 329.63],
+      [196, 233.08, 293.66, 349.23, 440],
+      [233.08, 293.66, 349.23, 440, 523.25],
+      [220, 261.63, 329.63, 392, 493.88]
+    ],
+    bass: [146.83, 196, 233.08, 220],
+    kick:  [1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0],
+    snare: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],
+    hat:   [1,0,1,1,0,1,1,0,1,0,1,1,0,1,1,0],
+    clave: [1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0],
+    kickV:{freq:62,decay:0.52,gain:0.9},
+    snareV:{tone:260,decay:0.18,noise:0.22},
+    hatV:{decay:0.05,hp:7200,gain:0.1},
+    claveV:{freq:1100,decay:0.07,gain:0.2}
+  },
+  {
+    id: 1,
+    name: 'Gospel Groove',
+    sub: 'Sunday Soul Vibes · 96 BPM',
+    badge: 'Gospel',
+    cls: '',
+    bpm: 96,
+    desc: 'Faith & Healing · Uplifting',
+    // Fmaj7 → Gm7 → Am7 → Bbmaj7
+    chords: [
+      [174.61, 220, 261.63, 329.63, 415.3],
+      [196, 233.08, 293.66, 349.23, 440],
+      [220, 261.63, 329.63, 392, 493.88],
+      [233.08, 293.66, 349.23, 440, 523.25]
+    ],
+    bass: [174.61, 196, 220, 233.08],
+    kick:  [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
+    snare: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hat:   [1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],
+    clave: [1,0,1,0,0,1,0,0,1,0,1,0,0,1,0,0],
+    kickV:{freq:68,decay:0.48,gain:0.88},
+    snareV:{tone:240,decay:0.2,noise:0.28},
+    hatV:{decay:0.04,hp:7800,gain:0.11},
+    claveV:{freq:900,decay:0.06,gain:0.18}
+  },
+  {
+    id: 2,
+    name: 'Afrobeats Jazz',
+    sub: 'Voices & Vibes Signature · 92 BPM',
+    badge: 'Signature',
+    cls: '',
+    bpm: 92,
+    desc: 'Rhythm & Restoration',
+    // Dm9 → Gm9 → Bbmaj7 → Am9
+    chords: [
+      [146.83, 174.61, 220, 261.63, 329.63],
+      [196, 233.08, 293.66, 349.23, 440],
+      [233.08, 293.66, 349.23, 440, 523.25],
+      [220, 261.63, 329.63, 392, 493.88]
+    ],
+    bass: [146.83, 196, 233.08, 220],
+    kick:  [1,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0],
+    snare: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hat:   [1,0,1,0,1,1,0,1,1,0,1,0,1,1,0,1],
+    clave: [1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1],
+    kickV:{freq:74,decay:0.52,gain:0.95},
+    snareV:{tone:210,decay:0.18,noise:0.22},
+    hatV:{decay:0.045,hp:7800,gain:0.1},
+    claveV:{freq:1200,decay:0.06,gain:0.24}
+  },
+  {
+    id: 3,
+    name: 'Soul Saturday',
+    sub: 'Deep Rest & Peace · 76 BPM',
+    badge: 'Soul',
+    cls: '',
+    bpm: 76,
+    desc: 'Self-Care Soundscape · Slow',
+    // Cmaj9 → Em7 → Am7 → Fmaj7
+    chords: [
+      [261.63, 329.63, 392, 493.88, 587.33],
+      [164.81, 220, 261.63, 329.63, 415.3],
+      [220, 261.63, 329.63, 415.3, 493.88],
+      [174.61, 220, 261.63, 329.63, 440]
+    ],
+    bass: [130.81, 164.81, 220, 174.61],
+    kick:  [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
+    snare: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hat:   [1,0,1,0,0,0,1,0,1,0,1,0,0,0,1,0],
+    clave: [1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0],
+    kickV:{freq:58,decay:0.65,gain:0.85},
+    snareV:{tone:200,decay:0.22,noise:0.18},
+    hatV:{decay:0.06,hp:6500,gain:0.08},
+    claveV:{freq:950,decay:0.09,gain:0.15}
+  },
+
+  // ── 4 NEW MOODS ────────────────────────────────────
+  {
+    id: 4,
+    name: 'Gospel Sunday',
+    sub: 'Church & Praise Vibes · 84 BPM',
+    badge: 'New',
+    cls: 'gospel',
+    bpm: 84,
+    desc: 'Faith · Worship · Healing',
+    // Gmaj7 → Cmaj7 → Em7 → D7
+    chords: [
+      [196, 246.94, 293.66, 369.99, 493.88],
+      [261.63, 329.63, 392, 493.88, 523.25],
+      [164.81, 220, 261.63, 329.63, 415.3],
+      [146.83, 220, 293.66, 370, 440]
+    ],
+    bass: [98, 130.81, 82.41, 73.42],
+    kick:  [1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],
+    snare: [0,0,0,0,1,0,0,1,0,0,0,0,1,0,1,0],
+    hat:   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    clave: [1,0,0,1,0,1,0,0,1,0,0,1,0,0,1,0],
+    kickV:{freq:65,decay:0.5,gain:0.85},
+    snareV:{tone:230,decay:0.22,noise:0.32},
+    hatV:{decay:0.03,hp:8500,gain:0.09},
+    claveV:{freq:800,decay:0.08,gain:0.22}
+  },
+  {
+    id: 5,
+    name: 'Healing Meditation',
+    sub: 'Stillness & Restoration · 60 BPM',
+    badge: 'New',
+    cls: 'meditation',
+    bpm: 60,
+    desc: 'Therapeutic · Breathwork · Calm',
+    // Amaj7 → F#m7 → Dmaj7 → Esus4
+    chords: [
+      [220, 277.18, 329.63, 415.3, 554.37],
+      [185, 220, 277.18, 329.63, 440],
+      [146.83, 185, 220, 277.18, 370],
+      [164.81, 220, 293.66, 369.99, 440]
+    ],
+    bass: [55, 46.25, 36.71, 41.20],
+    kick:  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    snare: [0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
+    hat:   [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    clave: [0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0],
+    kickV:{freq:50,decay:0.8,gain:0.6},
+    snareV:{tone:180,decay:0.3,noise:0.1},
+    hatV:{decay:0.08,hp:5500,gain:0.05},
+    claveV:{freq:700,decay:0.12,gain:0.1}
+  },
+  {
+    id: 6,
+    name: 'Soul Saturday Deep',
+    sub: 'Late Night Rest · 70 BPM',
+    badge: 'New',
+    cls: 'meditation',
+    bpm: 70,
+    desc: 'R&B Soul · Night Healing',
+    // Ebmaj9 → Cm9 → Fm7 → Bb7
+    chords: [
+      [155.56, 196, 233.08, 311.13, 392],
+      [130.81, 155.56, 196, 233.08, 311.13],
+      [174.61, 207.65, 261.63, 311.13, 415.3],
+      [116.54, 155.56, 185, 233.08, 311.13]
+    ],
+    bass: [77.78, 65.41, 87.31, 58.27],
+    kick:  [1,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0],
+    snare: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hat:   [1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0],
+    clave: [1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0],
+    kickV:{freq:55,decay:0.7,gain:0.88},
+    snareV:{tone:195,decay:0.25,noise:0.2},
+    hatV:{decay:0.07,hp:6000,gain:0.07},
+    claveV:{freq:850,decay:0.1,gain:0.16}
+  },
+  {
+    id: 7,
+    name: 'Trap Jazz Fusion',
+    sub: 'Healing Energy · 108 BPM',
+    badge: 'New',
+    cls: 'trapjazz',
+    bpm: 108,
+    desc: 'Urban · Jazz · Powerful',
+    // Dm11 → G13 → Cmaj9 → Fmaj7#11
+    chords: [
+      [146.83, 196, 220, 293.66, 370, 440],
+      [196, 246.94, 293.66, 370, 466.16, 587.33],
+      [261.63, 329.63, 392, 493.88, 587.33, 659.26],
+      [174.61, 220, 277.18, 329.63, 415.3, 554.37]
+    ],
+    bass: [73.42, 98, 65.41, 87.31],
+    kick:  [1,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0],
+    snare: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],
+    hat:   [1,1,0,1,1,0,1,1,1,0,1,1,0,1,1,0],
+    clave: [1,0,1,0,0,0,1,0,0,1,0,0,1,0,0,0],
+    kickV:{freq:70,decay:0.55,gain:1.0},
+    snareV:{tone:270,decay:0.16,noise:0.3},
+    hatV:{decay:0.035,hp:9000,gain:0.12},
+    claveV:{freq:1300,decay:0.055,gain:0.22}
+  }
+];
+
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let ctx=null, masterGain=null, reverb=null, noiseBuffer=null;
+let isPlaying=false, musicOn=false, curMood=2, isMuted=false;
+let volume=0.65, curStep=0, stepTimer=null, curChordIdx=0, chordTimer=null;
+let progInterval=null, progSec=0, vizInterval=null, vizAnimId=null;
+let vizBars=[];
+
+// ══════════════════════════════════════════════════════
+// AUDIO ENGINE
+// ══════════════════════════════════════════════════════
+function initAudio(){
+  if(ctx)return;
+  ctx=new(window.AudioContext||window.webkitAudioContext)();
+  masterGain=ctx.createGain();
+  masterGain.gain.setValueAtTime(0.0,ctx.currentTime);
+  masterGain.connect(ctx.destination);
+  // Lush reverb — 3.5 second room for warmth
+  const len=ctx.sampleRate*3.5;
+  const ir=ctx.createBuffer(2,len,ctx.sampleRate);
+  for(let c=0;c<2;c++){
+    const d=ir.getChannelData(c);
+    for(let i=0;i<len;i++){
+      // Smooth exponential decay with slight early reflection
+      const decay=Math.pow(1-i/len,1.8);
+      const early=i<ctx.sampleRate*0.05?0.5:1;
+      d[i]=(Math.random()*2-1)*decay*early;
+    }
+  }
+  reverb=ctx.createConvolver();
+  // Mix reverb quietly — lush but not drowning
+  const reverbMix=ctx.createGain();
+  reverbMix.gain.value=0.55;
+  reverb.connect(reverbMix);
+  reverbMix.connect(masterGain);
+  buildNoise();
+}
+function buildNoise(){
+  const buf=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate);
+  const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+  noiseBuffer=buf;
+}
+function getNoise(){return noiseBuffer;}
+function note(freq,t,dur,vol,atk,rel){
+  // Smooth sine-only jazz pad — no organ harmonics
+  const o=ctx.createOscillator();
+  const g=ctx.createGain();
+  const attackTime = atk || 0.18;
+  const releaseTime = rel || 0.55;
+  o.type='sine';
+  o.frequency.value=freq;
+  // Soft attack, long smooth decay — like a Rhodes piano
+  g.gain.setValueAtTime(0.0,t);
+  g.gain.linearRampToValueAtTime(vol,t+attackTime);
+  g.gain.setValueAtTime(vol,t+attackTime);
+  g.gain.linearRampToValueAtTime(vol*0.7,t+dur*0.5);
+  g.gain.linearRampToValueAtTime(0.0,t+dur+releaseTime);
+  o.connect(g);
+  // Slight reverb send only — no dry stacking
+  const reverbSend=ctx.createGain();
+  reverbSend.gain.value=0.35;
+  g.connect(reverbSend);
+  reverbSend.connect(reverb);
+  // Very low direct signal for warmth not presence
+  const directGain=ctx.createGain();
+  directGain.gain.value=0.4;
+  g.connect(directGain);
+  directGain.connect(masterGain);
+  o.start(t);
+  o.stop(t+dur+releaseTime+0.2);
+}
+function shimmer(freq,t,dur,vol){
+  // Gentle high shimmer — like brush on cymbal or room air
+  const o=ctx.createOscillator();
+  const g=ctx.createGain();
+  o.type='sine';
+  o.frequency.value=freq;
+  o.detune.value=(Math.random()-0.5)*8; // tiny human feel
+  g.gain.setValueAtTime(0.0,t);
+  g.gain.linearRampToValueAtTime(vol,t+0.35);
+  g.gain.linearRampToValueAtTime(0.0,t+dur);
+  o.connect(g);
+  const rs=ctx.createGain();rs.gain.value=0.9;
+  g.connect(rs);rs.connect(reverb);
+  o.start(t);o.stop(t+dur+0.2);
+}
+function playChord(mood,ci,t){
+  const chord=mood.chords[ci];
+  const barDur=60/mood.bpm*4;
+  // Stagger notes gently like a pianist rolling the chord
+  const stagger=0.06;
+  // Root — warm bass note
+  const bassFreq=mood.bass[ci];
+  note(bassFreq,t,barDur*1.1,0.18,0.12,0.8);
+  // Chord tones — very soft, spaced out like jazz comping
+  // Use ONLY root positions of chord, no octave doubling
+  const playVols=[0.07,0.055,0.05,0.045,0.035];
+  chord.slice(0,5).forEach((freq,i)=>{
+    note(freq,t+i*stagger,barDur*0.92,(playVols[i]||0.03),0.2+i*0.04,0.6);
+  });
+  // One subtle shimmer on the 5th — like a jazz vibrato tail
+  if(chord[2]){
+    shimmer(chord[2]*2,t+barDur*0.4,barDur*0.5,0.025);
+  }
+}
+function trigKick(t,m){
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  const v=m.kickV;
+  o.frequency.setValueAtTime(v.freq*2,t);
+  o.frequency.exponentialRampToValueAtTime(v.freq,t+v.decay*0.4);
+  g.gain.setValueAtTime(v.gain,t);g.gain.exponentialRampToValueAtTime(0.001,t+v.decay);
+  o.connect(g);g.connect(masterGain);o.start(t);o.stop(t+v.decay+0.05);
+  const n=ctx.createBufferSource();n.buffer=getNoise();
+  const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=180;
+  const ng=ctx.createGain();ng.gain.setValueAtTime(0.3,t);ng.gain.exponentialRampToValueAtTime(0.001,t+0.06);
+  n.connect(f);f.connect(ng);ng.connect(masterGain);n.start(t);n.stop(t+0.08);
+}
+function trigSnare(t,m){
+  const v=m.snareV;
+  const n=ctx.createBufferSource();n.buffer=getNoise();
+  const f=ctx.createBiquadFilter();f.type='bandpass';f.frequency.value=v.tone;f.Q.value=1.5;
+  const g=ctx.createGain();g.gain.setValueAtTime(v.noise,t);g.gain.exponentialRampToValueAtTime(0.001,t+v.decay);
+  n.connect(f);f.connect(g);g.connect(masterGain);n.start(t);n.stop(t+v.decay+0.05);
+  const o=ctx.createOscillator(),og=ctx.createGain();
+  o.type='triangle';o.frequency.value=v.tone;
+  og.gain.setValueAtTime(0.15,t);og.gain.exponentialRampToValueAtTime(0.001,t+v.decay*0.6);
+  o.connect(og);og.connect(masterGain);o.start(t);o.stop(t+v.decay+0.02);
+}
+function trigHat(t,m){
+  const v=m.hatV;
+  const n=ctx.createBufferSource();n.buffer=getNoise();
+  const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=v.hp;
+  const g=ctx.createGain();g.gain.setValueAtTime(v.gain,t);g.gain.exponentialRampToValueAtTime(0.001,t+v.decay);
+  n.connect(f);f.connect(g);g.connect(masterGain);n.start(t);n.stop(t+v.decay+0.02);
+}
+function trigClave(t,m){
+  const v=m.claveV;
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  o.type='triangle';o.frequency.value=v.freq;
+  g.gain.setValueAtTime(v.gain,t);g.gain.exponentialRampToValueAtTime(0.001,t+v.decay);
+  o.connect(g);g.connect(masterGain);o.start(t);o.stop(t+v.decay+0.02);
+}
+
+// ══════════════════════════════════════════════════════
+// SCHEDULER
+// ══════════════════════════════════════════════════════
+function stepMs(m){return 60000/m.bpm/4;}
+let schedStep=0, schedChord=0, schedLookahead=100, schedInterval=null;
+let nextStepTime=0, nextChordTime=0;
+
+function scheduler(){
+  const m=MOODS[curMood];
+  const stepDur=60/m.bpm/4;
+  const barDur=stepDur*16;
+  const now=ctx.currentTime;
+  while(nextStepTime<now+0.15){
+    const t=nextStepTime;
+    // Drums every step
+    if(m.kick[schedStep])trigKick(t,m);
+    if(m.snare[schedStep])trigSnare(t,m);
+    if(m.hat[schedStep])trigHat(t,m);
+    if(m.clave[schedStep])trigClave(t,m);
+    // Chord every 16 steps (1 bar)
+    if(schedStep===0){
+      playChord(m,schedChord,t);
+      schedChord=(schedChord+1)%m.chords.length;
+    }
+    schedStep=(schedStep+1)%16;
+    nextStepTime+=stepDur;
+  }
+}
+
+function startScheduler(){
+  if(!ctx)return;
+  schedStep=0;schedChord=0;
+  nextStepTime=ctx.currentTime+0.1;
+  schedInterval=setInterval(scheduler,schedLookahead);
+}
+function stopScheduler(){
+  if(schedInterval)clearInterval(schedInterval);
+  schedInterval=null;
+}
+
+// ══════════════════════════════════════════════════════
+// PLAYBACK CONTROL
+// ══════════════════════════════════════════════════════
+function toggleMusic(){
+  initAudio();if(ctx.state==='suspended')ctx.resume();
+  musicOn=!musicOn;
+  const btn=document.getElementById('musicBtn');
+  if(musicOn){
+    masterGain.gain.cancelScheduledValues(ctx.currentTime);
+    masterGain.gain.setValueAtTime(masterGain.gain.value,ctx.currentTime);
+    masterGain.gain.linearRampToValueAtTime(volume,ctx.currentTime+3.5);
+    if(!isPlaying)startPlayback();
+    btn.textContent='🎵 Music: On — Click to Pause';
+    btn.classList.add('on');
+  } else {
+    masterGain.gain.cancelScheduledValues(ctx.currentTime);
+    masterGain.gain.setValueAtTime(masterGain.gain.value,ctx.currentTime);
+    masterGain.gain.linearRampToValueAtTime(0.001,ctx.currentTime+1.2);
+    btn.textContent='🎵 Music: Off — Click to Start';
+    btn.classList.remove('on');
+  }
+}
+function startPlayback(){
+  isPlaying=true;
+  document.getElementById('playBtn').classList.add('playing');
+  document.getElementById('playBtn').textContent='⏸';
+  updateNowPlaying();
+  startScheduler();
+  startViz();
+  startProgress();
+}
+function stopPlayback(){
+  isPlaying=false;
+  stopScheduler();
+  document.getElementById('playBtn').classList.remove('playing');
+  document.getElementById('playBtn').textContent='▶';
+  stopViz();
+}
+function togglePlay(){
+  initAudio();if(ctx.state==='suspended')ctx.resume();
+  if(!musicOn){toggleMusic();return;}
+  if(isPlaying){
+    masterGain.gain.linearRampToValueAtTime(0.001,ctx.currentTime+0.6);
+    setTimeout(stopPlayback,600);
+  } else {
+    masterGain.gain.linearRampToValueAtTime(volume,ctx.currentTime+1.5);
+    startPlayback();
+  }
+}
+function switchMood(idx){
+  const wasMusicOn=musicOn;
+  const wasPlaying=isPlaying;
+  if(wasPlaying){
+    masterGain.gain.linearRampToValueAtTime(0.001,ctx.currentTime+0.4);
+    stopScheduler();
+    setTimeout(()=>{
+      curMood=idx;
+      updateNowPlaying();
+      updateMoodCards();
+      updateMoodDots();
+      masterGain.gain.linearRampToValueAtTime(volume,ctx.currentTime+1.5);
+      startScheduler();
+    },400);
+  } else {
+    curMood=idx;
+    updateNowPlaying();
+    updateMoodCards();
+    updateMoodDots();
+  }
+}
+function prevMood(){switchMood((curMood-1+MOODS.length)%MOODS.length);}
+function nextMood(){switchMood((curMood+1)%MOODS.length);}
+
+// ══════════════════════════════════════════════════════
+// UI
+// ══════════════════════════════════════════════════════
+function updateNowPlaying(){
+  const m=MOODS[curMood];
+  document.getElementById('npTrack').textContent=m.name+' · '+m.bpm+' BPM';
+  document.getElementById('npMeta').textContent=m.desc+' · Voices & Vibes Radio';
+}
+function buildMoodCards(){
+  const grid=document.getElementById('moodsGrid');grid.innerHTML='';
+  MOODS.forEach((m,i)=>{
+    const card=document.createElement('div');
+    card.className='mood-card'+(m.cls?' '+m.cls:'')+(i===curMood?' active':'');
+    card.innerHTML=`
+      <div class="mood-num">0${i+1}</div>
+      <div class="mood-name">${m.name}</div>
+      <div class="mood-bpm">${m.bpm} BPM · ${m.desc.split('·')[0].trim()}</div>
+      <div class="mood-badge">${m.badge}</div>`;
+    card.onclick=()=>switchMood(i);
+    grid.appendChild(card);
+  });
+}
+function updateMoodCards(){
+  document.querySelectorAll('.mood-card').forEach((c,i)=>{
+    c.classList.toggle('active',i===curMood);
+  });
+}
+function buildMoodDots(){
+  const wrap=document.getElementById('moodDots');wrap.innerHTML='';
+  MOODS.forEach((m,i)=>{
+    const d=document.createElement('div');
+    d.className='mood-dot'+(i===curMood?' active':'');
+    d.title=m.name;d.onclick=()=>switchMood(i);
+    wrap.appendChild(d);
+  });
+}
+function updateMoodDots(){
+  document.querySelectorAll('.mood-dot').forEach((d,i)=>d.classList.toggle('active',i===curMood));
+}
+
+// VISUALIZER
+function buildViz(){
+  const wrap=document.getElementById('vizWrap');wrap.innerHTML='';vizBars=[];
+  for(let i=0;i<24;i++){
+    const b=document.createElement('div');b.className='viz-bar';b.style.height='4px';
+    wrap.appendChild(b);vizBars.push(b);
+  }
+}
+function startViz(){
+  vizAnimId=setInterval(()=>{
+    if(!isPlaying||!musicOn)return;
+    vizBars.forEach((b,i)=>{
+      const h=4+Math.random()*34;
+      b.style.height=h+'px';
+    });
+  },90);
+}
+function stopViz(){
+  clearInterval(vizAnimId);
+  vizBars.forEach(b=>b.style.height='4px');
+}
+
+// PROGRESS
+function startProgress(){
+  progSec=0;clearInterval(progInterval);
+  progInterval=setInterval(()=>{
+    if(!isPlaying)return;
+    progSec++;
+    const total=480; // 8 min loop
+    const pct=(progSec%total)/total*100;
+    document.getElementById('progFill').style.width=pct+'%';
+    const m=Math.floor(progSec/60),s=progSec%60;
+    document.getElementById('timeEl').textContent=m+':'+(s<10?'0':'')+s;
+  },1000);
+}
+
+// VOLUME
+function setVol(v){
+  volume=parseInt(v)/100;
+  if(musicOn&&masterGain)masterGain.gain.value=volume;
+  document.getElementById('volPct').textContent=v+'%';
+  document.getElementById('volIcon').textContent=
+    isMuted||v==0?'🔇':v<45?'🔈':'🔊';
+}
+function toggleMute(){
+  isMuted=!isMuted;
+  if(masterGain)masterGain.gain.value=isMuted?0:volume;
+  document.getElementById('volIcon').textContent=isMuted?'🔇':'🔊';
+}
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+buildViz();
+buildMoodCards();
+buildMoodDots();
+updateNowPlaying();
+</script>
+</body>
+</html>
