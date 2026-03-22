@@ -17,6 +17,7 @@ import NewArtist from "./pages/NewArtist.tsx";
 import AdminNewArtist from "./pages/AdminNewArtist.tsx";
 import AdminNewArtistCard from "./pages/admin/NewArtist";
 import Studios from "./pages/Studios.tsx";
+import Listen from "./pages/Listen.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const SplashGate = () => {
@@ -44,6 +45,7 @@ const App = () => (
               <Route path="/new-artist" element={<NewArtist />} />
               <Route path="/admin/new-artist" element={<AdminNewArtistCard />} />
               <Route path="/studios" element={<Studios />} />
+              <Route path="/listen" element={<Listen />} />
               <Route path="/:day" element={<DayPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

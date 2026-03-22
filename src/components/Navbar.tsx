@@ -1,7 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
-const LISTEN_LIVE_URL = "https://hello.citrus3.com:2020/public/voicesandvibes";
-
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -54,15 +52,13 @@ const Navbar = () => {
         )}
       </ul>
 
-      <a
-        href={LISTEN_LIVE_URL}
-        target="_blank"
-        rel="noopener noreferrer"
+      <Link
+        to="/listen"
         className="flex items-center gap-2 bg-primary text-primary-foreground px-[18px] py-2 text-[11px] font-bold tracking-[0.1em] uppercase no-underline hover:brightness-110 transition-all"
       >
         <span className="w-[7px] h-[7px] rounded-full bg-secondary animate-blink" />
-        Live
-      </a>
+        Listen
+      </Link>
     </nav>
   );
 };
