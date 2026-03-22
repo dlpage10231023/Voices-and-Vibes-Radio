@@ -1,11 +1,12 @@
 
 
-## Plan: Add New Artist Card Builder HTML
+## Why the vinyl is invisible
 
-Copy the uploaded `tony-williams-promo_22.html` to `public/new-artist-card.html` so the iframe in `/admin/new-artist` has content to render.
+Line 208 in `src/pages/NewArtist.tsx` sets the spinning record image to `opacity: 0.06` (6% opacity). On the dark `#080c0c` background, this makes it practically invisible.
 
-### Steps
-1. Copy `user-uploads://tony-williams-promo_22.html` → `public/new-artist-card.html`
+## Plan
 
-No other files need changes — the route and iframe are already wired up.
+1. **Update line 208 in `src/pages/NewArtist.tsx`** — Change `opacity: 0.06` to a visible value like `opacity: 0.15` or `opacity: 0.2` so the vinyl is clearly visible but still sits behind the content as a background element.
+
+One line change, nothing else modified.
 
