@@ -107,6 +107,7 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
   // Create audio element once
   useEffect(() => {
     const a = new Audio();
+    a.crossOrigin = "anonymous";
     a.volume = 0.8;
     audioRef.current = a;
 
