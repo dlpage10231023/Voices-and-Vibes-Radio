@@ -82,12 +82,26 @@ const ArtistSpotlight = () => {
             <p className="font-montserrat font-light text-[14px] text-muted leading-relaxed max-w-[480px] line-clamp-2">
               {displayDesc}
             </p>
-            <Link
-              to="/new-artist"
-              className="inline-flex items-center gap-2 font-montserrat font-bold text-[11px] tracking-[0.12em] uppercase mt-2 px-5 py-2.5 border border-primary/40 text-primary bg-transparent hover:bg-primary/10 hover:border-primary transition-all no-underline"
-            >
-              🎙️ Meet Tony Williams →
-            </Link>
+            <div className="flex flex-wrap gap-3 mt-2">
+              <Link
+                to="/new-artist"
+                className="inline-flex items-center gap-2 font-montserrat font-bold text-[11px] tracking-[0.12em] uppercase px-5 py-2.5 border border-primary/40 text-primary bg-transparent hover:bg-primary/10 hover:border-primary transition-all no-underline"
+              >
+                🎙️ New Artist
+              </Link>
+              <Link
+                to="/artist-player"
+                className="inline-flex items-center gap-2 font-montserrat font-bold text-[11px] tracking-[0.12em] uppercase px-5 py-2.5 border border-secondary/40 text-secondary bg-transparent hover:bg-secondary/10 hover:border-secondary transition-all no-underline"
+              >
+                🎵 Artist Player
+              </Link>
+              <Link
+                to="/studios"
+                className="inline-flex items-center gap-2 font-montserrat font-bold text-[11px] tracking-[0.12em] uppercase px-5 py-2.5 border border-muted/40 text-muted bg-transparent hover:bg-muted/10 hover:border-muted transition-all no-underline"
+              >
+                🏠 Studios
+              </Link>
+            </div>
 
           </div>
         </div>
