@@ -107,6 +107,7 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
   // Create audio element once
   useEffect(() => {
     const a = new Audio();
+    a.crossOrigin = "anonymous";
     a.volume = 0.8;
     audioRef.current = a;
 
@@ -148,7 +149,7 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
       a.load();
       setHasSource(true);
       if (autoPlay) {
-        a.play().catch(() => {});
+        a.play().catch((e) => console.warn("Artist track play failed:", e));
         setIsPlaying(true);
       }
     } else {
@@ -180,7 +181,7 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
     a.src = comm.audio_url;
     a.load();
     setHasSource(true);
-    a.play().catch(() => {});
+    a.play().catch((e) => console.warn("Commercial play failed:", e));
     setIsPlaying(true);
     return true;
   }, []);
@@ -320,9 +321,9 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
         sourceRef.current = src;
       }
       if (audioCtxRef.current.state === "suspended") {
-        await audioCtxRef.current.resume();
+        await audioCtxRef.current.resume().catch((e) => console.warn("AudioContext resume failed:", e));
       }
-      await a.play().catch(() => {});
+      await a.play().catch((e) => console.warn("Artist togglePlay failed:", e));
       setIsPlaying(true);
     }
   }, [isPlaying, stopPlay, dayAudio]);
