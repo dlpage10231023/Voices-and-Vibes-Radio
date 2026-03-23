@@ -16,6 +16,9 @@ const Footer = () => {
           { label: "Gospel Sunday", href: "#gospel" },
           { label: "Books", href: "#books" },
           { label: "Contact", href: "#contact" },
+          { label: "New Artist", href: "/new-artist" },
+          { label: "Artist Player", href: "/artist-player" },
+          { label: "Studios", href: "/studios" },
           { label: "Listen Live", href: LISTEN_LIVE_URL, external: true },
         ].map((link) => (
           <a

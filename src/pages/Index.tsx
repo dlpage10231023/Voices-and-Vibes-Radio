@@ -10,7 +10,7 @@ import ArtistSpotlight from "@/components/ArtistSpotlight";
 import BookSpotlight from "@/components/BookSpotlight";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
-import StickyPlayer from "@/components/StickyPlayer";
+
 
 const Index = () => {
   return (
@@ -27,7 +27,7 @@ const Index = () => {
       <BookSpotlight />
       <Contact />
       <Footer />
-      <StickyPlayer />
+      
     </div>
   );
 };
