@@ -106,14 +106,20 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
 
   const togglePlay = useCallback(() => {
     if (isPlaying) {
-      stopAudio();
+      // Pause without destroying the audio element
+      audioRef.current?.pause();
       setIsPlaying(false);
     } else {
       // Stop artist audio before starting day audio
       otherStopRef.current?.();
-      playTrackAtIndex(indexRef.current);
+      // Resume if we already have an audio element with a valid src
+      if (audioRef.current && audioRef.current.src && audioRef.current.src !== window.location.href) {
+        audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+      } else {
+        playTrackAtIndex(indexRef.current);
+      }
     }
-  }, [isPlaying, playTrackAtIndex, stopAudio]);
+  }, [isPlaying, playTrackAtIndex]);
 
   return (
     <AudioCtx.Provider value={{
