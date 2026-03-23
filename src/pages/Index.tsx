@@ -28,7 +28,7 @@ const Index = () => {
       <BookSpotlight />
       <Contact />
       <Footer />
-      
+      <HomeBottomBar />
     </div>
   );
 };
