@@ -209,19 +209,16 @@ export const ArtistAudioProvider = ({ children }: { children: ReactNode }) => {
           a.pause();
           setIsPlaying(false);
         }
-      } else if (tracksRef.current.length > 1) {
-        // Spotlight track ended → try to play a commercial first
+      } else if (tracksRef.current.length > 0) {
+        // Spotlight track ended → try to play a commercial first, then advance (loops back to 0)
         const nextCommIdx = commercialIdxRef.current;
-        if (!playCommercial(nextCommIdx)) {
-          const next = (trackIndex + 1) % tracksRef.current.length;
-          loadTrackByIndex(next, true);
-        } else {
-          commercialIdxRef.current = (nextCommIdx + 1) % (commercialsRef.current.length || 1);
+        const next = (trackIndex + 1) % tracksRef.current.length;
+        if (commercialsRef.current.length > 0 && playCommercial(nextCommIdx)) {
+          commercialIdxRef.current = (nextCommIdx + 1) % commercialsRef.current.length;
           setCommercialIndex(commercialIdxRef.current);
+        } else {
+          loadTrackByIndex(next, true);
         }
-      } else {
-        a.pause();
-        setIsPlaying(false);
       }
     };
     a.addEventListener("ended", onEnd);
