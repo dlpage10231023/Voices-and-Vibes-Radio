@@ -63,9 +63,8 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
     return () => { cancelled = true; };
   }, [activeSlug]);
 
-  // Stop playback when tracks change
+  // Reset state when tracks change (don't destroy audio — avoids race with user clicks)
   useEffect(() => {
-    stopAudio();
     setCurrentTrack(null);
     indexRef.current = 0;
   }, [tracks]);
@@ -88,11 +87,13 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
 
     stopAudio();
 
-    const audio = new Audio(track.audio_url);
+    const audio = new Audio();
+    audio.crossOrigin = "anonymous";
     audio.volume = 0.25;
+    audio.src = track.audio_url;
     audio.onended = () => playTrackAtIndex(i + 1);
     audioRef.current = audio;
-    audio.play().then(() => setIsPlaying(true)).catch(() => {});
+    audio.play().then(() => setIsPlaying(true)).catch((e) => console.warn("Day audio play failed:", e));
   }, [stopAudio]);
 
   const externalStop = useCallback(() => {
@@ -114,7 +115,7 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
       otherStopRef.current?.();
       // Resume if we already have an audio element with a valid src
       if (audioRef.current && audioRef.current.src && audioRef.current.src !== window.location.href) {
-        audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+        audioRef.current.play().then(() => setIsPlaying(true)).catch((e) => console.warn("Day audio resume failed:", e));
       } else {
         playTrackAtIndex(indexRef.current);
       }
