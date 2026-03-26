@@ -214,8 +214,8 @@ const ArtistPlayer = () => {
             {/* ── Album Art Zone ── */}
             <div className="wave-border w-full">
             <div
-              className="w-full relative overflow-hidden flex items-center justify-center wave-border-inner"
-              style={{ aspectRatio: "16/9", maxHeight: 520 }}>
+               className="w-full relative overflow-hidden flex items-center justify-center wave-border-inner aspect-square md:aspect-video"
+               style={{ maxHeight: 520 }}>
               
               {artSrc &&
               <img
