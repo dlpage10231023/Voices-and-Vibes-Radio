@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import voicesLogo from "@/assets/voices-logo.jpg";
 
-const ADMIN_PW = import.meta.env.VITE_ADMIN_PASSWORD || "";
+import { ADMIN_PW } from "@/lib/adminAuth";
 
 const t = (msg: string) =>
   toast(msg, {
@@ -149,9 +149,14 @@ const AdminNewArtist = () => {
       if (imageFile) image_url = await uploadFile("album-art", imageFile, "new-artists");
       if (audioFile) audio_url = await uploadFile("day-audio", audioFile, "new-artists");
 
-      const payload: Record<string, unknown> = { ...form, image_size: imageSize, image_zoom: imageZoom };
-      if (image_url) payload.image_url = image_url;
-      if (audio_url) payload.audio_url = audio_url;
+      const payload = {
+        ...form,
+        image_size: imageSize,
+        image_zoom: imageZoom,
+        ...(image_url ? { image_url } : {}),
+        ...(audio_url ? { audio_url } : {}),
+      };
+
 
       if (editId) {
         await supabase.from("new_artists").update(payload).eq("id", editId);

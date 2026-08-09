@@ -3,7 +3,7 @@ import html2canvas from "html2canvas";
 import { toast } from "sonner";
 import voicesLogo from "@/assets/voices-logo.jpg";
 
-const ADMIN_PW = import.meta.env.VITE_ADMIN_PASSWORD || "";
+import { ADMIN_PW } from "@/lib/adminAuth";
 
 const t = (msg: string) =>
   toast(msg, {
