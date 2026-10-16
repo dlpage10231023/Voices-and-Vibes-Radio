@@ -1068,6 +1068,10 @@ export default function Studios() {
           >
             Share Your Music
           </div>
+
+          {/* Collapsed for now — flip PLANS_ENABLED to true to reopen the plans grid */}
+          {PLANS_ENABLED && (
+            <>
           <p
             style={{
               fontSize: 13,
