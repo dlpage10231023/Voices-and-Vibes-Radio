@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 
 const LISTEN_LIVE_URL = "https://hello.citrus3.com:2020/public/voicesandvibes";
 
+/* Share Your Music plans — collapsed for now; set to true to reopen */
+const PLANS_ENABLED = false;
+
 /* ─── Studio Data ─── */
 const studios = [
   {
@@ -1184,6 +1187,8 @@ export default function Studios() {
               </div>
             ))}
           </div>
+            </>
+          )}
 
           <p style={{ fontSize: 11, color: "#5a9090", textAlign: "center", marginTop: "1.5rem" }}>
             All plans include access to all 7 studio tools.{" "}
