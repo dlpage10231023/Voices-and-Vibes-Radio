@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import StickyPlayer from "@/components/StickyPlayer";
 import ListenLiveButton from "@/components/ListenLiveButton";
 import BackgroundAudio from "@/components/BackgroundAudio";
+import GospelSundayStudio from "@/components/GospelSundayStudio";
 
 const SHARE_STORY_URL = "YOUR_GOOGLE_FORM_URL";
 
@@ -148,6 +149,8 @@ const DayPage = () => {
           </div>
         </section>
       )}
+
+      {day === "sunday" && <GospelSundayStudio />}
 
       <Footer />
       <StickyPlayer />
